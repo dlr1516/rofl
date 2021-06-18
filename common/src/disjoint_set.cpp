@@ -17,7 +17,7 @@
  */
 #include <rofl/common/disjoint_set.h>
 
-namespace maf {
+namespace rofl {
 
     DisjointSet::DisjointSet() : setNum_(0) {
     }
