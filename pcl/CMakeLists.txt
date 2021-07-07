@@ -1,4 +1,4 @@
-set(SUBLIB_SUFFIX common)
+set(SUBLIB_SUFFIX pcl)
 set(SUBLIB_NAME ${PROJECT_NAME}_${SUBLIB_SUFFIX})
 
 message(STATUS "*****")
@@ -11,9 +11,7 @@ message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_library(${SUBLIB_NAME} SHARED 
-  src/disjoint_set.cpp
-  src/param_map.cpp
-  src/profiler.cpp
+  src/point_cloud_plane_aligner.cpp
 )
 
 # Option "make install": copy binaries
