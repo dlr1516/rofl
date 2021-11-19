@@ -16,7 +16,6 @@ add_subdirectory(common)
 
 if(PCL_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})
-
   add_subdirectory(pcl)
 endif()
 

@@ -17,7 +17,7 @@
  */
 #ifndef ROFL_BIT_MANIP_H
 #define ROFL_BIT_MANIP_H
- 
+
 #include <cstdint>
 #include <bitset>
 
@@ -285,7 +285,37 @@ namespace rofl {
     uint64_t log2(uint64_t x) {
         return (63 - nlz(x));
     }
-    
+
+    // ---------------------------------------------------------------
+    // IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES 
+    // ---------------------------------------------------------------
+
+    void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
+
+        union {
+            float f;
+            uint32_t i;
+        } floatBits;
+
+        floatBits.f = f;
+        m = 0x007FFFFF & floatBits.i;
+        e = (0x7F800000 & floatBits.i) >> 23;
+        s = 0x80000000 & floatBits.i;
+    }
+
+    void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
+
+        union {
+            double f;
+            uint64_t i;
+        } floatBits;
+
+        floatBits.f = f;
+        m = 0x000FFFFFFFFFFFFF & floatBits.i;
+        e = (0x7FF0000000000000 & floatBits.i) >> 52;
+        s = 0x8000000000000000 & floatBits.i;
+    }
+
 } // end of namespace
 
 #endif

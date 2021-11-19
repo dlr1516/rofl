@@ -79,10 +79,9 @@ namespace rofl {
 
 }
 
-//BOOST_GEOMETRY_REGISTER_POINT_2D(maf::Point2, double, boost::geometry::cartesian_tag, x(), y());
-BOOST_GEOMETRY_REGISTER_POINT_2D(maf::Point2, maf::Scalar, boost::geometry::cs::cartesian, x(), y());
-BOOST_GEOMETRY_REGISTER_RING(maf::VectorPoint2);
-BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(maf::VectorPolygon2);
+BOOST_GEOMETRY_REGISTER_POINT_2D(rofl::Point2, rofl::Scalar, boost::geometry::cs::cartesian, x(), y());
+BOOST_GEOMETRY_REGISTER_RING(rofl::VectorPoint2);
+BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(rofl::VectorPolygon2);
 
 #endif 
 
