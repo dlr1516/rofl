@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_PARAM_MAP_H
-#define ROFL_PARAM_MAP_H
+#ifndef ROFL_COMMON_PARAM_MAP_H_
+#define ROFL_COMMON_PARAM_MAP_H_
 
 #include <iostream>
 #include <fstream>

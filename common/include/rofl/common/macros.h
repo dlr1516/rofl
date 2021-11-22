@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_MACROS_H
-#define ROFL_MACROS_H
+#ifndef ROFL_COMMON_MACROS_H_
+#define ROFL_COMMON_MACROS_H_
 
 #include <iostream>
 #include <boost/filesystem/path.hpp>

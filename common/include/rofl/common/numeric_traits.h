@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_INTEGER_TRAITS_H
-#define ROFL_INTEGER_TRAITS_H
+#ifndef ROFL_COMMON_INTEGER_TRAITS_H_
+#define ROFL_COMMON_INTEGER_TRAITS_H_
 
 #include <cstdint>
 #include <rofl/common/bit_manip.h>

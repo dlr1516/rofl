@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_BIT_MANIP_H
-#define ROFL_BIT_MANIP_H
+#ifndef ROFL_COMMON_BIT_MANIP_H_
+#define ROFL_COMMON_BIT_MANIP_H_
 
 #include <cstdint>
 #include <bitset>

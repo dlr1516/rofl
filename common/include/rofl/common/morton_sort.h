@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_MORTON_SORT_H
-#define ROFL_MORTON_SORT_H
+#ifndef ROFL_COMMON_MORTON_SORT_H_
+#define ROFL_COMMON_MORTON_SORT_H_
 
 #include <rofl/common/bit_manip.h>
 #include <rofl/common/numeric_traits.h>

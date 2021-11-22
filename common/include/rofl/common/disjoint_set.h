@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_DISJOINT_SET_H
-#define ROFL_DISJOINT_SET_H
+#ifndef ROFL_COMMON_DISJOINT_SET_H_
+#define ROFL_COMMON_DISJOINT_SET_H_
 
 #include <iostream>
 #include <vector>

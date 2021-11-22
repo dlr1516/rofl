@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_MINMAXHEAP_H
-#define ROFL_MINMAXHEAP_H
+#ifndef ROFL_COMMON_MIN_MAX_HEAP_H_
+#define ROFL_COMMON_MIN_MAX_HEAP_H_
 
 #include <iostream>
 #include <vector>
