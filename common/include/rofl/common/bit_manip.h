@@ -23,298 +23,123 @@
 
 namespace rofl {
 
-    // ---------------------------------------------------------------
-    // FLOOR/CEIL LOW POWER 2
-    // ---------------------------------------------------------------
+	// ---------------------------------------------------------------
+	// NUMBER OF LEADING ZEROS
+	// ---------------------------------------------------------------
 
-    /**
-     * Returns the larger power of 2 less than the given argument.
-     * Example: flp2(5) = 2^2.
-     * @param x input argument
-     */
-    uint8_t flp2(uint8_t x) {
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        return x - (x >> 1);
-    }
+	/**
+	 * Number of leading zeros in given argument.
+	 * @param x input argument
+	 */
+	int8_t nlz8(uint8_t x);
 
-    /**
-     * Returns the larger power of 2 less than the given argument.
-     * Example: flp2(5) = 2^2.
-     * @param x input argument
-     */
-    uint16_t flp2(uint16_t x) {
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        x = x | (x >> 8);
-        return x - (x >> 1);
-    }
+	/**
+	 * Number of leading zeros in given argument.
+	 * @param x input argument
+	 */
+	int16_t nlz16(uint16_t x);
 
-    /**
-     * Returns the larger power of 2 less than the given argument.
-     * Example: flp2(5) = 2^2.
-     * @param x input argument
-     */
-    uint32_t flp2(uint32_t x) {
-        //        std::cout << " x:       " << std::bitset<32>(x) << " | \n"
-        //                  << " x >> 1:  " << std::bitset<32>(x >> 1) << "\n";
-        x = x | (x >> 1);
-        //        std::cout << " x:       " << std::bitset<32>(x) << " | \n"
-        //                  << " x >> 2:  " << std::bitset<32>(x >> 2) << "\n";
-        x = x | (x >> 2);
-        //        std::cout << " x:       " << std::bitset<32>(x) << " | \n"
-        //                  << " x >> 4:  " << std::bitset<32>(x >> 4) << "\n";
-        x = x | (x >> 4);
-        //        std::cout << " x:       " << std::bitset<32>(x) << " | \n"
-        //                  << " x >> 8:  " << std::bitset<32>(x >> 8) << "\n";
-        x = x | (x >> 8);
-        //        std::cout << " x:       " << std::bitset<32>(x) << " | \n"
-        //                  << " x >> 16: " << std::bitset<32>(x >> 16) << "\n";
-        x = x | (x >> 16);
-        //        std::cout << " x:       " << std::bitset<32>(x) << " - \n"
-        //                  << " x >> 1:  " << std::bitset<32>(x >> 1) << "\n"
-        //                  << " diff     " << (x - (x >> 1)) << std::endl;
-        return x - (x >> 1);
-    }
+	/**
+	 * Number of leading zeros in given argument.
+	 * @param x input argument
+	 */
+	int32_t nlz32(uint32_t x);
 
-    /**
-     * Returns the larger power of 2 less than the given argument.
-     * Example: flp2(5) = 2^2.
-     * @param x input argument
-     */
-    uint64_t flp2(uint64_t x) {
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        x = x | (x >> 8);
-        x = x | (x >> 16);
-        x = x | (x >> 32);
-        return x - (x >> 1);
-    }
+	/**
+	 * Number of leading zeros in given argument.
+	 * @param x input argument
+	 */
+	int64_t nlz64(uint64_t x);
 
-    /**
-     * Returns the smaller power of 2 greater than the given argument.
-     * Example: clp2(5) = 2^3.
-     * @param x input argument
-     */
-    uint8_t clp2(uint8_t x) {
-        x = x - 1;
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        return x + 1;
-    }
+	// ---------------------------------------------------------------
+	// FLOOR/CEIL LOW POWER 2
+	// ---------------------------------------------------------------
 
-    /**
-     * Returns the smaller power of 2 greater than the given argument.
-     * Example: clp2(5) = 2^3.
-     * @param x input argument
-     */
-    uint16_t clp2(uint16_t x) {
-        x = x - 1;
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        x = x | (x >> 8);
-        return x + 1;
-    }
+	/**
+	 * Returns the largest power of 2 less than the given argument.
+	 * Example: flp2(5) = 2^2.
+	 * @param x input argument
+	 */
+	uint8_t flp2u8(uint8_t x);
 
-    /**
-     * Returns the smaller power of 2 greater than the given argument.
-     * Example: clp2(5) = 2^3.
-     * @param x input argument
-     */
-    uint32_t clp2(uint32_t x) {
-        x = x - 1;
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        x = x | (x >> 8);
-        x = x | (x >> 16);
-        return x + 1;
-    }
+	/**
+	 * Returns the largest power of 2 less than the given argument.
+	 * Example: flp2(5) = 2^2.
+	 * @param x input argument
+	 */
+	uint16_t flp2u16(uint16_t x);
 
-    /**
-     * Returns the smaller power of 2 greater than the given argument.
-     * Example: clp2(5) = 2^3.
-     * @param x input argument
-     */
-    uint64_t clp2(uint64_t x) {
-        x = x - 1;
-        x = x | (x >> 1);
-        x = x | (x >> 2);
-        x = x | (x >> 4);
-        x = x | (x >> 8);
-        x = x | (x >> 16);
-        x = x | (x >> 32);
-        return x + 1;
-    }
+	/**
+	 * Returns the largest power of 2 less than the given argument.
+	 * Example: flp2(5) = 2^2.
+	 * @param x input argument
+	 */
+	uint32_t flp2u32(uint32_t x);
 
-    // ---------------------------------------------------------------
-    // NUMBER OF LEADING ZEROS
-    // ---------------------------------------------------------------
+	/**
+	 * Returns the largest power of 2 less than the given argument.
+	 * Example: flp2(5) = 2^2.
+	 * @param x input argument
+	 */
+	uint64_t flp2u64(uint64_t x);
 
-    int nlz(uint8_t x) {
-        uint8_t y;
-        int n;
+	/**
+	 * Returns the smallest power of 2 greater than the given argument.
+	 * Example: clp2(5) = 2^3.
+	 * @param x input argument
+	 */
+	uint8_t clp2u8(uint8_t x);
 
-        n = 8;
-        y = x >> 4;
-        if (y != 0) {
-            n = n - 4;
-            x = y;
-        }
-        y = x >> 2;
-        if (y != 0) {
-            n = n - 2;
-            x = y;
-        }
-        y = x >> 1;
-        if (y != 0) return n - 2;
-        return n - x;
-    }
+	/**
+	 * Returns the smallest power of 2 greater than the given argument.
+	 * Example: clp2(5) = 2^3.
+	 * @param x input argument
+	 */
+	uint16_t clp2u16(uint16_t x);
 
-    int nlz(uint16_t x) {
-        uint16_t y;
-        int n;
+	/**
+	 * Returns the smallest power of 2 greater than the given argument.
+	 * Example: clp2(5) = 2^3.
+	 * @param x input argument
+	 */
+	uint32_t clp2u32(uint32_t x);
 
-        n = 16;
-        y = x >> 8;
-        if (y != 0) {
-            n = n - 8;
-            x = y;
-        }
-        y = x >> 4;
-        if (y != 0) {
-            n = n - 4;
-            x = y;
-        }
-        y = x >> 2;
-        if (y != 0) {
-            n = n - 2;
-            x = y;
-        }
-        y = x >> 1;
-        if (y != 0) return n - 2;
-        return n - x;
-    }
+	/**
+	 * Returns the smallest power of 2 greater than the given argument.
+	 * Example: clp2(5) = 2^3.
+	 * @param x input argument
+	 */
+	uint64_t clp2u64(uint64_t x);
 
-    int nlz(uint32_t x) {
-        uint32_t y;
-        int n;
+	// ---------------------------------------------------------------
+	// IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES
+	// ---------------------------------------------------------------
 
-        n = 32;
-        y = x >> 16;
-        if (y != 0) {
-            n = n - 16;
-            x = y;
-        }
-        y = x >> 8;
-        if (y != 0) {
-            n = n - 8;
-            x = y;
-        }
-        y = x >> 4;
-        if (y != 0) {
-            n = n - 4;
-            x = y;
-        }
-        y = x >> 2;
-        if (y != 0) {
-            n = n - 2;
-            x = y;
-        }
-        y = x >> 1;
-        if (y != 0) return n - 2;
-        return n - x;
-    }
+	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
 
-    int nlz(uint64_t x) {
-        uint64_t y;
-        int n;
+		union {
+			float f;
+			uint32_t i;
+		} floatBits;
 
-        n = 64;
-        y = x >> 32;
-        if (y != 0) {
-            n = n - 32;
-            x = y;
-        }
-        y = x >> 16;
-        if (y != 0) {
-            n = n - 16;
-            x = y;
-        }
-        y = x >> 8;
-        if (y != 0) {
-            n = n - 8;
-            x = y;
-        }
-        y = x >> 4;
-        if (y != 0) {
-            n = n - 4;
-            x = y;
-        }
-        y = x >> 2;
-        if (y != 0) {
-            n = n - 2;
-            x = y;
-        }
-        y = x >> 1;
-        if (y != 0) return n - 2;
-        return n - x;
-    }
+		floatBits.f = f;
+		m = 0x007FFFFF & floatBits.i;
+		e = (0x7F800000 & floatBits.i) >> 23;
+		s = 0x80000000 & floatBits.i;
+	}
 
-    // ---------------------------------------------------------------
-    // DISCRETE LOG2
-    // ---------------------------------------------------------------
+	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
 
-    uint8_t log2(uint8_t x) {
-        return (7 - nlz(x));
-    }
+		union {
+			double f;
+			uint64_t i;
+		} floatBits;
 
-    uint16_t log2(uint16_t x) {
-        return (15 - nlz(x));
-    }
-
-    uint32_t log2(uint32_t x) {
-        return (31 - nlz(x));
-    }
-
-    uint64_t log2(uint64_t x) {
-        return (63 - nlz(x));
-    }
-
-    // ---------------------------------------------------------------
-    // IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES 
-    // ---------------------------------------------------------------
-
-    void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
-
-        union {
-            float f;
-            uint32_t i;
-        } floatBits;
-
-        floatBits.f = f;
-        m = 0x007FFFFF & floatBits.i;
-        e = (0x7F800000 & floatBits.i) >> 23;
-        s = 0x80000000 & floatBits.i;
-    }
-
-    void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
-
-        union {
-            double f;
-            uint64_t i;
-        } floatBits;
-
-        floatBits.f = f;
-        m = 0x000FFFFFFFFFFFFF & floatBits.i;
-        e = (0x7FF0000000000000 & floatBits.i) >> 52;
-        s = 0x8000000000000000 & floatBits.i;
-    }
+		floatBits.f = f;
+		m = 0x000FFFFFFFFFFFFF & floatBits.i;
+		e = (0x7FF0000000000000 & floatBits.i) >> 52;
+		s = 0x8000000000000000 & floatBits.i;
+	}
 
 } // end of namespace
 
