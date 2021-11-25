@@ -20,9 +20,14 @@ add_library(${SUBLIB_NAME} SHARED
 add_executable(test_interval_indices
   app/test_interval_indices.cpp
 )
-target_link_libraries(test_interval_indices
-  ${Boost_LIBRARIES}
+target_link_libraries(test_interval_indices ${Boost_LIBRARIES})
+
+add_executable(test_peak_finder_d
+  app/test_peak_finder_d.cpp
 )
+target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
+
+
 
 # Option "make install": copy binaries
 install(TARGETS ${SUBLIB_NAME}

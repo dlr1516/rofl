@@ -24,7 +24,7 @@ int main(int argc,char** argv) {
 	II win1, win2, win3, win12, win13;
 
     win1.initMinMax({0, 0}, {5, 3});
-    win2.initWindow({6,5}, {3,4});
+    win2.initCentered({6,5}, {3,4});
     win3 = win1;
     win3.translate({10, 10});
 
@@ -51,8 +51,6 @@ int main(int argc,char** argv) {
 	for (auto it = win12.beginBoustrophedon(); it != win12.endBoustrophedon() && counter < 20; ++it, ++counter) {
 		std::cout << "  " << *it << "\n";
 	}
-
-
 
 	return 0;
 }

@@ -65,6 +65,14 @@ namespace rofl {
 				}
 				return indices;
 			}
+
+			static Index getPos(const Indices& minval, const Indices& dimensions, const Indices& indices) {
+				Index index = 0;
+				for (int d = Dim - 1; d >= 0; --d) {
+					index = index * dimensions[d] + indices[d] - minval[d];
+				}
+				return index;
+			}
 		};
 
 		/**
@@ -201,7 +209,7 @@ namespace rofl {
 		 * @param winCenter center of the interval ("window")
 		 * @param winSize (half) dimension of the interval ("window")
 		 */
-		void initWindow(const Indices& winCenter, const Indices& winSize) {
+		void initCentered(const Indices& winCenter, const Indices& winSize) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] = winCenter[d] - winSize[d];
 				dimensions_[d] = 2 * winSize[d] + 1;
@@ -322,7 +330,7 @@ namespace rofl {
 		 */
 		ThisType intersect(const ThisType& interval) const {
 			ThisType intersection;
-			Indices intersMin, intersMax;
+			Indices intersMin, intersMax, intersDim;
 			if (empty()) {
 				return clone();
 			} else if (interval.empty()) {
@@ -333,6 +341,11 @@ namespace rofl {
 				intersMax[d] = std::min(min_[d] + dimensions_[d], interval.min_[d] + interval.dimensions_[d]) - 1;
 			}
 			intersection.initMinMax(intersMin, intersMax);
+			for (int d = 0; d < Dim; ++d) {
+				if (intersection.dimensions_[d] < 0) {
+					intersection.dimensions_[d] = 0;
+				}
+			}
 			return intersection;
 		}
 
@@ -370,24 +383,46 @@ namespace rofl {
 			min_[d] += incr;
 		}
 
+		/**
+		 * Translates interval according to the given translation vector of indices.
+		 * @param t translation vector
+		 */
 		void translate(const Indices& t) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] += t[d];
 			}
 		}
 
+		/**
+		 * Returns the iterator to first position of iterator.
+		 * The RasterIteratorType visits the interval in raster order where
+		 * index 0 of indices is the inner index and index Dim-1 is the outer one.
+		 */
 		RasterIteratorType beginRaster() const {
 			return RasterIteratorType(this, 0);
 		}
 
+		/**
+		 * Returns the iterator to last position of iterator.
+		 * The RasterIteratorType visits the interval in raster order where
+		 * index 0 of indices is the inner index and index Dim-1 is the outer one.
+		 */
 		RasterIteratorType endRaster() const {
 			return RasterIteratorType(this, this->size());
 		}
 
+		/**
+		 * Returns the iterator to first position of iterator.
+		 * The RasterIteratorType visits the interval in boustrophedron order.
+		 */
 		BoustrophedonIteratorType beginBoustrophedon() const {
 			return BoustrophedonIteratorType(this, 0);
 		}
 
+		/**
+		 * Returns the iterator to last position of iterator.
+		 * The RasterIteratorType visits the interval in boustrophedron order.
+		 */
 		BoustrophedonIteratorType endBoustrophedon() const {
 			return BoustrophedonIteratorType(this, this->size());
 		}
@@ -429,7 +464,12 @@ namespace rofl {
 
 			IntervalIterator(const IntervalType* interval, Index pos) : interval_(interval), pos_(pos), indices_() {
 				ROFL_ASSERT(interval_ != nullptr);
-				indices_ = IndexerType::getIndices(interval_->min(), interval_->dimensions(), pos);
+				if (!interval->empty()) {
+					indices_ = IndexerType::getIndices(interval_->min(), interval_->dimensions(), pos);
+				}
+				else {
+					indices_ = interval_->min();
+				}
 			}
 
 			IntervalIterator(const IntervalIterator& it) : interval_(it.interval_), pos_(it.pos_), indices_(it.indices_) {
