@@ -17,6 +17,13 @@ add_library(${SUBLIB_NAME} SHARED
   src/profiler.cpp
 )
 
+add_executable(test_interval_indices
+  app/test_interval_indices.cpp
+)
+target_link_libraries(test_interval_indices
+  ${Boost_LIBRARIES}
+)
+
 # Option "make install": copy binaries
 install(TARGETS ${SUBLIB_NAME}
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin

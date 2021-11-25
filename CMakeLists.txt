@@ -6,9 +6,12 @@ set(VERSION_NUM 1.0.0)
 
 set(CMAKE_BUILD_TYPE Release)
 
-
+find_package(Boost COMPONENTS system filesystem iostreams) 
 find_package(Eigen3 REQUIRED)
 find_package(PCL)
+
+include_directories(${Boost_INCLUDE_DIR} ${Eigen3_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY})
 
 # Adds the subdirectories of the components of the library
 add_subdirectory(common)
