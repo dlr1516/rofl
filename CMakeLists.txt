@@ -24,3 +24,8 @@ endif()
 
 # Installs instruction for CMake configuration scripts 
 
+## Option "make install": copy cmake script
+file(GLOB cmake_script "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/roflConfig.cmake")
+message(STATUS "cmake_script " ${cmake_script})
+INSTALL(FILES ${cmake_script} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/rofl/)
+

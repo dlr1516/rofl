@@ -83,12 +83,12 @@ namespace rofl {
 			static Indices getIndices(const Indices& minval, const Indices& dimensions, Index pos) {
 				Indices indices;
 				Index res = pos;
-				for (Index d = 0; d < Dim; ++d) {
+				for (int d = 0; d < Dim; ++d) {
 					indices[d] = res % dimensions[d];
 					res = res / dimensions[d];
 				}
 				Index odd = 0;
-				for (Index d = Dim - 1; d >= 0; --d) {
+				for (int d = Dim - 1; d >= 0; --d) {
 					//ROFL_VAR3(d, indices[d], odd);
 					if (odd) {
 						odd = indices[d] % 2;
@@ -103,14 +103,44 @@ namespace rofl {
 			}
 		};
 
+		/**
+		 * Forward declaration only.
+		 * Class IntervalIterator is the base class for iterators over multi-dimensional intervals.
+		 * Template parameters:
+		 * - Dim: the dimension of the space;
+		 * - Index: integer type for the index (prefer a signed integer type);
+		 * - Indexer: the indexing policy class corresponding to the concept
+		 *
+		 *     struct Indexer {
+		 *        using Indices = std::array<Index, Dim>;
+		 *        static Indices getIndices(const Indices& minval, const Indices& dimensions, Index pos);
+		 *     };
+		 */
 		template <size_t Dim,typename Index,template <size_t,typename > class Indexer> class IntervalIterator;
 
+		/**
+		 * Forward declaration only of class RasterIterator.
+		 * See its implementing policy RasterIndexer.
+		 */
 		template <size_t Dim,typename Index> class RasterIterator;
 
+		/**
+		 * Forward declaration only of class BoustrophedonIterator.
+		 * See its implementing policy BoustrophedonIndexer.
+		 */
 		template <size_t Dim,typename Index> class BoustrophedonIterator;
 
-	}
+	}  // end of namespace detail
 
+
+	// ------------------------------------------------------------------------
+	// INTERVAL INDICES
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Class IntervalIndices handles interval of indices over a multi-dimensional space
+	 * of size Dim.
+	 */
 	template <size_t Dim,typename Index = int>
 	class IntervalIndices {
 	public:
@@ -124,22 +154,53 @@ namespace rofl {
 
 		static const size_t DIM = Dim;
 
+		/**
+		 * Default constructor.
+		 * It creates an empty interval.
+		 */
 		IntervalIndices() : min_(), dimensions_() {
 			min_.fill(0);
 			dimensions_.fill(0);
 		}
 
+		/**
+		 * Constructor with given min indices and dimensions.
+		 * Example: Dim =2, min=[4,1], dimensions=[3,2] creates an interval spanning
+		 *   on indices[0] from 4 to 6 (end value 4+3 = 7 not included)
+		 *   on indices[1] from 1 to 2 (end value 1+2 = 3 not included)
+		 * @param min min values of indices in each coordinate
+		 * @param dimensions dimension sizes of indices in each coordinate
+		 */
 		IntervalIndices(const Indices& min, const Indices& dimensions) : min_(min), dimensions_(dimensions) {
 		}
 
+		/**
+		 * Destructor.
+		 */
 		virtual ~IntervalIndices() {
 		}
 
+		/**
+		 * Initializes the interval with given min indices and dimensions.
+		 * Example: Dim =2, min=[4,1], dimensions=[3,2] creates an interval spanning
+		 *   on indices[0] from 4 to 6 (end value 4+3 = 7 not included)
+		 *   on indices[1] from 1 to 2 (end value 1+2 = 3 not included)
+		 * @param min min values of indices in each coordinate
+		 * @param dimensions dimension sizes of indices in each coordinate
+		 */
 		void initBounds(const Indices& min, const Indices& dimensions) {
 			min_ = min;
 			dimensions_ = dimensions;
 		}
 
+		/**
+		 * Initializes the interval centered on the given winCenter and half-size winSize.
+		 * Example: Dim=2, winCenter=[2,5], winSize=[3,2] creates an interval spanning
+		 *   on indices[0] from 2-3=-1 to 2+3=5
+		 *   on indices[1] from 5-2= 3 to 5+2=7
+		 * @param winCenter center of the interval ("window")
+		 * @param winSize (half) dimension of the interval ("window")
+		 */
 		void initWindow(const Indices& winCenter, const Indices& winSize) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] = winCenter[d] - winSize[d];
@@ -147,6 +208,14 @@ namespace rofl {
 			}
 		}
 
+		/**
+		 * Initializes the interval with given min and max indices.
+		 * Example: Dim =2, min=[4,1], max=[6,2] creates an interval spanning
+		 *   on indices[0] from 4 to 6
+		 *   on indices[1] from 1 to 2
+		 * @param min min values of indices in each coordinate (included in interval)
+		 * @param max min values of indices in each coordinate (included in interval)
+		 */
 		void initMinMax(const Indices& min, const Indices& max) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] = min[d];
@@ -154,22 +223,37 @@ namespace rofl {
 			}
 		}
 
+		/**
+		 * Returns a copy of the interval.
+		 */
 		ThisType clone() const {
 			return ThisType(min_, dimensions_);
 		}
 
+		/**
+		 * Returns the dimension sizes of interval.
+		 */
 		const Indices& dimensions() const {
 			return dimensions_;
 		}
 
+		/**
+		 * Returns the dimension size on coordinate d.
+		 */
 		Index dimension(size_t d) const {
 			return dimensions_[d];
 		}
 
+		/**
+		 * Returns the min values of indices in each coordinate.
+		 */
 		const Indices& min() const {
 			return min_;
 		}
 
+		/**
+		 * Returns the (included) max values of indices in each coordinate.
+		 */
 		Indices max() const {
 			Indices ret;
 			for (size_t d = 0; d < Dim; ++d) {
@@ -178,10 +262,18 @@ namespace rofl {
 			return ret;
 		}
 
+		/**
+		 * Returns the first values of indices in each coordinate.
+		 * It is the same as min(), but with a different name!
+		 */
 		const Indices& first() const {
 			return min_;
 		}
 
+		/**
+		 * Returns the (NOT included) last values of indices in each coordinate.
+		 * It is the same as max() - 1.
+		 */
 		Indices last() const {
 			Indices ret;
 			for (size_t d = 0; d < Dim; ++d) {
@@ -202,6 +294,9 @@ namespace rofl {
 			return false;
 		}
 
+		/**
+		 * Returns the number of indices items included in the interval.
+		 */
 		size_t size() const {
 			size_t s = 1;
 			for (int d = 0; d < Dim; ++d) {
@@ -210,6 +305,9 @@ namespace rofl {
 			return s;
 		}
 
+		/**
+		 * Says if the given indices array is included in interval.
+		 */
 		bool inside(const Indices& indices) const {
 			for (int d = 0; d < Dim; ++d) {
 				if (indices[d] < min_[d] || indices[d] >= min_[d] + dimensions_[d]) {
@@ -219,6 +317,9 @@ namespace rofl {
 			return true;
 		}
 
+		/**
+		 * Intersects this interval with another interval.
+		 */
 		ThisType intersect(const ThisType& interval) const {
 			ThisType intersection;
 			Indices intersMin, intersMax;
@@ -235,12 +336,20 @@ namespace rofl {
 			return intersection;
 		}
 
+		/**
+		 * Returns a new interval built adding incr new cells along coordinate d.
+		 * Example: let interval win=[3:5,1:3], then
+		 *   win.stacked(0, 1) -> [6:6,1:3]
+		 *   win.stacked(1, -2) ->  [3:5,-2:0]
+		 * @param d dimension of stacked expansion
+		 * @param incr number of added cell after (if incr>0) or before (if incr<0)
+		 */
 		ThisType stacked(size_t d, Index incr) const {
 			ROFL_ASSERT_VAR2(d < Dim, d, Dim);
 			ThisType expansion;
 			Indices expandMin = min_;
 			Indices expandDim = dimensions_;
-			if (incr > 0) {
+			if (incr >= 0) {
 				expandMin[d] += dimensions_[d];
 				expandDim[d] = incr;
 			} else {
@@ -251,6 +360,11 @@ namespace rofl {
 			return expansion;
 		}
 
+		/**
+		 * Translates interval according to a vector parallel to dimension d.
+		 * @param d dimension of translation
+		 * @param incr number of added cell after (if incr>0) or before (if incr<0)
+		 */
 		void translate(size_t d, Index incr) {
 			ROFL_ASSERT_VAR2(d < Dim, d, Dim);
 			min_[d] += incr;

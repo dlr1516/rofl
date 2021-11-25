@@ -36,6 +36,9 @@ int main(int argc,char** argv) {
 			<< "win3 " << win3 << " size " << win3.size() << "\n"
 			<< "win12 " << win12 << " size " << win12.size() << "\n"
 			<< "win13 " << win13 << "  win13.empty() " << win13.empty() << " size " << win13.size() << "\n"
+			<< "win12.stacked(0, 1) " << win12.stacked(0, 1) << "\n"
+			<< "win12.stacked(1, -3) " << win12.stacked(1, -3) << "\n"
+			<< "win12.stacked(0, 0) " << win12.stacked(0, 0) << "\n"
 			<< std::endl;
 
 	std::cout << "\nraster iterate on win12" << std::endl;
@@ -48,6 +51,8 @@ int main(int argc,char** argv) {
 	for (auto it = win12.beginBoustrophedon(); it != win12.endBoustrophedon() && counter < 20; ++it, ++counter) {
 		std::cout << "  " << *it << "\n";
 	}
+
+
 
 	return 0;
 }
