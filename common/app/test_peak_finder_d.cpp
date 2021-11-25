@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 	std::cout << "Finding maxima\n";
 	peakFinder.setDomain(grid2f.dimensions());
 	peakFinder.setPeakWindow( { 8, 8 });
-	peakFinder.enableFilterMinValue(true, 1.0f);
+	//peakFinder.enableFilterMinValue(true, 1.0f);
 	peakFinder.detect(mymap, std::back_inserter(indicesMax));
 
 	std::cout << "Maxima:\n";

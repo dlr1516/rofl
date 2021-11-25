@@ -144,17 +144,15 @@ namespace rofl {
 				//   !comp_(map(windowItems.top()), map(*domainIt))) -> map(*domainIt) >= map(windowItems.top()
 				if (!enableFilterMinValue_ || comp_(map(*domainIt), valueMin_)) {
 					if (!windowItems.empty() && !comp_(map(windowItems.top()), map(*domainIt))) {
-						//Indices curTop = windowItems.top();
-						//windowItems.popTop();
-						//if (comp_(map(*domainIt), map(windowItems.top()))) {
+						Indices curTop = windowItems.top();
+						windowItems.popTop();
+						if (comp_(map(*domainIt), map(windowItems.top()))) {
 						//	ROFL_VAR6(*domainIt, map(*domainIt), curTop, map(curTop), windowItems.top(), map(windowItems.top()));
 							// Indices *domainIt is added only if there is no minium filter enabled or
 							// map(*domainIt) is greater than valueMin_
-
 							insertMax = *domainIt;
-
-						//}
-						//windowItems.push(curTop);
+						}
+						windowItems.push(curTop);
 					}
 				}
 				indicesPrev = *domainIt;
