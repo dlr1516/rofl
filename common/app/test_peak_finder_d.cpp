@@ -31,6 +31,8 @@ void fillGaussian(MyGrid2f& grid, float kfactor, float width, int c0, int c1);
 
 void plotGrid2(const MyGrid2f& grid, const std::string& filename, float factor = 1.0f);
 
+std::ostream& operator<<(std::ostream& out, const MyIndices& indices);
+
 int main(int argc, char** argv) {
 	MyPeakFinder peakFinder;
 	MyGrid2f grid2f( { 120, 100 });
@@ -121,5 +123,16 @@ void plotGrid2(const MyGrid2f& grid, const std::string& filename, float factor) 
 	file << "e\n";
 
 	file.close();
+}
+
+std::ostream& operator<<(std::ostream& out, const MyIndices& indices) {
+	out << "[";
+	for (int d = 0; d < indices.size(); ++d) {
+		out << indices[d];
+		if (d < indices.size() - 1)
+			out << ",";
+	}
+	out << "]";
+	return out;
 }
 

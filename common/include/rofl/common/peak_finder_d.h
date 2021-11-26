@@ -118,7 +118,7 @@ namespace rofl {
 			for (auto it = novelInterval.beginRaster(); it != novelInterval.endRaster(); ++it) {
 				windowItems.push(*it);
 			}
-			ROFL_VAR4(*domainIt, windowInterval, novelInterval, windowItems.size());
+			//ROFL_VAR4(*domainIt, windowInterval, novelInterval, windowItems.size());
 			indicesPrev = *domainIt;
 			++domainIt;
 
@@ -133,7 +133,7 @@ namespace rofl {
 					windowItems.push(*it);
 				}
 				windowInterval.translate(dimMax, incrMax);
-				//ROFL_VAR4(*domainIt, windowInterval, novelInterval, windowItems.size());
+				//ROFL_VAR4(detail::printIndices(*domainIt), windowInterval, novelInterval, windowItems.size());
 
 				// Extracts from the window queue the top items that are not in the durrect window
 				while (!windowItems.empty() && !windowInterval.inside(windowItems.top())) {
@@ -145,6 +145,8 @@ namespace rofl {
 				//   !comp_(map(windowItems.top()), map(*domainIt))) -> map(*domainIt) >= map(windowItems.top()
 				if (!enableFilterMinValue_ || comp_(map(*domainIt), valueMin_)) {
 					if (!windowItems.empty() && !comp_(map(windowItems.top()), map(*domainIt))) {
+						ROFL_VAR4(outIdx(*domainIt), map(*domainIt), outIdx(windowItems.top()), map(windowItems.top()));
+						ROFL_VAR3(outIdx(windowItems.nextTop()), map(windowItems.nextTop()), comp_(map(*domainIt), map(windowItems.nextTop())));
 						//Indices curTop = windowItems.top();
 						//windowItems.popTop();
 						if (comp_(map(*domainIt), map(windowItems.nextTop()))) {

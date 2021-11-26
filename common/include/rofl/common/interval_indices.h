@@ -19,22 +19,29 @@
 #define ROFL_COMMON_INTERVAL_INDICES_H_
 
 #include <iostream>
+#include <sstream>
 #include <array>
 #include <rofl/common/macros.h>
 
-template <typename I,size_t D>
-std::ostream& operator<<(std::ostream& out, const std::array<I,D>& indices) {
-	out << "[";
-	for (int d = 0; d < D; ++d) {
-		out << indices[d];
-		if (d < D - 1)
-			out << ",";
-	}
-	out << "]";
-	return out;
-}
-
 namespace rofl {
+
+	/**
+	 * operator<< is defined only in rofl workspace to avoid potential conflicts.
+	 * To use it outside the namespace the following instruction is needed:
+	 *
+	 *    using rofl::operator<<
+	 */
+//	template <typename I,size_t D>
+//	std::ostream& operator<<(std::ostream& out, const std::array<I,D>& indices) {
+//		out << "[";
+//		for (int d = 0; d < D; ++d) {
+//			out << indices[d];
+//			if (d < D - 1)
+//				out << ",";
+//		}
+//		out << "]";
+//		return out;
+//	}
 
 	// ------------------------------------------------------------------------
 	// DETAIL: indexers converting a position index into indices over an
@@ -427,16 +434,16 @@ namespace rofl {
 			return BoustrophedonIteratorType(this, this->size());
 		}
 
-		template <size_t D,typename I>
-		friend std::ostream& operator<<(std::ostream& out, const IntervalIndices<D,I>& interval) {
+//		template <size_t D,typename I>
+//		friend std::ostream& operator<<(std::ostream& out, const IntervalIndices<D,I>& interval) {
+		void print(std::ostream&out) const {
 			out << "[";
-			for (int d = 0; d < D; ++d) {
-				out << interval.min()[d] << ":" << interval.max()[d];
+			for (int d = 0; d < Dim; ++d) {
+				out << min()[d] << ":" << max()[d];
 				if (d < Dim - 1)
 					out << ",";
 			}
 			out << "]";
-			return out;
 		}
 
 	private:
@@ -553,8 +560,27 @@ namespace rofl {
 			}
 		};
 
+	}  // end of namespace detail
+
+	template <typename I,size_t D>
+	std::string outIdx(const std::array<I,D>& indices) {
+		std::stringstream out;
+		out << "[";
+		for (int d = 0; d < D; ++d) {
+			out << indices[d];
+			if (d < D - 1)
+				out << ",";
+		}
+		out << "]";
+		return out.str();
 	}
 
+} // end of namespace rofl
+
+template <size_t D,typename I>
+std::ostream& operator<<(std::ostream& out, const rofl::IntervalIndices<D,I>& interval) {
+	interval.print(out);
+	return out;
 }
 
 #endif /* COMMON_INCLUDE_ROFL_COMMON_INTERVAL_INDICES_H_ */
