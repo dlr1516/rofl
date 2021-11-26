@@ -38,19 +38,37 @@ namespace rofl {
     using Scalar = float;
 
     // --------------------------------------------------------------
-    // GEOMETRY 2D: ELEMENTARY TYPES
+    // LINEAR ALGEBRA AND GEOMETRY: ELEMENTARY TYPES
     // --------------------------------------------------------------
-    
-    using Point2 = Eigen::Matrix<Scalar, 2, 1>; //Eigen::Vector2f;
-    using VectorPoint2 = std::vector<Point2, Eigen::aligned_allocator<Point2> >;
-    using DequePoint2 = std::deque<Point2, Eigen::aligned_allocator<Point2> >;
-    using Transform2 = Eigen::Transform<Scalar, 2, Eigen::Affine>; //Eigen::Affine2f;
+
+    using Vector2 = Eigen::Matrix<Scalar, 2, 1>;
+    using VectorVector2 = std::vector<Vector2, Eigen::aligned_allocator<Vector2> >;
+    using DequeVector2 = std::deque<Vector2, Eigen::aligned_allocator<Vector2> >;
+    using Transform2 = Eigen::Transform<Scalar, 2, Eigen::Affine>;
     using VectorTransform2 = std::vector<Transform2, Eigen::aligned_allocator<Transform2> >;
+
+    using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
+    using VectorVector3 = std::vector<Vector3, Eigen::aligned_allocator<Vector3> >;
+    using DequeVector3 = std::deque<Vector3, Eigen::aligned_allocator<Vector3> >;
+    using Transform3 = Eigen::Transform<Scalar, 3, Eigen::Affine>;
+    using VectorTransform3 = std::vector<Transform3, Eigen::aligned_allocator<Transform3> >;
+
+    using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
+    using Vector5 = Eigen::Matrix<Scalar, 5, 1>;
+    using Vector6 = Eigen::Matrix<Scalar, 5, 1>;
+    using Vector7 = Eigen::Matrix<Scalar, 5, 1>;
+
+    using Matrix2 = Eigen::Matrix<Scalar, 2, 2>;
+    using Matrix3 = Eigen::Matrix<Scalar, 3, 3>;
+    using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
+    using Matrix5 = Eigen::Matrix<Scalar, 5, 5>;
+    using Matrix6 = Eigen::Matrix<Scalar, 6, 6>;
     
     // --------------------------------------------------------------
     // GEOMETRY 2D: BOOST POLYGON TYPES
     // --------------------------------------------------------------
     
+    using Point2 = Vector2;
     using Segment2 = boost::geometry::model::segment<Point2>;
     using Polygon2 = boost::geometry::model::polygon<Point2,
             false, //outer ring of polygons is CCW, inner rings (holes) are CW
@@ -63,24 +81,11 @@ namespace rofl {
     using VectorSegment2 = std::vector<Segment2, Eigen::aligned_allocator<Segment2> >;
     using VectorPolygon2 = std::vector<Polygon2, Eigen::aligned_allocator<Polygon2> >;
     using VectorBox2 = std::vector<Box2, Eigen::aligned_allocator<Box2> >;
-    
-
-    // --------------------------------------------------------------
-    // GEOMETRY 3D: ELEMENTARY TYPES
-    // --------------------------------------------------------------
-    
-    using Point3 = Eigen::Matrix<Scalar, 2, 1>; //Eigen::Vector3f;
-    using VectorPoint3 = std::vector<Point3, Eigen::aligned_allocator<Point3> >;
-    using DequePoint3 = std::deque<Point3, Eigen::aligned_allocator<Point3> >;
-    using Transform3 = Eigen::Transform<Scalar, 3, Eigen::Affine>; //Eigen::Affine3f;
-    using VectorTransform3 = std::vector<Transform3, Eigen::aligned_allocator<Transform3> >;
-    
-    using VectorAffine3f = std::vector<Eigen::Affine3f, Eigen::aligned_allocator<Eigen::Affine3f> >;
 
 }
 
-BOOST_GEOMETRY_REGISTER_POINT_2D(rofl::Point2, rofl::Scalar, boost::geometry::cs::cartesian, x(), y());
-BOOST_GEOMETRY_REGISTER_RING(rofl::VectorPoint2);
+BOOST_GEOMETRY_REGISTER_POINT_2D(rofl::Vector2, rofl::Scalar, boost::geometry::cs::cartesian, x(), y());
+BOOST_GEOMETRY_REGISTER_RING(rofl::VectorVector2);
 BOOST_GEOMETRY_REGISTER_MULTI_POLYGON(rofl::VectorPolygon2);
 
 #endif 
