@@ -124,6 +124,33 @@ namespace rofl {
 			}
 		}
 
+		/** Returns the next minimum element.
+		 */
+		const Value& nextTop() const {
+			ROFL_ASSERT(!data_.empty());
+			if (data_.size() == 1) {
+				return data_[0];
+			}
+			else if (data_.size() < 4) {
+				return data_[childMin(0)];
+			}
+			else {
+				return data_[grandchildMin(0)];
+			}
+		}
+
+		/** Returns the next minimum element.
+		 */
+		const Value& nextBottom() const {
+			ROFL_ASSERT(!data_.empty());
+			if (data_.size() < 3) {
+				return data_[0];
+			}
+			else {
+				return data_[childMin(0)];
+			}
+		}
+
 		/**
 		 * Output the content of the heap.
 		 */

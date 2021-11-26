@@ -17,6 +17,11 @@ add_library(${SUBLIB_NAME} SHARED
   src/profiler.cpp
 )
 
+add_executable(test_min_max_heap
+  app/test_min_max_heap.cpp
+)
+target_link_libraries(test_min_max_heap ${Boost_LIBRARIES})
+
 add_executable(test_interval_indices
   app/test_interval_indices.cpp
 )

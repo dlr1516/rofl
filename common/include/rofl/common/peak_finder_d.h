@@ -105,6 +105,7 @@ namespace rofl {
 			};
 			//std::priority_queue<Indices,std::vector<Indices>,decltype(indicesCmp)> windowItems(indicesCmp);
 			MinMaxHeap<Indices,decltype(indicesCmp)> windowItems(indicesCmp);
+			MinMaxHeap<Indices,decltype(indicesCmp)> maxima(indicesCmp);
 			Indices indicesPrev;
 			IntervalType windowInterval, novelInterval;
 			int dimMax, incrMax;
@@ -144,18 +145,21 @@ namespace rofl {
 				//   !comp_(map(windowItems.top()), map(*domainIt))) -> map(*domainIt) >= map(windowItems.top()
 				if (!enableFilterMinValue_ || comp_(map(*domainIt), valueMin_)) {
 					if (!windowItems.empty() && !comp_(map(windowItems.top()), map(*domainIt))) {
-						Indices curTop = windowItems.top();
-						windowItems.popTop();
-						if (comp_(map(*domainIt), map(windowItems.top()))) {
-						//	ROFL_VAR6(*domainIt, map(*domainIt), curTop, map(curTop), windowItems.top(), map(windowItems.top()));
-							// Indices *domainIt is added only if there is no minium filter enabled or
-							// map(*domainIt) is greater than valueMin_
-							insertMax = *domainIt;
+						//Indices curTop = windowItems.top();
+						//windowItems.popTop();
+						if (comp_(map(*domainIt), map(windowItems.nextTop()))) {
+							//insertMax = *domainIt;
+							maxima.push(*domainIt);
 						}
-						windowItems.push(curTop);
+						//windowItems.push(curTop);
 					}
 				}
 				indicesPrev = *domainIt;
+			}
+
+			while (!maxima.empty()) {
+				insertMax = maxima.top();
+				maxima.popTop();
 			}
 		}
 
