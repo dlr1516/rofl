@@ -30,15 +30,17 @@ namespace rofl {
 
 	class HoughPlaneDetector {
 	public:
-		using PlaneParam = Vector4;  //Eigen::Matrix<Scalar, 4, 1>;
-		using VectorPlaneParam = std::vector<PlaneParam, Eigen::aligned_allocator<PlaneParam> >;
 		using Counter = size_t;
-		using HoughTransformGrid = Grid<3, Counter>;
-		using HoughSpectrumGrid = Grid<2, Counter>;
-		//using NormalLutGrid = Grid<2, Vector3, rofl::detail::RasterIndexer<2, size_t>, std::vector, Eigen::aligned_allocator>;
-		using NormalLutGrid = Grid<2, Vector3>;
+		using Index = int;
+		using HoughTransformGrid = Grid<3, Counter, Index, rofl::detail::RasterIndexer<3, Index>, std::vector, std::allocator>;
+		using HoughSpectrumGrid = Grid<2, Counter, Index, rofl::detail::RasterIndexer<2, Index>, std::vector, std::allocator>;
+		using NormalLutGrid = Grid<2, Vector3, Index, rofl::detail::RasterIndexer<2, Index>, std::vector, Eigen::aligned_allocator>;
+		//using NormalLutGrid = Grid<2, Vector3>;
 		using Indices3 = typename HoughTransformGrid::Indices;
 		using Indices2 = typename HoughSpectrumGrid::Indices;
+		using PlaneParam = Vector4;  //Eigen::Matrix<Scalar, 4, 1>;
+		using VectorPlaneParam = std::vector<PlaneParam, Eigen::aligned_allocator<PlaneParam> >;
+
 
 		struct PlaneHypothesis {
 			int itheta;

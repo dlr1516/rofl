@@ -92,7 +92,7 @@ namespace rofl {
 		ROFL_ASSERT_VAR2(0 <= itheta && itheta < thetaNum_, itheta, thetaNum_);
 		ROFL_ASSERT_VAR2(0 <= iphi && iphi < phiNum_, iphi, phiNum_);
 		ROFL_ASSERT_VAR2(0 <= irho && irho < rhoNum_, irho, rhoNum_);
-		return houghTransform_.value( { itheta, iphi, irho });
+		return houghTransform_.value({ itheta, iphi, irho });
 	}
 
 	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpecturm(int itheta, int iphi) const {

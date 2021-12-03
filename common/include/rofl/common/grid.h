@@ -24,7 +24,7 @@
 namespace rofl {
 
 	template <size_t Dim,typename Value,typename Index = int,typename Indexer = detail::RasterIndexer<Dim, Index>,
-			template <typename,typename > class Container = std::vector,template <typename > class Allocator = std::allocator>
+			template <class,class > class Container = std::vector,template <typename > class Allocator = std::allocator>
 	class Grid {
 	public:
 		using Type = Grid<Dim, Value, Index, Indexer, Container, Allocator>;
