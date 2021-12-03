@@ -35,7 +35,6 @@ namespace rofl {
 		using HoughTransformGrid = Grid<3, Counter, Index, rofl::detail::RasterIndexer<3, Index>, std::vector, std::allocator>;
 		using HoughSpectrumGrid = Grid<2, Counter, Index, rofl::detail::RasterIndexer<2, Index>, std::vector, std::allocator>;
 		using NormalLutGrid = Grid<2, Vector3, Index, rofl::detail::RasterIndexer<2, Index>, std::vector, Eigen::aligned_allocator>;
-		//using NormalLutGrid = Grid<2, Vector3>;
 		using Indices3 = typename HoughTransformGrid::Indices;
 		using Indices2 = typename HoughSpectrumGrid::Indices;
 		using PlaneParam = Vector4;  //Eigen::Matrix<Scalar, 4, 1>;
@@ -137,6 +136,15 @@ namespace rofl {
 		Counter getHoughTransform(int itheta, int iphi, int irho) const;
 
 		/**
+		 * Returns the value of Hough transform in the given bin.
+		 * @param indices the index array where
+		 *   indices[0] is the latitude bin index itheta,
+		 *   indices[1] is the longitude bin index iphi,
+		 *   indices[2] is the distance-to-origin bin index irho
+		 */
+		Counter getHoughTransform(const Indices3& indices) const;
+
+		/**
 		 * Returns the value of Hough spectrum in the given bin.
 		 * @param itheta the index of latitude bin
 		 * @param itheta the index of longitude bin
@@ -144,30 +152,84 @@ namespace rofl {
 		Counter getHoughSpecturm(int itheta, int iphi) const;
 
 		/**
+		 * Returns the value of Hough spectrum in the given bin.
+		 * @param indices the index array where
+		 *   indices[0] is the latitude bin index itheta,
+		 *   indices[1] is the longitude bin index iphi
+		 */
+		Counter getHoughSpecturm(const Indices2& indices) const;
+
+		/**
 		 * Resets the value of Hough transform and spectturm to zero.
 		 */
 		void setZero();
 
-//		void insert(const VectorPoint3& points);
-//
+		/**
+		 * Sets the dimension of non maximum suppression (NMS) window when searching
+		 * maxima of Hough spectrum and transform.
+		 * @param ithetaWin the widow dimension of latitude theta
+		 * @param iphiWin the widow dimension of longitude phi
+		 * @param irhoWin the widow dimension of distance-to-origin rho
+		 */
+		void setPeakWindow(int ithetaWin, int iphiWin, int irhoWin);
+
+		/**
+		 * Sets the dimension of non maximum suppression (NMS) window when searching
+		 * maxima of Hough spectrum and transform.
+		 * @param thetaWin the widow dimension of latitude theta
+		 * @param phiWin the widow dimension of longitude phi
+		 * @param rhoWin the widow dimension of distance-to-origin rho
+		 */
+		void setPeakWindow(Scalar thetaWin, Scalar phiWin, Scalar rhoWin);
+
+		/**
+		 * Inserts the given points and computes the Hough tansform and spectrum.
+		 * @param points vector of points
+		 */
+		void insert(const VectorVector3& points);
+
+		/**
+		 * Inserts the given points and computes the Hough tansform and spectrum.
+		 * It receives input points using iterators and conversion functor
+		 * from input point type to rofl::Vector3.
+		 *
+		 * Example: if the input point set is
+		 *
+		 *   pcl::PointCloud<pcl::PointXYZ> cloud;
+		 *   auto converter = [&](const pcl::PointXYZ& p) -> Vector3 {
+		 *     Vector3 v;
+		 *     v << p.x, p.y, p.z;
+		 *     return v;
+		 *   };
+		 *   insert(std::begin(cloud), std::end(cloud), converter);
+		 *
+		 * @param points vector of points
+		 */
 		template <typename Iterator,typename Converter>
-		void insert(Iterator beg, Iterator end, Converter& converter);
-//
-//		void findPlane(int& itheta, int& iphi, int& irho);
-//
-//		void findPlane(std::vector<PlaneHypothesis>& hypotheses) const;
-//
-//		void findPlane(PlaneParam& planeParam);
-//
-//		void findPlane(VectorPlaneParam& planeParams);
+		void insert(Iterator beg, Iterator end, const Converter& converter);
+
+		/**
+		 * Returns the maxima of Hough spectrum with non-maximum suppression
+		 * over window with half-size [ithetaWin, iphiWin].
+		 * @param hsMaxima the indices of maxima in Hough spectrum
+		 *    (hsMaxima[i][0]: itheta, hsMaxima[i][1]: iphi)
+		 */
+		void findSpectrumMax(std::vector<Indices2>& hsMaxima) const;
+
+		/**
+		 * Returns the detected planes using Hough spectrum and transform
+		 * with non-maximum suppression
+		 * @param hypotheses the indices of maxima in Hough domains
+		 *    (hypotheses[i][0]: itheta, hypotheses[i][1]: iphi, hypotheses[i][2]: irho)
+		 */
+		void findPlanes(std::vector<Indices3>& hypotheses) const;
+
+		void findPlanes(VectorPlaneParam& planeParams);
 
 	private:
 		HoughTransformGrid houghTransform_;
 		HoughSpectrumGrid houghSpectrum_;
 		NormalLutGrid normalLut_;
-		//std::vector<Counter> houghTransform_;
-		//std::vector<Counter> houghSpectrum_;
-		//VectorPoint3 normalLut_;
 		int thetaNum_;
 		int phiNum_;
 		int rhoNum_;
@@ -177,6 +239,9 @@ namespace rofl {
 		Scalar thetaRes_;
 		Scalar phiRes_;
 		Scalar rhoRes_;
+		int ithetaWin_;
+		int iphiWin_;
+		int irhoWin_;
 
 		inline int indexTransform(int itheta, int iphi, int irho) const {
 			return (((itheta * phiNum_) + iphi) * rhoNum_ + irho);
@@ -196,8 +261,12 @@ namespace rofl {
 		}
 	};
 
+	// ------------------------------------------------------------------------
+	// DEFINITION OF METHODS WITH TEMPLATE ARGUMENTS
+	// ------------------------------------------------------------------------
+
 	template <typename Iterator,typename Converter>
-	void HoughPlaneDetector::insert(Iterator beg, Iterator end, Converter& converter) {
+	void HoughPlaneDetector::insert(Iterator beg, Iterator end, const Converter& converter) {
 		Scalar rho;
 		int irho;
 		int pointNum = std::distance(beg, end);
@@ -211,10 +280,10 @@ namespace rofl {
 			//if (pointCounter % pointNotify == 0) {
 			//	std::cout << "HT: processed " << pointCounter << "/" << pointNum << " points (print every " << pointNotify << ")" << std::endl;
 			//}
-			Vector3 p = converter(*it);
+			const Vector3& p = converter(*it);
 			for (int itheta = 0; itheta < thetaNum_; ++itheta) {
 				for (int iphi = 0; iphi < phiNum_; ++iphi) {
-					Vector3 &normal = normalLut_.value({itheta, iphi});
+					const Vector3 &normal = normalLut_.value({itheta, iphi});
 					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
 					irho = (int) round(rho / rhoRes_);
 					if (0 <= irho && irho < rhoNum_) {

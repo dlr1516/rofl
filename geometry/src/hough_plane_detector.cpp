@@ -3,11 +3,26 @@
 namespace rofl {
 
 	HoughPlaneDetector::HoughPlaneDetector() : houghTransform_(), houghSpectrum_(), thetaNum_(0), phiNum_(0), rhoNum_(0), rhoRes_(0.0) {
+		thetaNum_ = 0;
+		phiNum_ = 0;
+		rhoNum_ = 0;
+		thetaMin_ = 0.0;
+		phiMin_ = 0.0;
+		rhoMin_ = 0.0;
+		thetaRes_ = 0.0;
+		phiRes_ = 0.0;
+		rhoRes_ = 0.0;
+		ithetaWin_ = 1;
+		iphiWin_ = 1;
+		irhoWin_ = 1;
 	}
 
 	HoughPlaneDetector::HoughPlaneDetector(int thetaNum, int phiNum, int rhoNum, Scalar rhoRes) : houghTransform_(), houghSpectrum_(), thetaNum_(thetaNum), phiNum_(
 			phiNum), rhoNum_(rhoNum), rhoRes_(rhoRes) {
 		init(thetaNum, phiNum, rhoNum, rhoRes);
+		ithetaWin_ = 1;
+		iphiWin_ = 1;
+		irhoWin_ = 1;
 	}
 
 	HoughPlaneDetector::~HoughPlaneDetector() {
@@ -95,15 +110,104 @@ namespace rofl {
 		return houghTransform_.value({ itheta, iphi, irho });
 	}
 
+	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughTransform(const Indices3& indices) const {
+		ROFL_ASSERT_VAR2(0 <= indices[0] && indices[0] < thetaNum_, indices[0], thetaNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[1] && indices[1] < phiNum_, indices[1], phiNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[2] && indices[2] < rhoNum_, indices[2], rhoNum_);
+		return houghTransform_.value(indices);
+	}
+
 	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpecturm(int itheta, int iphi) const {
 		ROFL_ASSERT_VAR2(0 <= itheta && itheta < thetaNum_, itheta, thetaNum_);
 		ROFL_ASSERT_VAR2(0 <= iphi && iphi < phiNum_, iphi, phiNum_);
 		return houghSpectrum_.value( { itheta, iphi });
 	}
 
+	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpecturm(const Indices2& indices) const {
+		ROFL_ASSERT_VAR2(0 <= indices[0] && indices[0] < thetaNum_, indices[0], thetaNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[1] && indices[1] < phiNum_, indices[1], phiNum_);
+		return houghSpectrum_.value(indices);
+	}
+
 	void HoughPlaneDetector::setZero() {
 		houghTransform_.fill(0);
 		houghSpectrum_.fill(0);
+	}
+
+	void HoughPlaneDetector::setPeakWindow(int ithetaWin, int iphiWin, int irhoWin) {
+		ithetaWin_ = ithetaWin;
+		iphiWin_ = iphiWin;
+		irhoWin_ = irhoWin;
+	}
+
+	void HoughPlaneDetector::setPeakWindow(Scalar thetaWin, Scalar phiWin, Scalar rhoWin) {
+		ithetaWin_ = (int)ceil(thetaWin / thetaRes_);
+		iphiWin_ = (int)ceil(phiWin / phiRes_);
+		irhoWin_ = (int)ceil(rhoWin / rhoRes_);
+	}
+
+	void HoughPlaneDetector::insert(const VectorVector3& points) {
+		insert(std::begin(points), std::end(points), [&](const Vector3& v) -> const Vector3& { return v; });
+		// Also possibile to return the copy:
+		//   insert(std::begin(points), std::end(points), [&](const Vector3& v) -> Vector3 { return v; });
+	}
+
+	void HoughPlaneDetector::findSpectrumMax(std::vector<Indices2>& hsMaxima) const {
+		using PeakFinder2 = rofl::PeakFinderD<2, Counter, int, std::greater<Counter> >;
+
+		// Searches normal directions that are robust maxima in Hough Spectrum
+		PeakFinder2 peakHS;
+		auto hsMap = [&](const Indices2& indices) -> Counter {
+			return houghSpectrum_.value(indices);
+		};
+		peakHS.setDomain( { thetaNum_, phiNum_ });
+		peakHS.setPeakWindow( { ithetaWin_, iphiWin_ });
+		peakHS.detect(hsMap, std::back_inserter(hsMaxima));
+	}
+
+	void HoughPlaneDetector::findPlanes(std::vector<Indices3>& hypotheses) const {
+		using PeakFinder1 = rofl::PeakFinderD<1, Counter, int, std::greater<Counter> >;
+		using Indices1 = typename PeakFinder1::Indices;
+		Indices3 ph;
+		auto htCmp = [&](const Indices3& nh1, const Indices3& nh2) -> bool {
+			return houghTransform_.value(nh1) > houghTransform_.value(nh2);
+		};
+
+		// Searches normal directions that are robust maxima in Hough Spectrum
+		std::vector<Indices2> hsMaxima;
+		findSpectrumMax(hsMaxima);
+
+		// For each normal direction (Hough spectrum maximum) searches the best rho
+		PeakFinder1 peakRho;
+		std::vector<Indices1> rhoMaxima;
+		peakRho.setDomain( { rhoNum_ });
+		peakRho.setPeakWindow( { irhoWin_ });
+		for (auto &h : hsMaxima) {
+			rhoMaxima.clear();
+			auto htRho = [&](const Indices1& indices) -> Counter {
+				return houghTransform_.value({h[0], h[1], indices[0]});
+			};
+			peakRho.detect(htRho, std::back_inserter(rhoMaxima));
+			ph[0] = h[0];
+			ph[1] = h[1];
+			for (auto &r : rhoMaxima) {
+				ph[2] = r[0];
+				hypotheses.push_back(ph);
+			}
+		}
+
+		std::sort(hypotheses.begin(), hypotheses.end(), htCmp);
+	}
+
+	void HoughPlaneDetector::findPlanes(VectorPlaneParam& planeParams) {
+		std::vector<Indices3> hypotheses;
+
+		findPlanes(hypotheses);
+		planeParams.resize(hypotheses.size());
+		for (int i = 0; i < hypotheses.size(); ++i) {
+			Vector3 &normal = normalLut_.value( { hypotheses[i][0], hypotheses[i][1] });
+			planeParams[i] << normal(0), normal(1), normal(2), -(rhoRes_ * hypotheses[i][2]);
+		}
 	}
 
 }
