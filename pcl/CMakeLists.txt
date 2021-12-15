@@ -8,7 +8,14 @@ message(STATUS "SUBLIB_NAME: " ${SUBLIB_NAME})
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+message(STATUS "PCL_INCLUDE_DIRS: " ${PCL_INCLUDE_DIRS})
+
+include_directories(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  "../common/include"
+  "../geometry/include"
+  ${PCL_INCLUDE_DIRS}
+)
 
 add_library(${SUBLIB_NAME} SHARED 
   src/point_cloud_plane_aligner.cpp

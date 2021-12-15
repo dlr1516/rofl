@@ -28,6 +28,34 @@
 
 namespace rofl {
 
+	/**
+	 * Class HoughPlaneDetector computes planes using Hough Transform (HT) in 3D and Hough Spectrum (HS).
+	 * Planes are represented according the so called Hessian or polar parameters, i.e.
+	 *
+	 *   x * cos(theta) * cos(phi) + y * cos(theta) * sin(phi) + z * sin(theta) = rho
+	 *
+	 * where by defaults theta belongs to [-0.5*PI, 0.5*PI], phi to [0, 2.0*PI] and rho to [0.0, rhoMax].
+	 * As in standard HT the values of parameters theta, phi and rho are discretized into histogram bins
+	 * which in this case has 3 dimensions (one for each parameter) and is accessed by the tuple
+	 * of integer indices [itheta, iphi, irho].
+	 * The relations between indices and parameters (in center of corresponding histogram bin):
+	 *   theta = thetaMin + thetaRes * itheta   with itheta = 0, ..., thetaNum-1
+	 *   phi = phiMin + phiRes * iphi           with iphi = 0, ..., phiNum-1
+	 *   rho = rhoMin + rhoRes * irho           with irho = 0, ..., rhoNum-1
+	 * with default thetaMin = -0.5*PI, phiMin = 0.0, rhoMin = 0.0 and
+	 * thetaRes = PI/thetaNum, phiRes = 2*PI / phiNum.
+	 *
+	 * HS is derived from HT and geometrically measures the fitting between the input points
+	 * and the pencil of parallel planes.
+	 * It is computed from HT as:
+	 *
+	 *   HS(itheta, iphi) = \sum_{irho} HT(itheta, iphi, irho)^2
+	 *
+	 * See the following references for more information:
+	 * - A Censi, L Iocchi, G Grisetti, "Scan matching in the Hough domain", IEEE ICRA 2005
+	 * - A. Censi, S. Carpin, "HSM3D: feature-less global 6DOF scan-matching in the Hough/Radon domain",
+	 *   IEEE CRA 2009, DOI: 10.1109/ROBOT.2009.5152431.
+	 */
 	class HoughPlaneDetector {
 	public:
 		using Counter = size_t;
@@ -40,12 +68,11 @@ namespace rofl {
 		using PlaneParam = Vector4;  //Eigen::Matrix<Scalar, 4, 1>;
 		using VectorPlaneParam = std::vector<PlaneParam, Eigen::aligned_allocator<PlaneParam> >;
 
-
-		struct PlaneHypothesis {
-			int itheta;
-			int iphi;
-			int irho;
-		};
+//		struct PlaneHypothesis {
+//			int itheta;
+//			int iphi;
+//			int irho;
+//		};
 
 		/**
 		 * Default constructor. It creates an empty class.
@@ -69,6 +96,10 @@ namespace rofl {
 
 		/**
 		 * Initializes the Hough transform and spectrum space with the given dimensions.
+		 * It uses the whole interval: thetaMin = -0.5*PI, phiMin = 0.0, rhoMin = 0.0.
+		 * Moreover, the resolution of angular parameters theta and phi is
+		 *    thetaRes = PI / thetaNum
+		 *    phiRes = 2 * PI / phiNum
 		 * @param thetaNum the number of partitioning bins of latitude theta
 		 * @param phiNum the number of partitioning bins of longitude phi
 		 * @param rhoNum the number of partitioning bins of distance from origin rho
@@ -149,7 +180,7 @@ namespace rofl {
 		 * @param itheta the index of latitude bin
 		 * @param itheta the index of longitude bin
 		 */
-		Counter getHoughSpecturm(int itheta, int iphi) const;
+		Counter getHoughSpectrum(int itheta, int iphi) const;
 
 		/**
 		 * Returns the value of Hough spectrum in the given bin.
@@ -157,7 +188,7 @@ namespace rofl {
 		 *   indices[0] is the latitude bin index itheta,
 		 *   indices[1] is the longitude bin index iphi
 		 */
-		Counter getHoughSpecturm(const Indices2& indices) const;
+		Counter getHoughSpectrum(const Indices2& indices) const;
 
 		/**
 		 * Resets the value of Hough transform and spectturm to zero.
@@ -193,7 +224,7 @@ namespace rofl {
 		 * It receives input points using iterators and conversion functor
 		 * from input point type to rofl::Vector3.
 		 *
-		 * Example: if the input point set is
+		 * Example: if the input point set is a PCL point cloud
 		 *
 		 *   pcl::PointCloud<pcl::PointXYZ> cloud;
 		 *   auto converter = [&](const pcl::PointXYZ& p) -> Vector3 {
@@ -243,22 +274,22 @@ namespace rofl {
 		int iphiWin_;
 		int irhoWin_;
 
-		inline int indexTransform(int itheta, int iphi, int irho) const {
-			return (((itheta * phiNum_) + iphi) * rhoNum_ + irho);
-		}
-
-		inline int indexSpectrum(int itheta, int iphi) const {
-			return ((itheta * phiNum_) + iphi);
-		}
-
-		inline PlaneParam getPlaneParams(int itheta, int iphi, int irho) const {
-			const Vector3 &normal = normalLut_.value( { itheta, iphi });
-			return PlaneParam(normal(0), normal(1), normal(2), -(rhoRes_ * irho));
-		}
-
-		inline PlaneParam getPlaneParams(const PlaneHypothesis& ph) const {
-			return getPlaneParams(ph.itheta, ph.iphi, ph.irho);
-		}
+//		inline int indexTransform(int itheta, int iphi, int irho) const {
+//			return (((itheta * phiNum_) + iphi) * rhoNum_ + irho);
+//		}
+//
+//		inline int indexSpectrum(int itheta, int iphi) const {
+//			return ((itheta * phiNum_) + iphi);
+//		}
+//
+//		inline PlaneParam getPlaneParams(int itheta, int iphi, int irho) const {
+//			const Vector3 &normal = normalLut_.value( { itheta, iphi });
+//			return PlaneParam(normal(0), normal(1), normal(2), -(rhoRes_ * irho));
+//		}
+//
+//		inline PlaneParam getPlaneParams(const PlaneHypothesis& ph) const {
+//			return getPlaneParams(ph.itheta, ph.iphi, ph.irho);
+//		}
 	};
 
 	// ------------------------------------------------------------------------

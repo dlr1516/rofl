@@ -117,13 +117,13 @@ namespace rofl {
 		return houghTransform_.value(indices);
 	}
 
-	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpecturm(int itheta, int iphi) const {
+	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpectrum(int itheta, int iphi) const {
 		ROFL_ASSERT_VAR2(0 <= itheta && itheta < thetaNum_, itheta, thetaNum_);
 		ROFL_ASSERT_VAR2(0 <= iphi && iphi < phiNum_, iphi, phiNum_);
 		return houghSpectrum_.value( { itheta, iphi });
 	}
 
-	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpecturm(const Indices2& indices) const {
+	HoughPlaneDetector::Counter HoughPlaneDetector::getHoughSpectrum(const Indices2& indices) const {
 		ROFL_ASSERT_VAR2(0 <= indices[0] && indices[0] < thetaNum_, indices[0], thetaNum_);
 		ROFL_ASSERT_VAR2(0 <= indices[1] && indices[1] < phiNum_, indices[1], phiNum_);
 		return houghSpectrum_.value(indices);
