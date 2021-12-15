@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ROFL_POINT_CLOUD_PLANE_ALIGNER_H
-#define ROFL_POINT_CLOUD_PLANE_ALIGNER_H
+#ifndef ROFL_PCL_POINT_CLOUD_PLANE_ALIGNER_H_
+#define ROFL_PCL_POINT_CLOUD_PLANE_ALIGNER_H_
 
 #include <Eigen/Dense>
 #include <pcl/point_cloud.h>

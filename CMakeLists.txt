@@ -10,12 +10,14 @@ find_package(Boost COMPONENTS system filesystem iostreams)
 find_package(Eigen3 REQUIRED)
 find_package(PCL)
 
+message(STATUS "Eigen3_INCLUDE_DIR: " ${EIGEN3_INCLUDE_DIR})
+
 include_directories(${Boost_INCLUDE_DIR} ${Eigen3_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY})
 
 # Adds the subdirectories of the components of the library
 add_subdirectory(common)
-#add_subdirectory(geometry)
+add_subdirectory(geometry)
 
 if(PCL_FOUND)
   include_directories(${PCL_INCLUDE_DIRS})

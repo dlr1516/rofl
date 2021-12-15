@@ -85,7 +85,7 @@ namespace rofl {
 
 		/** Pops the minimum item.
 		 */
-		void popMin() {
+		void popTop() {
 			ROFL_ASSERT(!data_.empty());
 			std::swap(data_[0], data_.back());
 			data_.pop_back();
@@ -94,7 +94,7 @@ namespace rofl {
 
 		/** Pops the maximum item.
 		 */
-		void popMax() {
+		void popBottom() {
 			ROFL_ASSERT(!data_.empty());
 			if (data_.size() == 1) {
 				data_.pop_back();
@@ -108,19 +108,46 @@ namespace rofl {
 
 		/** Returns the minimum element.
 		 */
-		const Value& min() const {
+		const Value& top() const {
 			ROFL_ASSERT(!data_.empty());
 			return data_[0];
 		}
 
 		/** Returns the maximum element.
 		 */
-		const Value& max() const {
+		const Value& bottom() const {
 			ROFL_ASSERT(!data_.empty());
 			if (data_.size() == 1) {
 				return data_[0];
 			} else {
 				return data_[childMax(0)];
+			}
+		}
+
+		/** Returns the next minimum element.
+		 */
+		const Value& nextTop() const {
+			ROFL_ASSERT(!data_.empty());
+			if (data_.size() == 1) {
+				return data_[0];
+			}
+			else if (data_.size() < 4) {
+				return data_[childMin(0)];
+			}
+			else {
+				return data_[grandchildMin(0)];
+			}
+		}
+
+		/** Returns the next minimum element.
+		 */
+		const Value& nextBottom() const {
+			ROFL_ASSERT(!data_.empty());
+			if (data_.size() < 3) {
+				return data_[0];
+			}
+			else {
+				return data_[childMin(0)];
 			}
 		}
 
@@ -304,7 +331,7 @@ namespace rofl {
 				if (hasGrandparent(i))
 					imax = grandparent(i);
 			}
-			ROFL_VAR6(i, imin, imax, level(i), onLevelMin, data_.size());
+			//ROFL_VAR6(i, imin, imax, level(i), onLevelMin, data_.size());
 
 			while (imin < data_.size() && cmp_(data_[i], data_[imin])) {
 				//ROFL_MSG("swap items " << i << " and " << imin << ", i.e. " << data_[i] << " and " << data_[imin]);
@@ -331,7 +358,7 @@ namespace rofl {
 			size_t icurr, ichild, igrand;
 			icurr = i;
 			while (icurr < data_.size()) {
-				ROFL_VAR3(icurr, grandchildMin(icurr), childMin(icurr));
+				//ROFL_VAR3(icurr, grandchildMin(icurr), childMin(icurr));
 				ichild = childMin(icurr);
 				igrand = grandchildMin(icurr);
 				// If the minimum value among icurr, the minimum child ichild and the minimum grandchild igrand is igrand,
@@ -358,7 +385,7 @@ namespace rofl {
 			while (icurr < data_.size()) {
 				ichild = childMax(icurr);
 				igrand = grandchildMax(icurr);
-				ROFL_VAR5(icurr, grandchildMax(icurr), igrand, childMax(icurr), ichild);
+				//ROFL_VAR5(icurr, grandchildMax(icurr), igrand, childMax(icurr), ichild);
 				// If the minimum value among icurr, the minimum child ichild and the minimum grandchild igrand is igrand,
 				// then
 				if (igrand < data_.size() && cmp_(data_[icurr],data_[igrand]) && cmp_(data_[ichild], data_[igrand])) {

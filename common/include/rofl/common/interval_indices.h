@@ -19,22 +19,29 @@
 #define ROFL_COMMON_INTERVAL_INDICES_H_
 
 #include <iostream>
+#include <sstream>
 #include <array>
 #include <rofl/common/macros.h>
 
-template <typename I,size_t D>
-std::ostream& operator<<(std::ostream& out, const std::array<I,D>& indices) {
-	out << "[";
-	for (int d = 0; d < D; ++d) {
-		out << indices[d];
-		if (d < D - 1)
-			out << ",";
-	}
-	out << "]";
-	return out;
-}
-
 namespace rofl {
+
+	/**
+	 * operator<< is defined only in rofl workspace to avoid potential conflicts.
+	 * To use it outside the namespace the following instruction is needed:
+	 *
+	 *    using rofl::operator<<
+	 */
+//	template <typename I,size_t D>
+//	std::ostream& operator<<(std::ostream& out, const std::array<I,D>& indices) {
+//		out << "[";
+//		for (int d = 0; d < D; ++d) {
+//			out << indices[d];
+//			if (d < D - 1)
+//				out << ",";
+//		}
+//		out << "]";
+//		return out;
+//	}
 
 	// ------------------------------------------------------------------------
 	// DETAIL: indexers converting a position index into indices over an
@@ -64,6 +71,14 @@ namespace rofl {
 					res = res / dimensions[d];
 				}
 				return indices;
+			}
+
+			static Index getPos(const Indices& minval, const Indices& dimensions, const Indices& indices) {
+				Index index = 0;
+				for (int d = Dim - 1; d >= 0; --d) {
+					index = index * dimensions[d] + indices[d] - minval[d];
+				}
+				return index;
 			}
 		};
 
@@ -201,7 +216,7 @@ namespace rofl {
 		 * @param winCenter center of the interval ("window")
 		 * @param winSize (half) dimension of the interval ("window")
 		 */
-		void initWindow(const Indices& winCenter, const Indices& winSize) {
+		void initCentered(const Indices& winCenter, const Indices& winSize) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] = winCenter[d] - winSize[d];
 				dimensions_[d] = 2 * winSize[d] + 1;
@@ -322,7 +337,7 @@ namespace rofl {
 		 */
 		ThisType intersect(const ThisType& interval) const {
 			ThisType intersection;
-			Indices intersMin, intersMax;
+			Indices intersMin, intersMax, intersDim;
 			if (empty()) {
 				return clone();
 			} else if (interval.empty()) {
@@ -333,6 +348,11 @@ namespace rofl {
 				intersMax[d] = std::min(min_[d] + dimensions_[d], interval.min_[d] + interval.dimensions_[d]) - 1;
 			}
 			intersection.initMinMax(intersMin, intersMax);
+			for (int d = 0; d < Dim; ++d) {
+				if (intersection.dimensions_[d] < 0) {
+					intersection.dimensions_[d] = 0;
+				}
+			}
 			return intersection;
 		}
 
@@ -370,38 +390,60 @@ namespace rofl {
 			min_[d] += incr;
 		}
 
+		/**
+		 * Translates interval according to the given translation vector of indices.
+		 * @param t translation vector
+		 */
 		void translate(const Indices& t) {
 			for (size_t d = 0; d < Dim; ++d) {
 				min_[d] += t[d];
 			}
 		}
 
+		/**
+		 * Returns the iterator to first position of iterator.
+		 * The RasterIteratorType visits the interval in raster order where
+		 * index 0 of indices is the inner index and index Dim-1 is the outer one.
+		 */
 		RasterIteratorType beginRaster() const {
 			return RasterIteratorType(this, 0);
 		}
 
+		/**
+		 * Returns the iterator to last position of iterator.
+		 * The RasterIteratorType visits the interval in raster order where
+		 * index 0 of indices is the inner index and index Dim-1 is the outer one.
+		 */
 		RasterIteratorType endRaster() const {
 			return RasterIteratorType(this, this->size());
 		}
 
+		/**
+		 * Returns the iterator to first position of iterator.
+		 * The RasterIteratorType visits the interval in boustrophedron order.
+		 */
 		BoustrophedonIteratorType beginBoustrophedon() const {
 			return BoustrophedonIteratorType(this, 0);
 		}
 
+		/**
+		 * Returns the iterator to last position of iterator.
+		 * The RasterIteratorType visits the interval in boustrophedron order.
+		 */
 		BoustrophedonIteratorType endBoustrophedon() const {
 			return BoustrophedonIteratorType(this, this->size());
 		}
 
-		template <size_t D,typename I>
-		friend std::ostream& operator<<(std::ostream& out, const IntervalIndices<D,I>& interval) {
+//		template <size_t D,typename I>
+//		friend std::ostream& operator<<(std::ostream& out, const IntervalIndices<D,I>& interval) {
+		void print(std::ostream&out) const {
 			out << "[";
-			for (int d = 0; d < D; ++d) {
-				out << interval.min()[d] << ":" << interval.max()[d];
+			for (int d = 0; d < Dim; ++d) {
+				out << min()[d] << ":" << max()[d];
 				if (d < Dim - 1)
 					out << ",";
 			}
 			out << "]";
-			return out;
 		}
 
 	private:
@@ -429,7 +471,12 @@ namespace rofl {
 
 			IntervalIterator(const IntervalType* interval, Index pos) : interval_(interval), pos_(pos), indices_() {
 				ROFL_ASSERT(interval_ != nullptr);
-				indices_ = IndexerType::getIndices(interval_->min(), interval_->dimensions(), pos);
+				if (!interval->empty()) {
+					indices_ = IndexerType::getIndices(interval_->min(), interval_->dimensions(), pos);
+				}
+				else {
+					indices_ = interval_->min();
+				}
 			}
 
 			IntervalIterator(const IntervalIterator& it) : interval_(it.interval_), pos_(it.pos_), indices_(it.indices_) {
@@ -513,8 +560,27 @@ namespace rofl {
 			}
 		};
 
+	}  // end of namespace detail
+
+	template <typename I,size_t D>
+	std::string outIdx(const std::array<I,D>& indices) {
+		std::stringstream out;
+		out << "[";
+		for (int d = 0; d < D; ++d) {
+			out << indices[d];
+			if (d < D - 1)
+				out << ",";
+		}
+		out << "]";
+		return out.str();
 	}
 
+} // end of namespace rofl
+
+template <size_t D,typename I>
+std::ostream& operator<<(std::ostream& out, const rofl::IntervalIndices<D,I>& interval) {
+	interval.print(out);
+	return out;
 }
 
 #endif /* COMMON_INCLUDE_ROFL_COMMON_INTERVAL_INDICES_H_ */

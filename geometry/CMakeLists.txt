@@ -1,4 +1,4 @@
-set(SUBLIB_SUFFIX common)
+set(SUBLIB_SUFFIX geometry)
 set(SUBLIB_NAME ${PROJECT_NAME}_${SUBLIB_SUFFIX})
 
 message(STATUS "*****")
@@ -8,30 +8,17 @@ message(STATUS "SUBLIB_NAME: " ${SUBLIB_NAME})
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+#find_package(Eigen3 REQUIRED)
+message(STATUS "Eigen3_INCLUDE_DIR: " ${EIGEN3_INCLUDE_DIR})
+
+include_directories(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  ${EIGEN3_INCLUDE_DIR}
+)
 
 add_library(${SUBLIB_NAME} SHARED
-  src/bit_manip.cpp 
-  src/disjoint_set.cpp
-  src/param_map.cpp
-  src/profiler.cpp
+  src/hough_plane_detector.cpp 
 )
-
-add_executable(test_min_max_heap
-  app/test_min_max_heap.cpp
-)
-target_link_libraries(test_min_max_heap ${Boost_LIBRARIES})
-
-add_executable(test_interval_indices
-  app/test_interval_indices.cpp
-)
-target_link_libraries(test_interval_indices ${Boost_LIBRARIES})
-
-add_executable(test_peak_finder_d
-  app/test_peak_finder_d.cpp
-)
-target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
-
 
 
 # Option "make install": copy binaries
