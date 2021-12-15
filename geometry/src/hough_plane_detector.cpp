@@ -1,3 +1,20 @@
+/**
+ * ROFL - RIMLab Open Factotum Library
+ * Copyright (C) 2021 Dario Lodi Rizzini, Ernesto Fontana
+ *
+ * ROFL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ROFL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <rofl/geometry/hough_plane_detector.h>
 
 namespace rofl {
@@ -163,6 +180,16 @@ namespace rofl {
 		peakHS.setDomain( { thetaNum_, phiNum_ });
 		peakHS.setPeakWindow( { ithetaWin_, iphiWin_ });
 		peakHS.detect(hsMap, std::back_inserter(hsMaxima));
+	}
+
+	void HoughPlaneDetector::findNormalMax(VectorVector3& normals) const {
+		std::vector<Indices2> hsMaxima;
+		findSpectrumMax(hsMaxima);
+		normals.clear();
+		normals.reserve(hsMaxima.size());
+		for (auto& h : hsMaxima) {
+			normals.push_back(normalLut_.value(h));
+		}
 	}
 
 	void HoughPlaneDetector::findPlanes(std::vector<Indices3>& hypotheses) const {

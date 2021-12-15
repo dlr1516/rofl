@@ -248,13 +248,27 @@ namespace rofl {
 		void findSpectrumMax(std::vector<Indices2>& hsMaxima) const;
 
 		/**
+		 * Returns the maxima of Hough spectrum with non-maximum suppression
+		 * over window with half-size [ithetaWin, iphiWin].
+		 * @param hsMaxima the indices of maxima in Hough spectrum
+		 *    (hsMaxima[i][0]: itheta, hsMaxima[i][1]: iphi)
+		 */
+		void findNormalMax(VectorVector3& normals) const;
+
+		/**
 		 * Returns the detected planes using Hough spectrum and transform
-		 * with non-maximum suppression
+		 * with non-maximum suppression.
 		 * @param hypotheses the indices of maxima in Hough domains
 		 *    (hypotheses[i][0]: itheta, hypotheses[i][1]: iphi, hypotheses[i][2]: irho)
 		 */
 		void findPlanes(std::vector<Indices3>& hypotheses) const;
 
+		/**
+		 * Returns the detected planes using Hough spectrum and transform
+		 * with non-maximum suppression
+		 * @param planeParams the plane params of Cartesian equation
+		 *    x * planeParams[i](0) + y * planeParams[i](1) + z * planeParams[i](2) + planeParams[i](3) = 0
+		 */
 		void findPlanes(VectorPlaneParam& planeParams);
 
 	private:

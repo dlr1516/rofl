@@ -18,6 +18,7 @@ include_directories(
 )
 
 add_library(${SUBLIB_NAME} SHARED
+  src/hough_line_detector.cpp 
   src/hough_plane_detector.cpp 
 )
 
