@@ -93,6 +93,13 @@ namespace rofl {
         return true;
     }
 
+    bool ParamMap::write(std::ostream &out, const std::string &linePrefix) const {
+        for (const_iterator it = table_.begin(); it != table_.end(); ++it) {
+            out << linePrefix << it->first << " " << it->second << std::endl;
+        }
+        return true;
+    }
+
     bool ParamMap::write(std::string& filename) const {
         std::ofstream file(filename.c_str());
         if (!file) {
