@@ -12,6 +12,7 @@ message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "Eigen3_INCLUDE_DIR: " ${EIGEN3_INCLUDE_DIR})
 
 include_directories(
+  "../common/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   ${EIGEN3_INCLUDE_DIR}
 )
