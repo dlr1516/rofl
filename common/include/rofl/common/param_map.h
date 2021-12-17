@@ -28,105 +28,133 @@
 
 namespace rofl {
 
-	/** Reads and stores parameters from a string, a file, etc.
-	 */
-	class ParamMap {
-	public:
-		//typedef std::unordered_map<std::string, std::string> table_type;
-		typedef std::map<std::string,std::string> table_type; // a map stores lexically ordered parameters (nicer to view!)
-		typedef table_type::iterator iterator;
-		typedef table_type::const_iterator const_iterator;
+    /** Reads and stores parameters from a string, a file, etc.
+     */
+    class ParamMap {
+    public:
+        //typedef std::unordered_map<std::string, std::string> table_type;
+        typedef std::map<std::string, std::string> table_type; // a map stores lexically ordered parameters (nicer to view!)
+        typedef table_type::iterator iterator;
+        typedef table_type::const_iterator const_iterator;
 
-		const static char COMMENT = '#';
-		const static unsigned int MAX_LEN = 2000;
+        const static char COMMENT = '#';
+        const static unsigned int MAX_LEN = 2000;
 
-		/** Default constructor.
-		 */
-		ParamMap() : table_() {
-		}
+        /** Default constructor.
+         */
+        ParamMap() : table_() {
+        }
 
-		/** Destructor.
-		 */
-		~ParamMap() {
-		}
+        /** Destructor.
+         */
+        ~ParamMap() {
+        }
 
-		/** Clears all the content of param table.
-		 */
-		void clear() {
-			table_.clear();
-		}
+        /** Clears all the content of param table.
+         */
+        void clear() {
+            table_.clear();
+        }
 
-		/** Reads params from an input stream in the format:
-		 *   key1 value1
-		 *   key2 value2
-		 *   ...
-		 */
-		bool read(std::istream& in);
+        /** Reads params from an input stream in the format:
+         *   key1 value1
+         *   key2 value2
+         *   ...
+         */
+        bool read(std::istream& in);
 
-		/** Reads params from an input file (format as above).
-		 */
-		bool read(std::string& filename);
+        /** Reads params from an input file (format as above).
+         */
+        bool read(std::string& filename);
 
-		/** Reads from a command line. Required format
-		 *   ...
-		 *   argv[i] = "-key1"      // starting with "-"
-		 *   argv[i+1] = "value1"
-		 */
-		bool read(int argc, char** argv);
+        /** Reads from a command line. Required format
+         *   ...
+         *   argv[i] = "-key1"      // starting with "-"
+         *   argv[i+1] = "value1"
+         */
+        bool read(int argc, char** argv);
 
-		/** Writes the pairs (key,value).
-		 */
-		bool write(std::ostream& out) const;
+        /** Writes the pairs (key,value).
+         */
+        bool write(std::ostream& out) const;
 
-		/** Writes the pairs (key,value) appending each line to linePrefix
-		 * (e.g. with linePrefix = "#  " -> line becomes "#  key value")
-		 */
-		bool write(std::ostream& out, const std::string& linePrefix) const;
+        /** Writes the pairs (key,value) appending each line to linePrefix
+         * (e.g. with linePrefix = "#  " -> line becomes "#  key value")
+         */
+        bool write(std::ostream& out, const std::string& linePrefix) const;
 
-		/** Writes the parameters to an output file (format as above).
-		 */
-		bool write(std::string& filename) const;
+        /** Writes the parameters to an output file (format as above).
+         */
+        bool write(std::string& filename) const;
 
-		/** Sets the param (as a set of string).
-		 */
-		void setParamString(std::string paramName, std::string paramValue);
+        /** Sets the param (as a set of string).
+         */
+        void setParamString(std::string paramName, std::string paramValue);
 
-		/** Sets the param (as a set of string).
-		 */
-		template <typename Value>
-		void setParam(std::string paramName, const Value& paramValue) {
-			std::stringstream sstr;
-			sstr << paramValue;
-			table_.erase(paramName);
-			table_.insert(std::make_pair(paramName, sstr.str()));
-		}
+        /** Sets the param (as a set of string).
+         */
+        template <typename Value>
+        void setParam(std::string paramName, const Value& paramValue) {
+            std::stringstream sstr;
+            sstr << paramValue;
+            table_.erase(paramName);
+            table_.insert(std::make_pair(paramName, sstr.str()));
+        }
 
-		/** Casts the string value of a given parameters to the desired value.
-		 */
-		template <typename Value>
-		bool getParam(std::string paramName, Value& value, const Value& defaultValue) {
-			const_iterator v = table_.find(paramName);
-			if (v != table_.end()) {
-				try {
-					value = boost::lexical_cast<Value>(v->second);
-				} catch (boost::bad_lexical_cast const&) {
-					std::cerr
-							<< __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid(Value).name()
-							<< "\" for variable \"" << v->first << "\"" << std::endl;
-				}
-			} else {
-				//            std::cerr << "Parameter " << paramName << " not found." << std::endl;
-				value = defaultValue;
-				setParam(paramName, defaultValue);
-				return false;
-			}
-		}
+        /** Casts the string value of a given parameters to the desired value.
+         */
+        template <typename Value>
+        bool getParam(std::string paramName, Value& value, const Value& defaultValue) {
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end()) {
+                try {
+                    value = boost::lexical_cast<Value>(v->second);
+                } catch (boost::bad_lexical_cast const&) {
+                    std::cerr
+                            << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid (Value).name()
+                            << "\" for variable \"" << v->first << "\"" << std::endl;
+                }
+            } else {
+                //            std::cerr << "Parameter " << paramName << " not found." << std::endl;
+                value = defaultValue;
+                setParam(paramName, defaultValue);
+                return false;
+            }
+        }
 
-	protected:
-		table_type table_;
+        /** Casts the string value of a given parameters to the desired value.
+         */
+        template <typename Value, typename Inserter>
+        bool getParamContainerInserter(std::string paramName, Inserter ins, const Value &defaultValue, std::string delim = "[],") {
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end()) {
+                try {
+                    // Splits the value into tokens, e.g. "[1,2,3]" with delim "[,]" should become tokens "1", "2" and "3"
+                    boost::char_separator<char> sep(delim.c_str());
+                    boost::tokenizer < boost::char_separator<char> > tokens(v->second, sep);
+                    // Casts each token into a value
+                    for (auto it = tokens.begin(); it != tokens.end(); ++it) {
+                        ins = boost::lexical_cast < Value > (*it);
+                    }
 
-		static bool isOption(std::string str);
-	};
+                } catch (boost::bad_lexical_cast const&) {
+                    std::cerr << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid (Value).name()
+                            << "\" for variable \"" << v->first << "\"" << std::endl;
+                }
+            } else {
+                //std::cerr << "Parameter " << paramName << " not found." << std::endl;
+                //ins = defaultValue;
+                setParam(paramName, "");
+                return false;
+            }
+            return true;
+        }
+
+    protected:
+        table_type table_;
+
+        static bool isOption(std::string str);
+    };
 
 } // end of namespace 
 
