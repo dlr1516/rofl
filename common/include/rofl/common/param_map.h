@@ -42,13 +42,11 @@ namespace rofl {
 
         /** Default constructor.
          */
-        ParamMap() : table_() {
-        }
-
+        ParamMap();
+        
         /** Destructor.
          */
-        ~ParamMap() {
-        }
+        virtual ~ParamMap();
 
         /** Clears all the content of param table.
          */
