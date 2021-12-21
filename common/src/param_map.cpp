@@ -27,6 +27,10 @@ namespace rofl {
     ParamMap::~ParamMap() {
     };
 
+    void ParamMap::clear() {
+        table_.clear();
+    }
+
     bool ParamMap::read(std::istream& in) {
         std::string name;
         std::string value;
