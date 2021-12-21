@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(rofl)
 set(VERSION_NUM 1.0.0)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-std=c++14)
 
 set(CMAKE_BUILD_TYPE Release)

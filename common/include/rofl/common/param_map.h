@@ -33,9 +33,9 @@ namespace rofl {
     class ParamMap {
     public:
         //typedef std::unordered_map<std::string, std::string> table_type;
-        typedef std::map<std::string, std::string> table_type; // a map stores lexically ordered parameters (nicer to view!)
-        typedef table_type::iterator iterator;
-        typedef table_type::const_iterator const_iterator;
+        using table_type = std::map<std::string, std::string> ; // a map stores lexically ordered parameters (nicer to view!)
+        using iterator = table_type::iterator;
+        using const_iterator = table_type::const_iterator;
 
         const static char COMMENT = '#';
         const static unsigned int MAX_LEN = 2000;
@@ -43,16 +43,14 @@ namespace rofl {
         /** Default constructor.
          */
         ParamMap();
-        
+
         /** Destructor.
          */
         virtual ~ParamMap();
 
         /** Clears all the content of param table.
          */
-        void clear() {
-            table_.clear();
-        }
+        void clear();
 
         /** Reads params from an input stream in the format:
          *   key1 value1
@@ -118,6 +116,7 @@ namespace rofl {
                 setParam(paramName, defaultValue);
                 return false;
             }
+            return true;
         }
 
         /** Casts the string value of a given parameters to the desired value.
