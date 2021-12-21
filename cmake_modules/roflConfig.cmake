@@ -16,7 +16,7 @@ find_path(rofl_INCLUDE_DIR rofl ${rofl_PREFIX_DIR}/include)
 message(STATUS "    rofl_INCLUDE_DIR ${rofl_INCLUDE_DIR}." )
 set(rofl_INCLUDE_DIRS ${rofl_INCLUDE_DIR})
   
-# Searches library librimagraph.a in /usr/local/lib
+# Searches library  in /usr/local/lib
 find_path(rofl_LIBRARY_DIR librofl_common.a ${rofl_PREFIX_DIR}/lib)
 message(STATUS "    rofl_LIBRARY_DIR ${rofl_LIBRARY_DIR}." )
 set(rofl_LIBRARY_DIRS ${rofl_PREFIX_DIR}/lib)

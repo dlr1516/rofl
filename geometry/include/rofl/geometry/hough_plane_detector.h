@@ -25,6 +25,7 @@
 #include <rofl/geometry/types.h>
 #include <rofl/common/grid.h>
 #include <rofl/common/peak_finder_d.h>
+#include <rofl/common/profiler.h>
 
 namespace rofl {
 
@@ -191,6 +192,28 @@ namespace rofl {
 		Counter getHoughSpectrum(const Indices2& indices) const;
 
 		/**
+		 * Returns the normal corresponding to Hough spectrum cell with given indices.
+		 */
+		const Vector3& getNormal(const Indices2& indices) const;
+
+		/**
+		 * Returns the normal corresponding to Hough spectrum cell with given indices.
+		 */
+		const Vector3& getNormal(int itheta, int iphi) const;
+
+		/**
+		 * Returns the plane params in the form:
+		 *  x * planeParam(0) + y * planeParam(1) + z * planeParam(2) + planePara(3) = 0
+		 */
+		PlaneParam getPlaneParam(const Indices3& indices) const;
+
+		/**
+		 * Returns the plane params in the form:
+		 *  x * planeParam(0) + y * planeParam(1) + z * planeParam(2) + planePara(3) = 0
+		 */
+		PlaneParam getPlaneParam(int itheta, int iphi, int irho) const;
+
+		/**
 		 * Resets the value of Hough transform and spectturm to zero.
 		 */
 		void setZero();
@@ -254,6 +277,22 @@ namespace rofl {
 		 *    (hsMaxima[i][0]: itheta, hsMaxima[i][1]: iphi)
 		 */
 		void findNormalMax(VectorVector3& normals) const;
+
+		/**
+		 * Returns the candidate planes whose normal in the given direction
+		 * given by histogram cells [itheta, iphi].
+		 * @param itheta the index of latitude bin
+		 * @param iphi the index of longitude bin
+		 */
+		void findParallelPlanes(int itheta, int iphi, std::vector<Indices3>& indicesMaxima) const;
+
+		/**
+		 * Returns the candidate planes whose normal in the given direction
+		 * given by histogram cells [itheta, iphi].
+		 * @param itheta the index of latitude bin
+		 * @param iphi the index of longitude bin
+		 */
+		void findParallelPlanes(int itheta, int iphi, VectorPlaneParam& planeParams) const;
 
 		/**
 		 * Returns the detected planes using Hough spectrum and transform
@@ -322,29 +361,60 @@ namespace rofl {
 		// Computes the Hough Transform (HT) by incrementing counting cells
 		int pointCounter = 0;
 		for (auto it = beg; it != end; ++it) {
-			//if (pointCounter % pointNotify == 0) {
-			//	std::cout << "HT: processed " << pointCounter << "/" << pointNum << " points (print every " << pointNotify << ")" << std::endl;
-			//}
-			const Vector3& p = converter(*it);
+			//ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
+			if (pointCounter % pointNotify == 0) {
+				std::cout << "HT: processed " << pointCounter << "/" << pointNum << " points (print every " << pointNotify << ")" << std::endl;
+				//rofl::Profiler::getProfiler().printStats(std::cout);
+			}
+			const Vector3 &p = converter(*it);
 			for (int itheta = 0; itheta < thetaNum_; ++itheta) {
 				for (int iphi = 0; iphi < phiNum_; ++iphi) {
-					const Vector3 &normal = normalLut_.value({itheta, iphi});
+					//houghTransform_.value( { itheta, iphi, 0 })++;
+					const Vector3 &normal = normalLut_.value( { itheta, iphi });
 					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
 					irho = (int) round(rho / rhoRes_);
 					if (0 <= irho && irho < rhoNum_) {
-						houghTransform_.value({itheta, iphi, irho})++;
+						//ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
+						houghTransform_.value( { itheta, iphi, irho })++;
 						//std::cout << "point [" << p.transpose()  << "]: itheta " << itheta << " iphi " << iphi
 						//  << " rho " << rho << " irho " << irho << " HT " << houghTransform_[indexTransform(itheta, iphi, irho)] << "\n";
+						}
 					}
 				}
-			}
 			pointCounter++;
 		}
+
+//		std::cout << "Starting conversion" << std::endl;
+//		VectorVector3 points(std::distance(beg, end));
+//		{
+//			ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
+//			auto itp = points.begin();
+//			for (auto it = beg; it != end && itp != points.end(); ++it, ++itp) {
+//				*itp = converter(*it);
+//			}
+//		}
+//		rofl::Profiler::getProfiler().printStats(std::cout);
+//		ROFL_VAR2(points.size(), std::distance(beg, end));
+//
+//		Indices3 indices;
+//		for (int indices[0] = 0; indices[0] < thetaNum_; ++indices[0]) {
+//			for (int indices[1] = 0; indices[1] < phiNum_; ++indices[1]) {
+//				const Vector3 &normal = normalLut_.value({indices[0], indices[1]});
+//				for (auto& p : points) {
+//					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
+//					indices[2] = (int) round(rho / rhoRes_);
+//					if (0 <= irho && irho < rhoNum_) {
+//						houghTransform_.value(indices)++;
+//					}
+//				}
+//			}
+//		}
+//		ROFL_MSG("HT done");
 
 		// Computes Hough Spectrum (HS)
 		for (int itheta = 0; itheta < thetaNum_; ++itheta) {
 			for (int iphi = 0; iphi < phiNum_; ++iphi) {
-				Counter& hsVal = houghSpectrum_.value({itheta, irho });
+				Counter &hsVal = houghSpectrum_.value( { itheta, iphi });
 				hsVal = 0;
 				for (int irho = 0; irho < rhoNum_; ++irho) {
 					Counter &htVal = houghTransform_.value( { itheta, iphi, irho });
@@ -355,6 +425,6 @@ namespace rofl {
 		}
 	}
 
-}// end of namespace
+}						// end of namespace
 
 #endif

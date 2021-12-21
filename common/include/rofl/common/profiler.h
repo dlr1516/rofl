@@ -21,6 +21,9 @@
 #include <iostream>
 #include <map>
 #include <chrono>
+#include <rofl/common/macros.h>
+
+#define ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE rofl::ScopedTimer(ROFL_FILENAME(__FILE__) + "_" + __FUNCTION__ + "_" + ROFL_COMMON_STRING_LINE);
 
 namespace rofl {
 

@@ -21,6 +21,10 @@
 #include <iostream>
 #include <boost/filesystem/path.hpp>
 
+#define ROFL_COMMON_DETAIL_STRING(X) #X
+#define ROFL_COMMON_DETAIL_STRING_OP(X) ROFL_COMMON_DETAIL_STRING(X)
+#define ROFL_COMMON_STRING_LINE ROFL_COMMON_DETAIL_STRING_OP(__LINE__)
+
 #define ROFL_FILENAME(STR) boost::filesystem::path(STR).filename().string()
 
 #define ROFL_MSG(MSG) std::cout <<  ROFL_FILENAME(__FILE__) << "," << __LINE__ << ": " << MSG << std::endl;

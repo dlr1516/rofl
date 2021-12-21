@@ -146,6 +146,36 @@ namespace rofl {
 		return houghSpectrum_.value(indices);
 	}
 
+	const Vector3& HoughPlaneDetector::getNormal(const Indices2& indices) const {
+		ROFL_ASSERT_VAR2(0 <= indices[0] && indices[0] < thetaNum_, indices[0], thetaNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[1] && indices[1] < phiNum_, indices[1], phiNum_);
+		return normalLut_.value(indices);
+	}
+
+	const Vector3& HoughPlaneDetector::getNormal(int itheta, int iphi) const {
+		return getNormal({itheta, iphi});
+	}
+
+	HoughPlaneDetector::PlaneParam HoughPlaneDetector::getPlaneParam(const Indices3& indices) const {
+		ROFL_ASSERT_VAR2(0 <= indices[0] && indices[0] < thetaNum_, indices[0], thetaNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[1] && indices[1] < phiNum_, indices[1], phiNum_);
+		ROFL_ASSERT_VAR2(0 <= indices[2] && indices[2] < rhoNum_, indices[2], rhoNum_);
+		PlaneParam planeParam;
+		const Vector3 normal = getNormal(indices[0], indices[1]);
+		planeParam << normal(0), normal(1), normal(2), -(rhoRes_ * indices[2]);
+		return planeParam;
+	}
+
+	HoughPlaneDetector::PlaneParam HoughPlaneDetector::getPlaneParam(int itheta, int iphi, int irho) const {
+		ROFL_ASSERT_VAR2(0 <= itheta && itheta < thetaNum_, itheta, thetaNum_);
+		ROFL_ASSERT_VAR2(0 <= iphi && iphi < phiNum_, iphi, phiNum_);
+		ROFL_ASSERT_VAR2(0 <= irho && irho < rhoNum_, irho, rhoNum_);
+		PlaneParam planeParam;
+		const Vector3 normal = getNormal(itheta, iphi);
+		planeParam << normal(0), normal(1), normal(2), -(rhoRes_ * irho);
+		return planeParam;
+	}
+
 	void HoughPlaneDetector::setZero() {
 		houghTransform_.fill(0);
 		houghSpectrum_.fill(0);
@@ -164,9 +194,32 @@ namespace rofl {
 	}
 
 	void HoughPlaneDetector::insert(const VectorVector3& points) {
-		insert(std::begin(points), std::end(points), [&](const Vector3& v) -> const Vector3& { return v; });
-		// Also possibile to return the copy:
-		//   insert(std::begin(points), std::end(points), [&](const Vector3& v) -> Vector3 { return v; });
+//		Indices3 indices;
+//
+//		for (int indices[0] = 0; indices[0] < thetaNum_; ++indices[0]) {
+//			for (int indices[1] = 0; indices[1] < phiNum_; ++indices[1]) {
+//				const Vector3 &normal = normalLut_.value( { indices[0], indices[1] });
+//				for (auto &p : points) {
+//					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
+//					indices[2] = (int) round(rho / rhoRes_);
+//					if (0 <= irho && irho < rhoNum_) {
+//						houghTransform_.value(indices)++;}
+//					}
+//				}
+//			}
+//
+//		// Computes Hough Spectrum (HS)
+//		for (int itheta = 0; itheta < thetaNum_; ++itheta) {
+//			for (int iphi = 0; iphi < phiNum_; ++iphi) {
+//				Counter &hsVal = houghSpectrum_.value( { itheta, iphi });
+//				hsVal = 0;
+//				for (int irho = 0; irho < rhoNum_; ++irho) {
+//					Counter &htVal = houghTransform_.value( { itheta, iphi, irho });
+//					hsVal += htVal * htVal;
+//				}
+//				//std::cout << "itheta " << itheta << " irho " << irho << " hsIdx " << htIdx << ": HS " << houghSpectrum_[htIdx] << std::endl;
+//			}
+//		}
 	}
 
 	void HoughPlaneDetector::findSpectrumMax(std::vector<Indices2>& hsMaxima) const {
@@ -189,6 +242,37 @@ namespace rofl {
 		normals.reserve(hsMaxima.size());
 		for (auto& h : hsMaxima) {
 			normals.push_back(normalLut_.value(h));
+		}
+	}
+
+	void HoughPlaneDetector::findParallelPlanes(int itheta, int iphi, std::vector<Indices3>& indicesMaxima) const {
+		using PeakFinder1 = rofl::PeakFinderD<1, Counter, int, std::greater<Counter> >;
+		using Indices1 = typename PeakFinder1::Indices;
+		std::vector<Indices1> rhoMaxima;
+		Indices3 ph;
+
+		PeakFinder1 peakRho;
+		peakRho.setDomain( { rhoNum_ });
+		auto htRho = [&](const Indices1& indices) -> Counter {
+			return houghTransform_.value( { itheta, iphi, indices[0] });
+		};
+		peakRho.detect(htRho, std::back_inserter(rhoMaxima));
+		ph[0] = itheta;
+		ph[1] = iphi;
+		indicesMaxima.clear();
+		for (auto &r : rhoMaxima) {
+			ph[2] = r[0];
+			indicesMaxima.push_back(ph);
+		}
+	}
+
+	void HoughPlaneDetector::findParallelPlanes(int itheta, int iphi, VectorPlaneParam& planeParams) const {
+		std::vector<Indices3> indicesMaxima;
+
+		findParallelPlanes(itheta, iphi, indicesMaxima);
+		planeParams.resize(indicesMaxima.size());
+		for (int i = 0; i < indicesMaxima.size(); ++i) {
+			planeParams[i] = getPlaneParam(indicesMaxima[i]);
 		}
 	}
 
@@ -232,8 +316,7 @@ namespace rofl {
 		findPlanes(hypotheses);
 		planeParams.resize(hypotheses.size());
 		for (int i = 0; i < hypotheses.size(); ++i) {
-			Vector3 &normal = normalLut_.value( { hypotheses[i][0], hypotheses[i][1] });
-			planeParams[i] << normal(0), normal(1), normal(2), -(rhoRes_ * hypotheses[i][2]);
+			planeParams[i] = getPlaneParam(hypotheses[i]);
 		}
 	}
 

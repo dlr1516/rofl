@@ -82,13 +82,15 @@ namespace rofl {
 		}
 
 		const Value& value(const Indices& indices) const {
-			Index pos = getPos(indices);
-			return data_.at(pos);
+//			Index pos = getPos(indices);
+//			return data_.at(pos);
+			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
 		}
 
 		Value& value(const Indices& indices) {
-			Index pos = getPos(indices);
-			return data_.at(pos);
+			//Index pos = getPos(indices);
+			//return data_.at(pos);
+			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
 		}
 
 		const Value& value(const Index& pos) const {

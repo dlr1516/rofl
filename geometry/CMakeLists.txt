@@ -8,7 +8,6 @@ message(STATUS "SUBLIB_NAME: " ${SUBLIB_NAME})
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 
-#find_package(Eigen3 REQUIRED)
 message(STATUS "Eigen3_INCLUDE_DIR: " ${EIGEN3_INCLUDE_DIR})
 
 include_directories(
@@ -21,6 +20,11 @@ add_library(${SUBLIB_NAME} SHARED
   src/hough_line_detector.cpp 
   src/hough_plane_detector.cpp 
 )
+
+if(PCL_FOUND)
+  add_executable(test_hough_plane_detector app/test_hough_plane_detector.cpp)
+  target_link_libraries(test_hough_plane_detector ${SUBLIB_NAME} rofl_common ${PCL_LIBRARIES})
+endif()
 
 
 # Option "make install": copy binaries

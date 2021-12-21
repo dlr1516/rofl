@@ -51,6 +51,39 @@ namespace rofl {
 	namespace detail {
 
 		/**
+		 * Struct StaticRasterIndexer converts position index pos into indices over
+		 * an interval following raster order.
+		 *
+		 * Example: interval [3:5,1:3] is visited in order
+		 *   pos 0 -> [3,1], pos 1 -> [4,1], pos 2 -> [5,1],
+		 *   pos 3 -> [3,2], pos 4 -> [4,2], pos 5 -> [5,2],
+		 *   pos 6 -> [3,3], pos 7 -> [4,3], pos 8 -> [5,3]
+		 */
+		template <size_t Dim,typename Index>
+		struct StaticRasterIndexer {
+			static Index getPos(const Index* start, const Index* dimensions, const Index* indices) {
+				return (*indices - *start) + (*dimensions) * StaticRasterIndexer<Dim - 1,Index>::getPos(start + 1, dimensions + 1, indices + 1);
+			}
+
+			static void getIndices(Index pos, const Index* start, const Index* dimensions, const Index* indices) {
+				Index *ptr = const_cast<Index*>(indices);
+				*ptr = *start + pos % (*dimensions);
+				StaticRasterIndexer<Dim - 1,Index>::getIndices(pos / (*dimensions), start + 1, dimensions + 1, indices + 1);
+			}
+		};
+
+		template <typename Index>
+		struct StaticRasterIndexer<0,Index> {
+			static Index getPos(const Index* min, const Index* dimensions, const Index* indices) {
+				return 0;
+			}
+
+			static void getIndices(Index pos, const Index* start, const Index* dimensions, const Index* indices) {
+				return;
+			}
+		};
+
+		/**
 		 * Struct RasterIndexer converts position index pos into indices over
 		 * an interval following raster order.
 		 *

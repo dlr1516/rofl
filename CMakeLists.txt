@@ -4,7 +4,7 @@ project(rofl)
 set(VERSION_NUM 1.0.0)
 add_definitions(-std=c++14)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 
 find_package(Boost COMPONENTS system filesystem iostreams) 
 find_package(Eigen3 REQUIRED)
