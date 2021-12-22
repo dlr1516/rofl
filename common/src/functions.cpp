@@ -26,11 +26,8 @@ namespace rofl {
 
 //	int fastRoundf(float x) {
 //		int a;
-//		__asm
-//		{
-//			fld x
-//			fistp a
-//		}
+//		asm("fld x");
+//		asm("fistp a");
 //		return (a);
 //	}
 

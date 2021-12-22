@@ -211,7 +211,8 @@ namespace rofl {
 				const Vector3 &normal = normalLut_.value(indicesAngle);
 				for (auto &p : points) {
 					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
-					indicesAngle[2] = (int) round((rho - rhoMin_) / rhoRes_);
+					//indicesAngle[2] = (int) round((rho - rhoMin_) / rhoRes_);
+					indicesAngle[2] = (int)((rho - rhoMin_) / rhoRes_);
 					if (0 <= indicesAngle[2] && indicesAngle[2] < rhoNum_) {
 						//houghTransform_.value( { itheta, iphi, irho })++;
 						houghTransform_.value(indicesAngle)++;
@@ -265,6 +266,7 @@ namespace rofl {
 
 		PeakFinder1 peakRho;
 		peakRho.setDomain( { rhoNum_ });
+		peakRho.setPeakWindow({ irhoWin_ });
 		auto htRho = [&](const Indices1& indices) -> Counter {
 			return houghTransform_.value( { itheta, iphi, indices[0] });
 		};
