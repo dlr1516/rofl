@@ -81,6 +81,22 @@ namespace rofl {
 			return domain_.dimensions();
 		}
 
+		/**
+		 * Warning: the user is responsible about the correct access to the buffer.
+		 * This function is defined for more efficient access to data.
+		 */
+		const Value& value(const Index* indices) const {
+			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
+		}
+
+		/**
+		 * Warning: the user is responsible about the correct access to the buffer.
+		 * This function is defined for more efficient access to data.
+		 */
+		Value& value(const Index* indices) {
+			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
+		}
+
 		const Value& value(const Indices& indices) const {
 //			Index pos = getPos(indices);
 //			return data_.at(pos);

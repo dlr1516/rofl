@@ -355,74 +355,21 @@ namespace rofl {
 		int irho;
 		int pointNum = std::distance(beg, end);
 		int pointNotify = pointNum / 25;
+		int thetaNotify = thetaNum_ / 25;
+		int phiNotify = phiNum_ / 10;
 
 		setZero();
 
-		// Computes the Hough Transform (HT) by incrementing counting cells
-		int pointCounter = 0;
-		for (auto it = beg; it != end; ++it) {
-			//ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
-			if (pointCounter % pointNotify == 0) {
-				std::cout << "HT: processed " << pointCounter << "/" << pointNum << " points (print every " << pointNotify << ")" << std::endl;
-				//rofl::Profiler::getProfiler().printStats(std::cout);
-			}
-			const Vector3 &p = converter(*it);
-			for (int itheta = 0; itheta < thetaNum_; ++itheta) {
-				for (int iphi = 0; iphi < phiNum_; ++iphi) {
-					//houghTransform_.value( { itheta, iphi, 0 })++;
-					const Vector3 &normal = normalLut_.value( { itheta, iphi });
-					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
-					irho = (int) round(rho / rhoRes_);
-					if (0 <= irho && irho < rhoNum_) {
-						//ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
-						houghTransform_.value( { itheta, iphi, irho })++;
-						//std::cout << "point [" << p.transpose()  << "]: itheta " << itheta << " iphi " << iphi
-						//  << " rho " << rho << " irho " << irho << " HT " << houghTransform_[indexTransform(itheta, iphi, irho)] << "\n";
-						}
-					}
-				}
-			pointCounter++;
+		VectorVector3 points;
+		points.resize(std::distance(beg, end));
+		auto pit = points.begin();
+		for (auto it = beg; it != end; ++it, ++pit) {
+			//points.push_back(converter(*it));
+			*pit = converter(*it);
 		}
+		ROFL_MSG("converted input data to " << points.size() << " points");
 
-//		std::cout << "Starting conversion" << std::endl;
-//		VectorVector3 points(std::distance(beg, end));
-//		{
-//			ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
-//			auto itp = points.begin();
-//			for (auto it = beg; it != end && itp != points.end(); ++it, ++itp) {
-//				*itp = converter(*it);
-//			}
-//		}
-//		rofl::Profiler::getProfiler().printStats(std::cout);
-//		ROFL_VAR2(points.size(), std::distance(beg, end));
-//
-//		Indices3 indices;
-//		for (int indices[0] = 0; indices[0] < thetaNum_; ++indices[0]) {
-//			for (int indices[1] = 0; indices[1] < phiNum_; ++indices[1]) {
-//				const Vector3 &normal = normalLut_.value({indices[0], indices[1]});
-//				for (auto& p : points) {
-//					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
-//					indices[2] = (int) round(rho / rhoRes_);
-//					if (0 <= irho && irho < rhoNum_) {
-//						houghTransform_.value(indices)++;
-//					}
-//				}
-//			}
-//		}
-//		ROFL_MSG("HT done");
-
-		// Computes Hough Spectrum (HS)
-		for (int itheta = 0; itheta < thetaNum_; ++itheta) {
-			for (int iphi = 0; iphi < phiNum_; ++iphi) {
-				Counter &hsVal = houghSpectrum_.value( { itheta, iphi });
-				hsVal = 0;
-				for (int irho = 0; irho < rhoNum_; ++irho) {
-					Counter &htVal = houghTransform_.value( { itheta, iphi, irho });
-					hsVal += htVal * htVal;
-				}
-				//std::cout << "itheta " << itheta << " irho " << irho << " hsIdx " << htIdx << ": HS " << houghSpectrum_[htIdx] << std::endl;
-			}
-		}
+		insert(points);
 	}
 
 }						// end of namespace

@@ -49,8 +49,10 @@ namespace rofl {
 		Indices3 isize = { thetaNum, phiNum, rhoNum };
 		Vector3 paramMin, paramRes;
 
-		paramMin << -0.5 * M_PI, 0.0, 0.0;
-		paramRes << M_PI / thetaNum, 2.0 * M_PI / phiNum, rhoRes;
+		//paramMin << -0.5 * M_PI, 0.0, 0.0;
+		//paramRes << M_PI / thetaNum, 2.0 * M_PI / phiNum, rhoRes;
+		paramMin << 0.0, 0.0, -(rhoNum / 2) * rhoRes;
+		paramRes << 0.5 * M_PI / thetaNum, 2.0 * M_PI / phiNum, rhoRes;
 		init(isize, paramMin, paramRes);
 	}
 
@@ -194,32 +196,41 @@ namespace rofl {
 	}
 
 	void HoughPlaneDetector::insert(const VectorVector3& points) {
-//		Indices3 indices;
-//
-//		for (int indices[0] = 0; indices[0] < thetaNum_; ++indices[0]) {
-//			for (int indices[1] = 0; indices[1] < phiNum_; ++indices[1]) {
-//				const Vector3 &normal = normalLut_.value( { indices[0], indices[1] });
-//				for (auto &p : points) {
-//					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
-//					indices[2] = (int) round(rho / rhoRes_);
-//					if (0 <= irho && irho < rhoNum_) {
-//						houghTransform_.value(indices)++;}
-//					}
-//				}
-//			}
-//
-//		// Computes Hough Spectrum (HS)
-//		for (int itheta = 0; itheta < thetaNum_; ++itheta) {
-//			for (int iphi = 0; iphi < phiNum_; ++iphi) {
-//				Counter &hsVal = houghSpectrum_.value( { itheta, iphi });
-//				hsVal = 0;
-//				for (int irho = 0; irho < rhoNum_; ++irho) {
-//					Counter &htVal = houghTransform_.value( { itheta, iphi, irho });
-//					hsVal += htVal * htVal;
-//				}
-//				//std::cout << "itheta " << itheta << " irho " << irho << " hsIdx " << htIdx << ": HS " << houghSpectrum_[htIdx] << std::endl;
-//			}
-//		}
+		int indicesAngle[3];
+		rofl::Scalar rho;
+		int phiNotify = phiNum_ / 8;
+
+		// Computes the Hough Transform (HT) by incrementing counting cells
+		for (indicesAngle[0] = 0; indicesAngle[0] < thetaNum_; ++indicesAngle[0]) {
+			for (indicesAngle[1] = 0; indicesAngle[1] < phiNum_; ++indicesAngle[1]) {
+				if (indicesAngle[1] % phiNotify == 0) {
+					ROFL_VAR2(indicesAngle[0], indicesAngle[1]);
+				}
+				//houghTransform_.value( { itheta, iphi, 0 })++;
+				const Vector3 &normal = normalLut_.value(indicesAngle);
+				for (auto &p : points) {
+					rho = normal(0) * p(0) + normal(1) * p(1) + normal(2) * p(2);
+					indicesAngle[2] = (int) round((rho - rhoMin_) / rhoRes_);
+					if (0 <= indicesAngle[2] && indicesAngle[2] < rhoNum_) {
+						//houghTransform_.value( { itheta, iphi, irho })++;
+						houghTransform_.value(indicesAngle)++;
+					}
+				}
+			}
+		}
+
+		// Computes Hough Spectrum (HS)
+		for (indicesAngle[0] = 0; indicesAngle[0] < thetaNum_; ++indicesAngle[0]) {
+					for (indicesAngle[1] = 0; indicesAngle[1] < phiNum_; ++indicesAngle[1]) {
+				Counter &hsVal = houghSpectrum_.value(indicesAngle);
+				hsVal = 0;
+				for (indicesAngle[2] = 0; indicesAngle[2] < rhoNum_; ++indicesAngle[2]) {
+					Counter &htVal = houghTransform_.value(indicesAngle);
+					hsVal += htVal * htVal;
+				}
+				//std::cout << "itheta " << itheta << " irho " << irho << " hsIdx " << htIdx << ": HS " << houghSpectrum_[htIdx] << std::endl;
+			}
+		}
 	}
 
 	void HoughPlaneDetector::findSpectrumMax(std::vector<Indices2>& hsMaxima) const {
