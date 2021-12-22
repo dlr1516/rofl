@@ -13,6 +13,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_library(${SUBLIB_NAME} SHARED
   src/bit_manip.cpp 
   src/disjoint_set.cpp
+  src/functions.cpp
   src/param_map.cpp
   src/profiler.cpp
 )

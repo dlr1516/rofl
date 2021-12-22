@@ -206,6 +206,7 @@ namespace rofl {
 				if (indicesAngle[1] % phiNotify == 0) {
 					ROFL_VAR2(indicesAngle[0], indicesAngle[1]);
 				}
+				ROFL_COMMON_PROFILER_SCOPED_TIMER_HERE
 				//houghTransform_.value( { itheta, iphi, 0 })++;
 				const Vector3 &normal = normalLut_.value(indicesAngle);
 				for (auto &p : points) {
