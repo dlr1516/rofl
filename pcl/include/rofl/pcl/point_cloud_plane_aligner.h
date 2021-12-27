@@ -44,7 +44,7 @@ namespace rofl {
         /**
          * Constructor. 
          */
-        PointCloudPlaneAligner() _ : cloud_(), plane_(0.0f, 0.0f, 1.0f, 0.0f), transform_(Transform3::Identity()), planeTol_(0.02f) {
+        PointCloudPlaneAligner() : cloud_(), plane_(0.0f, 0.0f, 1.0f, 0.0f), transform_(Transform3::Identity()), planeTol_(0.02f) {
         }
 
         /**
