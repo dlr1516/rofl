@@ -103,8 +103,8 @@ int main(int argc, char** argv) {
 		<< std::endl;
 	}
 
-//	std::cout << "finding planes" << std::endl;
-//	hpd.findPlanes(planes);
+	//	std::cout << "finding planes" << std::endl;
+	//	hpd.findPlanes(planes);
 	if (!hsMaxima.empty()) {
 		std::cout << "find parallel planes to maximum normal:" << std::endl;
 		int ithetaMax = hsMaxima[0][0];
@@ -144,16 +144,16 @@ int main(int argc, char** argv) {
 		ss << "plane_" << i;
 		std::cout << "  " << ss.str() << " [" << planes[i].transpose() << "]  centered in [" << x << "," << y << "," << z << "]  inliers " << n << std::endl;
 
-		if (n > 100) {
-			viewer->addPlane(coefficients, x, y, z, ss.str());
-			PointType textPos;
-			textPos.x = x + 0.10 * planes[i](0);
-			textPos.y = y + 0.10 * planes[i](1);
-			textPos.z = z + 0.10 * planes[i](2);
-			ss.str("");
-			ss << "pl_" << i;
-			viewer->addText3D(ss.str(), textPos, 0.05, 0.0, 0.0, 0.0);
-		}
+		//if (n > 100) {
+		viewer->addPlane(coefficients, x, y, z, ss.str());
+		PointType textPos;
+		textPos.x = x + 0.10 * planes[i](0);
+		textPos.y = y + 0.10 * planes[i](1);
+		textPos.z = z + 0.10 * planes[i](2);
+		ss.str("");
+		ss << "pl_" << i;
+		viewer->addText3D(ss.str(), textPos, 0.05, 0.0, 0.0, 0.0);
+		//}
 	}
 
 	viewer->addCoordinateSystem(0.5);

@@ -164,7 +164,7 @@ namespace rofl {
 		ROFL_ASSERT_VAR2(0 <= indices[2] && indices[2] < rhoNum_, indices[2], rhoNum_);
 		PlaneParam planeParam;
 		const Vector3 normal = getNormal(indices[0], indices[1]);
-		planeParam << normal(0), normal(1), normal(2), -(rhoRes_ * indices[2]);
+		planeParam << normal(0), normal(1), normal(2), -(rhoRes_ * indices[2] + rhoMin_);
 		return planeParam;
 	}
 
