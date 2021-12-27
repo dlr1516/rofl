@@ -22,6 +22,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/centroid.h>
+#include <rofl/geometry/types.h>
 
 
 namespace rofl {
@@ -43,7 +44,7 @@ namespace rofl {
         /**
          * Constructor. 
          */
-        PointCloudPlaneAligner() {
+        PointCloudPlaneAligner() _ : cloud_(), plane_(0.0f, 0.0f, 1.0f, 0.0f), transform_(Transform3::Identity()), planeTol_(0.02f) {
         }
 
         /**
@@ -71,7 +72,7 @@ namespace rofl {
          * If the point cloud is the sensor frame/original viewpoint, then the 
          * axis Z of the resulting frame looks toward the sensor. 
          */
-        void setPlaneCoeffs(const Eigen::Vector4f& coeff) {
+        void setPlaneCoeffs(const Vector4& coeff) {
             if (coeff(3) > 0.0) {
                 plane_ = coeff;
             } else {
@@ -79,17 +80,21 @@ namespace rofl {
             }
         }
 
+        void setPlaneTol(Scalar tol) {
+        	planeTol_ = tol;
+        }
+
         /**
          * Returns the plane coefficients. 
          */
-        const Eigen::Vector4f& getPlaneCoeffs() const {
+        const Vector4& getPlaneCoeffs() const {
             return plane_;
         }
 
         /**
          * Returns the transformation.
          */
-        const Eigen::Affine3f& getTransform() const {
+        const Transform3& getTransform() const {
             return transform_;
         }
 
@@ -97,11 +102,11 @@ namespace rofl {
          * Computes the transformation for setting plane to 
          */
         void compute() {
-            Eigen::Vector3f ax, ay, az, centerPlane;
-            Eigen::Matrix3f Rot;
-            Eigen::Vector4f centroid;
-            float planeConst;
-            int idxMax;
+            Vector3 ax, ay, az, centerPlane;
+            Matrix3 Rot;
+            Vector4 centroid;
+            Scalar planeConst, dist, projZ;
+            int idxMax, inlierNum;
 
             // Sets the plane normal (plane coeffs 0:2) as axis Z
             az = plane_.head<3>();
@@ -126,17 +131,29 @@ namespace rofl {
             Rot << ax, ay, az;
             //std::cout << "Rot\n" << Rot << "\n ax.cross(ay) " << ax.cross(ay).transpose() << std::endl;
 
-            pcl::compute3DCentroid(*cloud_, centroid);
-            centerPlane = centroid.head<3>() - centroid.dot(plane_) * az;
+            //pcl::compute3DCentroid(*cloud_, centroid);
+            //centerPlane = centroid.head<3>() - centroid.dot(plane_) * az;
+            // Computes centroid of plane only on inlier points
+            centerPlane = Vector3::Zero();
+            inlierNum = 0;
+            for (auto& p : cloud_->points) {
+            	dist = fabs(p.x * plane_(0) + p.y * plane_(1) + p.z * plane_(2) + plane_(3));
+            	if (dist < planeTol_) {
+            		centerPlane(0) += p.x;
+            		centerPlane(1) += p.y;
+            		centerPlane(2) += p.z;
+            		inlierNum++;
+            	}
+            }
+            if (inlierNum > 0) {
+            	centerPlane = (centerPlane - centerPlane.dot(az) * az) / inlierNum;
+            }
+
             //std::cout << "centerPlane " << centerPlane.transpose() << ": n^T * centerPlane - d = " << (az.dot(centerPlane) - planeConst) << std::endl;
 
             transform_ = Eigen::Affine3f::Identity();
             transform_.pretranslate(-centerPlane);
             transform_.prerotate(Rot.inverse());
-            //transform_.linear().topLeftCorner<3,3>() = Rot;
-            //transform_.translation() = -centerPlane;
-
-            //std::cout << "Transform:\n" << transform_.matrix() << std::endl;
         }
 
         void transform(PointCloud& cloudOut) const {
@@ -145,8 +162,9 @@ namespace rofl {
 
     private:
         PointCloudConstPtr cloud_;
-        Eigen::Vector4f plane_;
-        Eigen::Affine3f transform_;
+        Vector4 plane_;
+        Transform3 transform_;
+        Scalar planeTol_;
     };
 
 }  // end of namespace 
