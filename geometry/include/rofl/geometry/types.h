@@ -52,7 +52,7 @@ namespace rofl {
 	 * We will never be able to fix everything....
 	 */
 
-#if __cplusplus <= 201703L
+#if __cplusplus < 201703L
 
 	using Scalar = float;
 

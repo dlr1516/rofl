@@ -115,31 +115,23 @@ namespace rofl {
 	// IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES
 	// ---------------------------------------------------------------
 
-	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
+	/**
+	 * Computes the manitissa, exponent and sign of single precision floating point numbers.
+	 * @param f input floating point number
+	 * @param m mantissa value in integer form
+	 * @param e exponent value in integer form
+	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
+	 */
+	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s);
 
-		union {
-			float f;
-			uint32_t i;
-		} floatBits;
-
-		floatBits.f = f;
-		m = 0x007FFFFF & floatBits.i;
-		e = (0x7F800000 & floatBits.i) >> 23;
-		s = 0x80000000 & floatBits.i;
-	}
-
-	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
-
-		union {
-			double f;
-			uint64_t i;
-		} floatBits;
-
-		floatBits.f = f;
-		m = 0x000FFFFFFFFFFFFF & floatBits.i;
-		e = (0x7FF0000000000000 & floatBits.i) >> 52;
-		s = 0x8000000000000000 & floatBits.i;
-	}
+	/**
+	 * Computes the manitissa, exponent and sign of double precision floating point numbers.
+	 * @param f input floating point number
+	 * @param m mantissa value in integer form
+	 * @param e exponent value in integer form
+	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
+	 */
+	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s);
 
 } // end of namespace
 

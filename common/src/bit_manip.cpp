@@ -250,6 +250,34 @@ namespace rofl {
 		return x + 1;
 	}
 
+	// ---------------------------------------------------------------
+	// IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES
+	// ---------------------------------------------------------------
+
+	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
+		union {
+			float f;
+			uint32_t i;
+		} floatBits;
+
+		floatBits.f = f;
+		m = 0x007FFFFF & floatBits.i;
+		e = (0x7F800000 & floatBits.i) >> 23;
+		s = 0x80000000 & floatBits.i;
+	}
+
+	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
+		union {
+			double f;
+			uint64_t i;
+		} floatBits;
+
+		floatBits.f = f;
+		m = 0x000FFFFFFFFFFFFF & floatBits.i;
+		e = (0x7FF0000000000000 & floatBits.i) >> 52;
+		s = 0x8000000000000000 & floatBits.i;
+	}
+
 	/**
 	 * Returns the smaller power of 2 greater than the given argument.
 	 * Example: clp2(5) = 2^3.

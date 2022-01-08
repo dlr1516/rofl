@@ -305,11 +305,21 @@ namespace rofl {
 	// INTEGER FUNCTIONS
 	// ---------------------------------------------------------------
 
+	/**
+	 * Returns the number of leading zeros of the given integer.
+	 * The number of leading zeros depends on the size of the integer type.
+	 * E.g.: int32_t i = 255;  nls(i) == 24
+	 */
 	template <typename I>
 	I nlz(const I& i) {
 		return IntegerTraits<I>::nlz(i);
 	}
 
+	/**
+	 * Given the input integer i, it returns the exponent l of the power of 2 s.t.
+	 *   2^l <= abs(i) < 2^(l+1)
+	 * where abs(i) is the absolute value of l.
+	 */
 	template <typename I>
 	I log2Mod(const I& i) {
 		return IntegerTraits<I>::log2Mod(i);

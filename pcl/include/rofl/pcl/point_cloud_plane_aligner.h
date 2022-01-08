@@ -151,7 +151,7 @@ namespace rofl {
 
             //std::cout << "centerPlane " << centerPlane.transpose() << ": n^T * centerPlane - d = " << (az.dot(centerPlane) - planeConst) << std::endl;
 
-            transform_ = Eigen::Affine3f::Identity();
+            transform_ = Transform3::Identity();
             transform_.pretranslate(-centerPlane);
             transform_.prerotate(Rot.inverse());
         }
