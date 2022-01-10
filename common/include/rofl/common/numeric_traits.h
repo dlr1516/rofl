@@ -318,7 +318,7 @@ namespace rofl {
 	/**
 	 * Given the input integer i, it returns the exponent l of the power of 2 s.t.
 	 *   2^l <= abs(i) < 2^(l+1)
-	 * where abs(i) is the absolute value of l.
+	 * where abs(i) is the absolute value ("module") of l.
 	 */
 	template <typename I>
 	I log2Mod(const I& i) {
