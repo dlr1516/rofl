@@ -33,6 +33,10 @@ add_executable(test_peak_finder_d
 )
 target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
 
+add_executable(test_morton_order_int
+  app/test_morton_order_int.cpp
+)
+target_link_libraries(test_morton_order_int ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
 
 # Option "make install": copy binaries

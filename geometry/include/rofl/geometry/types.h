@@ -39,7 +39,7 @@ namespace rofl {
 	 * ROFL geometry types are taken from library Eigen.
 	 * STL containers and classes containing Eigen linear algebra types
 	 * require aligned allocator before C++17.
-	 * Thus, there are different definitions according to the classes.
+	 * Thus, there are different definitions according to the version.
 	 *
 	 * From gcc 4.7.0 the values of __cplusplus are associated to a C++ version:
 	 * - pre-standard: __cplusplus == 1;

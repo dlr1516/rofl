@@ -29,15 +29,20 @@ namespace rofl {
 
     /**
      * MSB: Most Significant Bit comparison. 
-     * Given two integers i1 and i2, it computes if floor(log2(i1)) < floor(log2(i2))
+     * Given two integers i1 and i2, it says if floor(log2(i1)) < floor(log2(i2))
      * using the well known Timothy Chan's trick illustrated in 
      *   
      * T.M. Chan, "A minimalist's implementation of an approximate nearest 
      * neighbor algorithm in fixed dimensions", 2006
      * http://tmc.web.engr.illinois.edu/pub_ann.html
      * 
-     * E.g. i1 = 8 = 1000b, i2 = 11 = 1011b, i1 ^ i2 = 0011
-     *    i1 < i2 -> TRUE, i1 = 1000b < 
+     * Note: the conditions to be simultaneously checked to return true are:
+     * a) i1 < i2: trivial to see that  floor(log2(i1)) < floor(log2(i2));
+     * b) i1 < i1 ^ i2: it holds if the most significant bit of i1 is not the same of i2
+     *    (bitwise XOR ^ sets to 1 only the bits that are different!)
+     *
+     *  e.g. i1 = 1000b, i2 = 1010b -> i1 ^ i2 = 0010b, 1000b < 0010b ? FALSE
+     *       i1 = 0101b, i2 = 1001b -> i1 ^ i2 = 1100b, 0101b < 1100b ? TRUE
      * 
      * @param i1 the first integer
      * @param i2 the second integer
@@ -107,7 +112,7 @@ namespace rofl {
     	lastDim = 0;
     	lastXor = IT::removeSign(v1[0]) ^ IT::removeSign(v2[0]);
     	for (int d = 1; d < Dim; ++d) {
-    		currXor = IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]));
+    		currXor = IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]);
     		if (msb<UnsignedType>(lastXor, currXor)) {
     			lastDim = d;
     			lastXor = currXor;
