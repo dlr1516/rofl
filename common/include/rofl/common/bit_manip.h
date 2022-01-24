@@ -116,22 +116,46 @@ namespace rofl {
 	// ---------------------------------------------------------------
 
 	/**
-	 * Computes the manitissa, exponent and sign of single precision floating point numbers.
+	 * Returns the mantissa, exponent and sign of single precision floating point numbers.
+	 * The floating point number f is equal to
+	 *   (-1)^s * (1 + m * 2^(-lm)) * 2^(e)
+	 * (length of mantissa lm = 23 for single precision floating point).
+	 *
+	 * Example: f = 7.0  is written as
+	 *   1.11 * 2^(2) = (1 + 6291456 * 2^(-23)) * 2^(2)
+	 * where:
+	 *   m = 00000000011000000000000000000000 (decimal 6291456)
+	 *   e = 00000000000000000000000000000010 (decimal 2)
+	 *   s = 0
+	 *
 	 * @param f input floating point number
-	 * @param m mantissa value in integer form
-	 * @param e exponent value in integer form
+	 * @param m mantissa value in integer form (the implicit front bit 1 omitted as in IEEE 754)
+	 * @param e exponent value in integer form (the bias 127 is removed from exponent string)
 	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
 	 */
-	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s);
+	void getMantissaExpSignF(const float& f, int32_t& m, int32_t& e, bool& s);
+
+	float setMantissaExpSignF(int32_t m, int32_t e, bool s);
 
 	/**
-	 * Computes the manitissa, exponent and sign of double precision floating point numbers.
+	 * Computes the mantissa, exponent and sign of double precision floating point numbers.
+	 * The floating point number f is equal to
+	 *   (-1)^s * (1 + m * 2^(-lm)) * 2^(e)
+	 * (length of mantissa lm = 52 for double precision floating point).
+	 *
+	 * Example: f = 7.0  is written as
+	 *   1.11 * 2^(2) = (1 + 3377699720527872 * 2^(-52)) * 2^(2)
+	 * where:
+	 *   m = 0000000000001100000000000000000000000000000000000000000000000000 (decimal 3377699720527872)
+	 *   e = 0000000000000000000000000000000000000000000000000000000000000010 (decimal 2)
+	 *   s = 0
+	 *
 	 * @param f input floating point number
 	 * @param m mantissa value in integer form
 	 * @param e exponent value in integer form
 	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
 	 */
-	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s);
+	void getMantissaExpSignD(const double& f, int64_t& m, int64_t& e, bool& s);
 
 } // end of namespace
 

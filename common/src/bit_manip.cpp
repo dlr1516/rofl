@@ -254,27 +254,36 @@ namespace rofl {
 	// IEEE 754: EXTRACTION OF MANTISSA, EXPONENT, SIGN FROM FLOATING POINT TYPES
 	// ---------------------------------------------------------------
 
-	void getMantissaExpSignF(const float& f, uint32_t& m, uint32_t& e, bool& s) {
+	void getMantissaExpSignF(const float& f, int32_t& m, int32_t& e, bool& s) {
 		union {
 			float f;
 			uint32_t i;
 		} floatBits;
 
 		floatBits.f = f;
-		m = 0x007FFFFF & floatBits.i;
-		e = (0x7F800000 & floatBits.i) >> 23;
+		m = (0x007FFFFF & floatBits.i);  // To add the implicit 1 bit, apply "| 0x00800000";
+		e = ((0x7F800000 & floatBits.i) >> 23) - 127;
 		s = 0x80000000 & floatBits.i;
 	}
 
-	void getMantissaExpSignD(const double& f, uint64_t& m, uint64_t& e, bool& s) {
+	float setMantissaExpSignF(int32_t m, int32_t e, bool s) {
+		union {
+			float f;
+			uint32_t i;
+		} floatBits;
+		floatBits.i = m | ((e + 127) << 23) | (s << 31);
+		return floatBits.f;
+	}
+
+	void getMantissaExpSignD(const double& f, int64_t& m, int64_t& e, bool& s) {
 		union {
 			double f;
 			uint64_t i;
 		} floatBits;
 
 		floatBits.f = f;
-		m = 0x000FFFFFFFFFFFFF & floatBits.i;
-		e = (0x7FF0000000000000 & floatBits.i) >> 52;
+		m = (0x000FFFFFFFFFFFFF & floatBits.i);  // To add the implicit 1 bit, apply " | 0x0010000000000000"
+		e = ((0x7FF0000000000000 & floatBits.i) >> 52) - 1023;
 		s = 0x8000000000000000 & floatBits.i;
 	}
 

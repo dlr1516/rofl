@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
 	if (filenameCfg != "") {
 		params.read(filenameCfg);
 	}
+	params.read(argc, argv);
 
 	params.getParam<int>("xbeg", xbeg, -4);
 	params.getParam<int>("xend", xend, +4);
@@ -76,6 +77,8 @@ int main(int argc, char** argv) {
 	}
 	filePlot << "e" << std::endl;
 	filePlot.close();
+
+	std::cout << "To view the outcome of Morton order, run the command:\n\ngnuplot -persist " << filenamePlot << "\n" << std::endl;
 
 	return 0;
 }
