@@ -129,12 +129,19 @@ namespace rofl {
 	 *   s = 0
 	 *
 	 * @param f input floating point number
-	 * @param m mantissa value in integer form (the implicit front bit 1 omitted as in IEEE 754)
-	 * @param e exponent value in integer form (the bias 127 is removed from exponent string)
+	 * @param m mantissa value in integer form (the most significant bit 1 is implicit as in IEEE 754)
+	 * @param e exponent value in integer form (the bias 127 is removed from exponent)
 	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
 	 */
 	void getMantissaExpSignF(const float& f, int32_t& m, int32_t& e, bool& s);
 
+	/**
+	 * Returns the single precision floating point associated to the given mantissa
+	 * (the most significant bit must be implicit!), exponent (without bias) and sign.
+	 * @param m mantissa value in integer form (the most significant bit 1 is implicit as in IEEE 754)
+	 * @param e exponent value in integer form (the bias 127 is removed from exponent string)
+	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
+	 */
 	float setMantissaExpSignF(int32_t m, int32_t e, bool s);
 
 	/**
@@ -151,11 +158,20 @@ namespace rofl {
 	 *   s = 0
 	 *
 	 * @param f input floating point number
-	 * @param m mantissa value in integer form
-	 * @param e exponent value in integer form
+	 * @param m mantissa value in integer form (the most significant bit 1 is implicit as in IEEE 754)
+	 * @param e exponent value in integer form (the bias 1023 is removed from exponent string)
 	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
 	 */
 	void getMantissaExpSignD(const double& f, int64_t& m, int64_t& e, bool& s);
+
+	/**
+	 * Returns the double precision floating point associated to the given mantissa
+	 * (the most significant bit must be implicit!), exponent (without bias) and sign.
+	 * @param m mantissa value in integer form (the most significant bit 1 is implicit as in IEEE 754)
+	 * @param e exponent value in integer form (the bias 1023 is removed from exponent string)
+	 * @param s sign of floatinf point (true if f is negative, false if positive or zero)
+	 */
+	double setMantissaExpSignD(int64_t m, int64_t e, bool s);
 
 } // end of namespace
 

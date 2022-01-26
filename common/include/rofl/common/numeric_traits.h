@@ -372,7 +372,15 @@ namespace rofl {
 		using IntegerType = int32_t;
 		using UnsignedType = uint32_t;
 
-		static void extract(const FloatType& floatVal, UnsignedType& mantissa, UnsignedType& exponent, bool& sign) {
+		static const int BIT_NUM = 32;
+		static const int MANTISSA_BITS = 23;
+		static const int EXPONENT_BITS = 8;
+
+		static FloatType compose(const IntegerType& mantissa, const IntegerType& exponent, bool sign) {
+			return setMantissaExpSignF(mantissa, exponent, sign);
+		}
+
+		static void decompose(const FloatType& floatVal, IntegerType& mantissa, IntegerType& exponent, bool& sign) {
 			getMantissaExpSignF(floatVal, mantissa, exponent, sign);
 		}
 	};
@@ -385,7 +393,15 @@ namespace rofl {
 		using IntegerType = int64_t;
 		using UnsignedType = uint64_t;
 
-		static void extract(const FloatType& floatVal, UnsignedType& mantissa, UnsignedType& exponent, bool& sign) {
+		static const int BIT_NUM = 64;
+		static const int MANTISSA_BITS = 52;
+		static const int EXPONENT_BITS = 8;
+
+		static FloatType compose(const IntegerType& mantissa, const IntegerType& exponent, bool sign) {
+			return setMantissaExpSignD(mantissa, exponent, sign);
+		}
+
+		static void decompose(const FloatType& floatVal, IntegerType& mantissa, IntegerType& exponent, bool& sign) {
 			getMantissaExpSignD(floatVal, mantissa, exponent, sign);
 		}
 	};

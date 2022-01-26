@@ -271,7 +271,7 @@ namespace rofl {
 			float f;
 			uint32_t i;
 		} floatBits;
-		floatBits.i = m | ((e + 127) << 23) | (s << 31);
+		floatBits.i = (0x007FFFFF & m) | ((e + 127) << 23) | ((int32_t)s << 31);
 		return floatBits.f;
 	}
 
@@ -285,6 +285,15 @@ namespace rofl {
 		m = (0x000FFFFFFFFFFFFF & floatBits.i);  // To add the implicit 1 bit, apply " | 0x0010000000000000"
 		e = ((0x7FF0000000000000 & floatBits.i) >> 52) - 1023;
 		s = 0x8000000000000000 & floatBits.i;
+	}
+
+	double setMantissaExpSignD(int64_t m, int64_t e, bool s) {
+		union {
+			double f;
+			uint64_t i;
+		} floatBits;
+		floatBits.i = (0x000FFFFFFFFFFFFF & m) | ((e + 1023) << 52) | ((int64_t)s << 63);
+		return floatBits.f;
 	}
 
 	/**
