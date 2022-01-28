@@ -215,6 +215,93 @@ namespace rofl {
             }
         }
     }
+    
+    /**
+     * Compares two vectors of floating point values with floating point type F 
+     * and dimension Dim and sort them according to Morton order.
+     * It follows the implementation of Morton order comparator for integer,
+     * but taking into account the mantissa and exponent parts of floating 
+     * point representation.
+     *
+     *
+     * @param v1 the first floating point vector
+     * @param v2 the second floating point vector
+     * @return true if v1 is before v2 in Morton Order.
+     */
+    template <typename F, int Dim>
+    bool mortonCmpFloat(const F* v1, const F* v2) {
+        using FT = FloatTraits<F>;
+        using IntegerType = typename FT::IntegerType;
+        using UnsignedType = typename FT::UnsignedType;
+        IntegerType currMantissa, currExponent, lastMantissa, lastExponent;
+        int lastDim;
+        F currXor, lastXor;
+
+        lastDim = 0;
+        lastXor = computeBitDiff(v1[0], v2[0], lastMantissa, lastExponent);
+        for (int d = 1; d < Dim; ++d) {
+            currXor = computeBitDiff(v1[d], v2[d], currMantissa, currExponent);
+            if (lastXor < currXor && lastExponent < currExponent) {
+                lastDim = d;
+                lastExponent = currExponent;
+                lastXor = currXor;
+            }
+        }
+        return (v1[lastDim] < v2[lastDim]);
+    }
+    
+    template <typename F, int Dim>
+    int mortonDistanceFloat(const F* v1, const F* v2) {
+        using FT = FloatTraits<F>;
+        using IntegerType = typename FT::IntegerType;
+        using UnsignedType = typename FT::UnsignedType;
+        IntegerType mantissa, exponent, exponentMax;
+        exponentMax = -FT::EXPONENT_BIAS;
+        for (int d = 0; d < Dim; ++d) {
+            computeBitDiff(v1[d], v2[d], mantissa, exponent);
+            if (exponent > exponentMax) {
+                exponentMax = exponent;
+            }
+        }
+        return exponentMax;
+    }
+    
+    // ---------------------------------------------------------------
+    // MORTON TRAITS
+    // ---------------------------------------------------------------
+    
+    template <typename Scalar, size_t Dim, typename Enable = void> 
+    struct MortonTraits;
+    
+    
+    template <typename Scalar, size_t Dim> 
+    struct MortonTraits<Scalar, Dim, std::enable_if<std::is_integral_v<Scalar> > > {
+        
+        static bool compare(const Scalar* v1, const Scalar* v2) {
+            return mortonCmpInt<Scalar, Dim>(v1, v2);
+        }
+        
+        static int distance(const Scalar* v1, const Scalar* v2) {
+            return mortonDistanceInt<Scalar, Dim>(v1, v2);
+        }
+        
+        static void split(const Scalar* v1, const Scalar* v2, Scalar* low, Scalar* mid, Scalar* upp) {
+            mortonSplitInt<Scalar, Dim>(v1, v2, low, mid, upp);
+        }
+    };
+    
+    template <typename Scalar, size_t Dim> 
+    struct MortonTraits<Scalar, Dim, std::enable_if<std::is_floating_point_v<Scalar> > > { 
+    
+        static bool compare(const Scalar* v1, const Scalar* v2) {
+            return mortonCmpFloat<Scalar, Dim>(v1, v2);
+        }
+        
+        static int distance(const Scalar* v1, const Scalar* v2) {
+            return mortonDistanceFloat<Scalar, Dim>(v1, v2);
+        }
+    };
+    
 
 }
 
