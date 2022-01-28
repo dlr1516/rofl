@@ -31,7 +31,7 @@ namespace rofl {
             nodes_.push_back(n);
         }
     }
-    
+
     DisjointSet::~DisjointSet() {
     }
 

@@ -28,5 +28,5 @@ PCL_INSTANTIATE(PointCloudPlaneAligner, PCL_XYZ_POINT_TYPES)
 //    template class PointCloudPlaneAligner<pcl::PointXYZ>;
 //    template class PointCloudPlaneAligner<pcl::PointXYZI>;
 //}
-        
+
 #endif    // PCL_NO_PRECOMPILE

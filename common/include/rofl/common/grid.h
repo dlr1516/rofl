@@ -23,116 +23,116 @@
 
 namespace rofl {
 
-	template <size_t Dim,typename Value,typename Index = int,typename Indexer = detail::RasterIndexer<Dim, Index>,
-			template <class,class > class Container = std::vector,template <typename > class Allocator = std::allocator>
-	class Grid {
-	public:
-		using Type = Grid<Dim, Value, Index, Indexer, Container, Allocator>;
-		using Storage = Container<Value, Allocator<Value> >;
-		using IntervalType = IntervalIndices<Dim, Index>;
-		using Indices = typename IntervalType::Indices;
-		//using IndexerType = Indexer<Dim, Index>;  // if "template <size_t,typename > class Indexer"
-		using IndexerType = Indexer;
+    template <size_t Dim, typename Value, typename Index = int, typename Indexer = detail::RasterIndexer<Dim, Index>,
+    template <class, class > class Container = std::vector, template <typename > class Allocator = std::allocator>
+    class Grid {
+    public:
+        using Type = Grid<Dim, Value, Index, Indexer, Container, Allocator>;
+        using Storage = Container<Value, Allocator<Value> >;
+        using IntervalType = IntervalIndices<Dim, Index>;
+        using Indices = typename IntervalType::Indices;
+        //using IndexerType = Indexer<Dim, Index>;  // if "template <size_t,typename > class Indexer"
+        using IndexerType = Indexer;
 
-		Grid() : data_(), domain_() {
-		}
+        Grid() : data_(), domain_() {
+        }
 
-		Grid(const Indices& min, const Indices& dimensions) : data_(), domain_(min, dimensions) {
-			data_.resize(domain_.size());
-		}
+        Grid(const Indices& min, const Indices& dimensions) : data_(), domain_(min, dimensions) {
+            data_.resize(domain_.size());
+        }
 
-		Grid(const Indices& dimensions) : data_(), domain_() {
-			Indices zeros;
-			zeros.fill(0);
-			domain_.initBounds(zeros, dimensions);
-			data_.resize(domain_.size());
-		}
+        Grid(const Indices& dimensions) : data_(), domain_() {
+            Indices zeros;
+            zeros.fill(0);
+            domain_.initBounds(zeros, dimensions);
+            data_.resize(domain_.size());
+        }
 
-		virtual ~Grid() {
-		}
+        virtual ~Grid() {
+        }
 
-		void initBounds(const Indices& dimensions) {
-			Indices zeros;
-			zeros.fill(0);
-			domain_.initBounds(zeros, dimensions);
-			data_.resize(domain_.size());
-		}
+        void initBounds(const Indices& dimensions) {
+            Indices zeros;
+            zeros.fill(0);
+            domain_.initBounds(zeros, dimensions);
+            data_.resize(domain_.size());
+        }
 
-		void initBounds(const Indices& min, const Indices& dimensions) {
-			domain_.initBounds(min, dimensions);
-			data_.resize(domain_.size());
-		}
+        void initBounds(const Indices& min, const Indices& dimensions) {
+            domain_.initBounds(min, dimensions);
+            data_.resize(domain_.size());
+        }
 
-		void initCenter(const Indices& icenter, const Indices& iwin) {
-			domain_.initCentered(icenter, iwin);
-			data_.resize(domain_.size());
-		}
+        void initCenter(const Indices& icenter, const Indices& iwin) {
+            domain_.initCentered(icenter, iwin);
+            data_.resize(domain_.size());
+        }
 
-		void initMinMax(const Indices& imin, const Indices& imax) {
-			domain_.initMinMax(imin, imax);
-			data_.resize(domain_.size());
-		}
+        void initMinMax(const Indices& imin, const Indices& imax) {
+            domain_.initMinMax(imin, imax);
+            data_.resize(domain_.size());
+        }
 
-		size_t size() const {
-			return data_.size();
-		}
+        size_t size() const {
+            return data_.size();
+        }
 
-		const Indices& dimensions() const {
-			return domain_.dimensions();
-		}
+        const Indices& dimensions() const {
+            return domain_.dimensions();
+        }
 
-		/**
-		 * Warning: the user is responsible about the correct access to the buffer.
-		 * This function is defined for more efficient access to data.
-		 */
-		const Value& value(const Index* indices) const {
-			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
-		}
+        /**
+         * Warning: the user is responsible about the correct access to the buffer.
+         * This function is defined for more efficient access to data.
+         */
+        const Value& value(const Index* indices) const {
+            return data_[detail::StaticRasterIndexer<Dim, Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
+        }
 
-		/**
-		 * Warning: the user is responsible about the correct access to the buffer.
-		 * This function is defined for more efficient access to data.
-		 */
-		Value& value(const Index* indices) {
-			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
-		}
+        /**
+         * Warning: the user is responsible about the correct access to the buffer.
+         * This function is defined for more efficient access to data.
+         */
+        Value& value(const Index* indices) {
+            return data_[detail::StaticRasterIndexer<Dim, Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];
+        }
 
-		const Value& value(const Indices& indices) const {
-//			Index pos = getPos(indices);
-//			return data_.at(pos);
-			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
-		}
+        const Value& value(const Indices& indices) const {
+            //			Index pos = getPos(indices);
+            //			return data_.at(pos);
+            return data_[detail::StaticRasterIndexer<Dim, Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
+        }
 
-		Value& value(const Indices& indices) {
-			//Index pos = getPos(indices);
-			//return data_.at(pos);
-			return data_[detail::StaticRasterIndexer<Dim,Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
-		}
+        Value& value(const Indices& indices) {
+            //Index pos = getPos(indices);
+            //return data_.at(pos);
+            return data_[detail::StaticRasterIndexer<Dim, Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices.data())];
+        }
 
-		const Value& value(const Index& pos) const {
-			return data_.at(pos);
-		}
+        const Value& value(const Index& pos) const {
+            return data_.at(pos);
+        }
 
-		Value& value(const Index& pos) {
-			return data_.at(pos);
-		}
+        Value& value(const Index& pos) {
+            return data_.at(pos);
+        }
 
-		void fill(const Value& value) {
-			std::fill(std::begin(data_), std::end(data_), value);
-		}
+        void fill(const Value& value) {
+            std::fill(std::begin(data_), std::end(data_), value);
+        }
 
-		Index getPos(const Indices& indices) const {
-			return IndexerType::getPos(domain_.min(), domain_.dimensions(), indices);
-		}
+        Index getPos(const Indices& indices) const {
+            return IndexerType::getPos(domain_.min(), domain_.dimensions(), indices);
+        }
 
-		Indices getIndices(const Index& index) const {
-			return IndexerType::getIndices(domain_.min(), domain_.dimensions(), index);
-		}
+        Indices getIndices(const Index& index) const {
+            return IndexerType::getIndices(domain_.min(), domain_.dimensions(), index);
+        }
 
-	protected:
-		Storage data_;
-		IntervalType domain_;
-	};
+    protected:
+        Storage data_;
+        IntervalType domain_;
+    };
 
 } // end of namespace rofl
 

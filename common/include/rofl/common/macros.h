@@ -53,21 +53,21 @@
 #define ROFL_VAR7(X1,X2,X3,X4,X5,X6,X7) std::cout << ROFL_FILENAME(__FILE__) << "," << __LINE__ << ": " << (#X1) << " " << (X1) \
    << ", " << (#X2) << " " << (X2) << ", " << (#X3) << " " << (X3) << ", " << (#X4) << " " << (X4) \
    << ", " << (#X5) << " " << (X5) << ", " << (#X6) << " " << (X7) << ", " << (#X7) << " " << (X7) << std::endl;
-   
+
 #define ROFL_ASSERT(COND) if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; exit(-1); }
 
 #define ROFL_ASSERT_VAR1(COND,X1) \
    if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; \
    ROFL_VAR1(X1); exit(-1); }
-   
+
 #define ROFL_ASSERT_VAR2(COND,X1,X2) \
    if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; \
    ROFL_VAR2(X1,X2); exit(-1); }
-   
+
 #define ROFL_ASSERT_VAR3(COND,X1,X2,X3) \
    if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; \
    ROFL_VAR2(X1,X2,X3); exit(-1); }
-   
+
 #define ROFL_ASSERT_VAR4(COND,X1,X2,X3,X4) \
    if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; \
    ROFL_VAR4(X1,X2,X3,X4); exit(-1); }
@@ -75,5 +75,5 @@
 #define ROFL_ASSERT_VAR5(COND,X1,X2,X3,X4,X5) \
    if (!(COND)) { std::cerr << __FILE__ << "," << __LINE__ << ": assertion failed on " << #COND << std::endl; \
    ROFL_VAR5(X1,X2,X3,X4,X5); exit(-1); }
-   
+
 #endif

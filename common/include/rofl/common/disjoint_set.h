@@ -41,7 +41,7 @@ namespace rofl {
          * Each node corresponds to a set at the beginning. 
          */
         DisjointSet(id_type num);
-        
+
         /**
          * Destructor. 
          */

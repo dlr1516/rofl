@@ -81,7 +81,7 @@ namespace rofl {
         }
 
         void setPlaneTol(Scalar tol) {
-        	planeTol_ = tol;
+            planeTol_ = tol;
         }
 
         /**
@@ -137,16 +137,16 @@ namespace rofl {
             centerPlane = Vector3::Zero();
             inlierNum = 0;
             for (auto& p : cloud_->points) {
-            	dist = fabs(p.x * plane_(0) + p.y * plane_(1) + p.z * plane_(2) + plane_(3));
-            	if (dist < planeTol_) {
-            		centerPlane(0) += p.x;
-            		centerPlane(1) += p.y;
-            		centerPlane(2) += p.z;
-            		inlierNum++;
-            	}
+                dist = fabs(p.x * plane_(0) + p.y * plane_(1) + p.z * plane_(2) + plane_(3));
+                if (dist < planeTol_) {
+                    centerPlane(0) += p.x;
+                    centerPlane(1) += p.y;
+                    centerPlane(2) += p.z;
+                    inlierNum++;
+                }
             }
             if (inlierNum > 0) {
-            	centerPlane = (centerPlane - centerPlane.dot(az) * az) / inlierNum;
+                centerPlane = (centerPlane - centerPlane.dot(az) * az) / inlierNum;
             }
 
             //std::cout << "centerPlane " << centerPlane.transpose() << ": n^T * centerPlane - d = " << (az.dot(centerPlane) - planeConst) << std::endl;
@@ -167,7 +167,7 @@ namespace rofl {
         Scalar planeTol_;
     };
 
-}  // end of namespace 
+} // end of namespace 
 
 #define PCL_INSTANTIATE_PointCloudPlaneAligner(T) template class PCL_EXPORTS rofl::PointCloudPlaneAligner<T>;
 

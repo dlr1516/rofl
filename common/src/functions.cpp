@@ -24,25 +24,25 @@ namespace rofl {
     // COS-SIN FAST
     // --------------------------------------------------------
 
-//	int fastRoundf(float x) {
-//		int a;
-//		asm("fld x");
-//		asm("fistp a");
-//		return (a);
-//	}
+    //	int fastRoundf(float x) {
+    //		int a;
+    //		asm("fld x");
+    //		asm("fistp a");
+    //		return (a);
+    //	}
 
-	void fastCosSinf(float x, float& c, float& s) {
-		constexpr float factor = 1.0 / (2.0 * M_PI);
-		x *= factor;
+    void fastCosSinf(float x, float& c, float& s) {
+        constexpr float factor = 1.0 / (2.0 * M_PI);
+        x *= factor;
 
-		c = x - (0.25f + floor(x + 0.25f));
-		c *= 16.0 * (std::abs(c) - 0.5f);
-		c += 0.225 * c * (std::abs(c) - 1.0f);
+        c = x - (0.25f + floor(x + 0.25f));
+        c *= 16.0 * (std::abs(c) - 0.5f);
+        c += 0.225 * c * (std::abs(c) - 1.0f);
 
-		s = x - floor(x + 0.5);
-		s *= 16.0 * (0.5 - std::abs(s));
-		s += 0.225 * s * (std::abs(s) - 1.0f);
-	}
+        s = x - floor(x + 0.5);
+        s *= 16.0 * (0.5 - std::abs(s));
+        s += 0.225 * s * (std::abs(s) - 1.0f);
+    }
 
     void fastCosSin(double x, double& c, double& s) {
         constexpr double factor = 1.0 / (2.0 * M_PI);
@@ -58,14 +58,14 @@ namespace rofl {
     }
 
     float fastAtanf(float x) {
-    	const float a1 = 0.9998660f;
-    	const float a3 = -0.3302995f;
-    	const float a5 = 0.1801410f;
-    	const float a7 = -0.0851330f;
-    	const float a9 = 0.0208351f;
-    	float x2 = x * x;
-    	float x4 = x2 * x2;
-    	return x * (a1 + x2 * (a3 + a7 * x4) + x4 * (a5 + a9 * x4));
+        const float a1 = 0.9998660f;
+        const float a3 = -0.3302995f;
+        const float a5 = 0.1801410f;
+        const float a7 = -0.0851330f;
+        const float a9 = 0.0208351f;
+        float x2 = x * x;
+        float x4 = x2 * x2;
+        return x * (a1 + x2 * (a3 + a7 * x4) + x4 * (a5 + a9 * x4));
     }
 
     double fastAtan(double x) {

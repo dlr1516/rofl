@@ -23,8 +23,9 @@
 #include <rofl/common/numeric_traits.h>
 
 namespace rofl {
+
     // ---------------------------------------------------------------
-    // MORTON BIT OPERATION ON INTEGER SCALAR
+    // MORTON BIT OPERATION ON INTEGER OR FLOATING POINT SCALARS
     // ---------------------------------------------------------------
 
     /**
@@ -71,25 +72,86 @@ namespace rofl {
      */
     template <typename I>
     int intervalPow2Int(const I& i1, const I& i2, I& low, I& mid, I& upp) {
-    	using IT = IntegerTraits<I>;
-    	using IntegerType = typename IT::IntegerType;
-    	using UnsignedType = typename IT::UnsignedType;
-    	IntegerType level, intervMask;
+        using IT = IntegerTraits<I>;
+        using IntegerType = typename IT::IntegerType;
+        using UnsignedType = typename IT::UnsignedType;
+        IntegerType level, intervMask;
 
-    	level = IT::BIT_NUM - IT::nlz(IT::removeSign(i1) ^ IT::removeSign(i2));
-    	if (level < IT::BIT_NUM) {
-    		intervMask = (1 << level) - 1;
-    		low = i1 & (~intervMask);
-    		upp = (low | intervMask);
-    		mid = low | (1 << (level - 1));
-    	} else {
-    		intervMask = ~0;
-    		low = std::numeric_limits<I>::min();
-    		upp = std::numeric_limits<I>::max();
-    		mid = (upp + low) / 2;
-    	}
-    	return (int)level;
+        level = IT::BIT_NUM - IT::nlz(IT::removeSign(i1) ^ IT::removeSign(i2));
+        if (level < IT::BIT_NUM) {
+            intervMask = (1 << level) - 1;
+            low = i1 & (~intervMask);
+            upp = (low | intervMask);
+            mid = low | (1 << (level - 1));
+        } else {
+            intervMask = ~0;
+            low = std::numeric_limits<I>::min();
+            upp = std::numeric_limits<I>::max();
+            mid = (upp + low) / 2;
+        }
+        return (int) level;
     }
+
+    template <typename F>
+    F computeBitDiff(const F& f1, const F& f2) {
+        typename FloatTraits<F>::IntegerType xm, xe;
+        return computeBitDiff<F>(f1, f2, xm, xe);
+    }
+
+    template <typename F>
+    F computeBitDiff(const F& f1, const F& f2, typename FloatTraits<F>::IntegerType& mantissaDiff, typename FloatTraits<F>::IntegerType& exponentDiff) {
+        using FT = FloatTraits<F>;
+        using IntegerType = typename FT::IntegerType;
+        using UnsignedType = typename FT::UnsignedType;
+        IntegerType fm1, fm2, fe1, fe2, msbPos;
+        bool fs1, fs2;
+
+        FT::decompose(f1, fm1, fe1, fs1);
+        FT::decompose(f2, fm2, fe2, fs2);
+
+        // If the input numbers have different signs, then the returned value
+        // is the infinity. 
+        if (fs1 ^ fs2) {
+            mantissaDiff = 0;
+            exponentDiff = FT::EXPONENT_MASK - FT::EXPONENT_BIAS;
+            return FT::compose(mantissaDiff, exponentDiff, false);
+        }
+
+        // f1 must be the maximum of the two
+        if (fabs(f1) < fabs(f2)) {
+            std::swap(f1, f2);
+            std::swap(fe1, fe2);
+            std::swap(fm1, fm2);
+        }
+
+        // Adding the implicit most significant bit to the two mantissas
+        fm1 = fm1 | FT::MANTISSA_IMPLICIT_BIT;
+        if (fe1 < fe2 + FT::BIT_NUM) {
+            fm2 = (fm2 | FT::MANTISSA_IMPLICIT_BIT) >> (fe1 - fe2);
+        } else {
+            fm2 = 0;
+        }
+        // Changes the mantissas sign, if f1 and f2 are both negatives
+        if (fs1) {
+            fm1 = -fm1;
+            fm2 = -fm2;
+        }
+        mantissaDiff = fm1 ^ fm2;
+
+        if (mantissaDiff == 0) {
+            exponentDiff = -FT::EXPONENT_BIAS;
+            return FT::compose(mantissaDiff, exponentDiff, false);
+        }
+        msbPos = FT::MANTISSA_BITS - rofl::IntegerTraits<IntegerType>::log2Mod(mantissaDiff);
+        exponentDiff = fe1 - msbPos;
+        mantissaDiff = (mantissaDiff << msbPos) & FT::MANTISSA_MASK;
+
+        return FT::compose(mantissaDiff, exponentDiff, false);
+    }
+
+    // ---------------------------------------------------------------
+    // MORTON OPERATION ON ARRAYS/VECTORS OF SCALARS
+    // ---------------------------------------------------------------
 
     /**
      * Compares two vectors of integer values with integer type I and
@@ -106,53 +168,52 @@ namespace rofl {
      */
     template <typename I, int Dim>
     bool mortonCmpInt(const I* v1, const I* v2) {
-    	using IT = IntegerTraits<I>;
-    	using UnsignedType = typename IT::UnsignedType;
-    	UnsignedType lastDim, lastXor, currXor;
-    	lastDim = 0;
-    	lastXor = IT::removeSign(v1[0]) ^ IT::removeSign(v2[0]);
-    	for (int d = 1; d < Dim; ++d) {
-    		currXor = IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]);
-    		if (msb<UnsignedType>(lastXor, currXor)) {
-    			lastDim = d;
-    			lastXor = currXor;
-    		}
-    	}
-    	return (v1[lastDim] < v2[lastDim]);
+        using IT = IntegerTraits<I>;
+        using UnsignedType = typename IT::UnsignedType;
+        UnsignedType lastDim, lastXor, currXor;
+        lastDim = 0;
+        lastXor = IT::removeSign(v1[0]) ^ IT::removeSign(v2[0]);
+        for (int d = 1; d < Dim; ++d) {
+            currXor = IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]);
+            if (msb<UnsignedType>(lastXor, currXor)) {
+                lastDim = d;
+                lastXor = currXor;
+            }
+        }
+        return (v1[lastDim] < v2[lastDim]);
     }
 
     template <typename I, int Dim>
     int mortonDistanceInt(const I* v1, const I* v2) {
-    	using IT = IntegerTraits<I>;
-    	using UnsignedType = typename IT::UnsignedType;
-    	typename IT::IntegerType levelMax, level;
-    	levelMax = 0;
-    	for (int d = 0; d < Dim; ++d) {
-    		level = IT::BIT_NUM - IT::nlz(IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]));
-    		if (level > levelMax) {
-    			levelMax = level;
-    		}
-    	}
-    	return levelMax;
+        using IT = IntegerTraits<I>;
+        using UnsignedType = typename IT::UnsignedType;
+        typename IT::IntegerType levelMax, level;
+        levelMax = 0;
+        for (int d = 0; d < Dim; ++d) {
+            level = IT::BIT_NUM - IT::nlz(IT::removeSign(v1[d]) ^ IT::removeSign(v2[d]));
+            if (level > levelMax) {
+                levelMax = level;
+            }
+        }
+        return levelMax;
     }
 
     template <typename I, int Dim>
     void mortonSplitInt(const I* v1, const I* v2, I* low, I* mid, I* upp) {
-    	int dimSplit, levelSplit, level;
+        int dimSplit, levelSplit, level;
 
-    	dimSplit = 0;
-    	levelSplit = intervalPow2(v1[0], v2[0], low[0], mid[0], upp[0]);
-    	for (int d = 1; d < Dim; ++d) {
-    		level = intervalPow2(v1[d], v2[d], low[d], mid[d], upp[d]);
-    		if (level > levelSplit) {
-    			mid(dimSplit) = low(dimSplit);
-    			dimSplit = d;
-    			levelSplit = level;
-    		}
-    		else {
-    			mid[d] = low[d];
-    		}
-    	}
+        dimSplit = 0;
+        levelSplit = intervalPow2(v1[0], v2[0], low[0], mid[0], upp[0]);
+        for (int d = 1; d < Dim; ++d) {
+            level = intervalPow2(v1[d], v2[d], low[d], mid[d], upp[d]);
+            if (level > levelSplit) {
+                mid(dimSplit) = low(dimSplit);
+                dimSplit = d;
+                levelSplit = level;
+            } else {
+                mid[d] = low[d];
+            }
+        }
     }
 
 }

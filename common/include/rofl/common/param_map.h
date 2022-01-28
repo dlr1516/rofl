@@ -33,7 +33,7 @@ namespace rofl {
     class ParamMap {
     public:
         //typedef std::unordered_map<std::string, std::string> table_type;
-        using table_type = std::map<std::string, std::string> ; // a map stores lexically ordered parameters (nicer to view!)
+        using table_type = std::map<std::string, std::string>; // a map stores lexically ordered parameters (nicer to view!)
         using iterator = table_type::iterator;
         using const_iterator = table_type::const_iterator;
 

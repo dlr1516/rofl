@@ -22,50 +22,56 @@
 using II = rofl::IntervalIndices<2, int>;
 
 std::string outIndices(const typename II::Indices& indices) {
-	std::stringstream out;
-	out << "[";
-	for (int d = 0; d < indices.size(); ++d) {
-		out << indices[d];
-		if (d < indices.size() - 1)
-			out << ",";
-	}
-	out << "]";
-	return out.str();
+    std::stringstream out;
+    out << "[";
+    for (int d = 0; d < indices.size(); ++d) {
+        out << indices[d];
+        if (d < indices.size() - 1)
+            out << ",";
+    }
+    out << "]";
+    return out.str();
 }
 
-int main(int argc,char** argv) {
-	II win1, win2, win3, win12, win13;
+int main(int argc, char** argv) {
+    II win1, win2, win3, win12, win13;
 
-    win1.initMinMax({0, 0}, {5, 3});
-    win2.initCentered({6,5}, {3,4});
+    win1.initMinMax({0, 0},
+    {
+        5, 3
+    });
+    win2.initCentered({6, 5},
+    {
+        3, 4
+    });
     win3 = win1;
     win3.translate({10, 10});
 
     win12 = win1.intersect(win2);
     win13 = win3.intersect(win13);
 
-	std::cout << "win1 " << win1 << " size " << win1.size() << "\n"
-			<< "win2 " << win2 << " size " << win2.size() << "\n"
-			<< "win3 " << win3 << " size " << win3.size() << "\n"
-			<< "win12 " << win12 << " size " << win12.size() << "\n"
-			<< "win13 " << win13 << "  win13.empty() " << win13.empty() << " size " << win13.size() << "\n"
-			<< "win12.stacked(0, 1) " << win12.stacked(0, 1) << "\n"
-			<< "win12.stacked(1, -3) " << win12.stacked(1, -3) << "\n"
-			<< "win12.stacked(0, 0) " << win12.stacked(0, 0) << "\n"
-			<< std::endl;
+    std::cout << "win1 " << win1 << " size " << win1.size() << "\n"
+            << "win2 " << win2 << " size " << win2.size() << "\n"
+            << "win3 " << win3 << " size " << win3.size() << "\n"
+            << "win12 " << win12 << " size " << win12.size() << "\n"
+            << "win13 " << win13 << "  win13.empty() " << win13.empty() << " size " << win13.size() << "\n"
+            << "win12.stacked(0, 1) " << win12.stacked(0, 1) << "\n"
+            << "win12.stacked(1, -3) " << win12.stacked(1, -3) << "\n"
+            << "win12.stacked(0, 0) " << win12.stacked(0, 0) << "\n"
+            << std::endl;
 
-	std::cout << "\nraster iterate on win12" << std::endl;
-	for (auto it = win12.beginRaster(); it != win12.endRaster(); ++it) {
-		std::cout << "  " << outIndices(*it) << "\n";
-	}
+    std::cout << "\nraster iterate on win12" << std::endl;
+    for (auto it = win12.beginRaster(); it != win12.endRaster(); ++it) {
+        std::cout << "  " << outIndices(*it) << "\n";
+    }
 
-	std::cout << "\nboustrophedon iterate on win12" << std::endl;
-	int counter = 0;
-	for (auto it = win12.beginBoustrophedon(); it != win12.endBoustrophedon() && counter < 20; ++it, ++counter) {
-		std::cout << "  " << outIndices(*it) << "\n";
-	}
+    std::cout << "\nboustrophedon iterate on win12" << std::endl;
+    int counter = 0;
+    for (auto it = win12.beginBoustrophedon(); it != win12.endBoustrophedon() && counter < 20; ++it, ++counter) {
+        std::cout << "  " << outIndices(*it) << "\n";
+    }
 
-	return 0;
+    return 0;
 }
 
 
