@@ -308,7 +308,12 @@ namespace rofl {
     struct MortonTraits;
 
     template <typename Scalar, size_t Dim>
-    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_integral_v<Scalar> > > {
+#if __cplusplus >= 201703L
+    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_integral_v<Scalar> > > 
+#else
+    struct MortonTraits<Scalar, Dim, typename std::enable_if<std::is_integral<Scalar>::value >::type > 
+#endif
+    {
 
         static bool compare(const Scalar* v1, const Scalar* v2) {
             return mortonCmpInt<Scalar, Dim>(v1, v2);
@@ -324,7 +329,12 @@ namespace rofl {
     };
 
     template <typename Scalar, size_t Dim>
-    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_floating_point_v<Scalar> > > {
+#if __cplusplus >= 201703L
+    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_floating_point_v<Scalar> > >
+#else
+    struct MortonTraits<Scalar, Dim, typename std::enable_if<std::is_floating_point<Scalar>::value >::type >
+#endif
+    {
 
                                                                                                      static bool compare(const Scalar* v1, const Scalar* v2) {
             return mortonCmpFloat<Scalar, Dim>(v1, v2);

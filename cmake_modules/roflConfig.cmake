@@ -39,8 +39,10 @@ foreach(component ${rofl_COMPONENTS})
   find_library(rofl_${component}_LIBRARY 
     NAMES rofl rofl_${component} 
     HINTS ${rofl_PREFIX_DIR}/lib)
-  message(STATUS "    rofl_${component}_LIBRARY ${rofl_${component}_LIBRARY}." )
-  set(rofl_LIBRARIES ${rofl_LIBRARIES} ${rofl_${component}_LIBRARY})
+  message(STATUS "    rofl_${component}_LIBRARY ${rofl_${component}_LIBRARY}.")
+  if(NOT ("${rofl_${component}_LIBRARY}" STREQUAL "rofl_${component}_LIBRARY-NOTFOUND"))
+    set(rofl_LIBRARIES ${rofl_LIBRARIES} ${rofl_${component}_LIBRARY})
+  endif()
   #set(boost_LIBRARIES ${boost_LIBRARIES} debug ${boost_LIBRARY_DIR}/libboost_${component}-vc110-mt-gd-1_50.lib)
   #set(boost_LIBRARIES ${boost_LIBRARIES} optimized ${boost_LIBRARY_DIR}/libboost_${component}-vc110-mt-1_50.lib)
 endforeach()
