@@ -17,17 +17,24 @@
  */
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <array>
 #include <vector>
 #include <rofl/common/morton_sort.h>
 #include <rofl/common/param_map.h>
 
 int main(int argc, char** argv) {
-    using Point = std::array<int, 2>;
-    using VectorPoint = std::vector<Point>;
-    VectorPoint points;
-    Point pIn;
+    using PointI = std::array<int, 2>;
+    using PointF = std::array<float, 2>;
+    using VectorPointI = std::vector<PointI>;
+    using VectorPointF = std::vector<PointF>;
+    VectorPointI pointsInt;
+    VectorPointF pointsFloat;
+    PointI pInt;
+    PointF pFloat;
     int xbeg, xend, ybeg, yend;
+    unsigned xorI;
+    float f1, f2, res, xorF;
     rofl::ParamMap params;
     std::string filenameCfg, filenamePlot;
 
@@ -43,23 +50,50 @@ int main(int argc, char** argv) {
     params.getParam<int>("xend", xend, +4);
     params.getParam<int>("ybeg", ybeg, -4);
     params.getParam<int>("yend", yend, +4);
+    params.getParam<float>("res", res, 1.0f);
     params.getParam<std::string>("plot", filenamePlot, "morton.plot");
 
     std::cout << "Params:" << std::endl;
     params.write(std::cout);
 
-    for (pIn[0] = xbeg; pIn[0] < xend; ++pIn[0]) {
-        for (pIn[1] = ybeg; pIn[1] < yend; ++pIn[1]) {
-            points.push_back(pIn);
+    for (pInt[0] = xbeg; pInt[0] < xend; ++pInt[0]) {
+        for (pInt[1] = ybeg; pInt[1] < yend; ++pInt[1]) {
+            pointsInt.push_back(pInt);
+            pFloat[0] = res * pInt[0];
+            pFloat[1] = res * pInt[1];
+            pointsFloat.push_back(pFloat);
         }
     }
-    std::sort(points.begin(), points.end(),
-            [&](const Point& p1, const Point & p2) -> bool {
-                return rofl::mortonCmpInt<int, 2>(p1.data(), p2.data()); }
-    );
 
-    std::cout << "\nSorted points in morton order:\n";
-    for (auto& p : points) {
+    for (int i = xbeg; i < xend; ++i) {
+        for (int j = i; j < xend; ++j) {
+            xorI = rofl::IntegerTraits<int>::removeSign(i) ^ rofl::IntegerTraits<int>::removeSign(j);
+            f1 = res * i;
+            f2 = res * j;
+            xorF = rofl::computeBitDiff(f1, f2);
+            std::cout
+                    << "i " << std::setw(3) << i << " (" << std::setw(3) << (res * i) << ")  "
+                    << "j " << std::setw(3) << j << " (" << std::setw(3) << (res * j) << "): "
+                    << "xorI " << std::setw(3) << xorI << " xorF " << std::setw(3) << xorF << std::endl;
+        }
+    }
+
+    std::sort(pointsInt.begin(), pointsInt.end(),
+            [&](const PointI& p1, const PointI & p2) -> bool {
+                return rofl::MortonTraits<int, 2>::compare(p1.data(), p2.data());
+                //return rofl::mortonCmpInt<int, 2>(p1.data(), p2.data());
+            });
+    std::sort(pointsFloat.begin(), pointsFloat.end(),
+            [&](const PointF& p1, const PointF & p2) -> bool {
+                return rofl::MortonTraits<float, 2>::compare(p1.data(), p2.data());
+            });
+
+    std::cout << "\nSorted Integer points in morton order:\n";
+    for (auto& p : pointsInt) {
+        std::cout << "  [" << p[0] << "," << p[1] << "]\n";
+    }
+    std::cout << "\nSorted Float points in morton order:\n";
+    for (auto& p : pointsFloat) {
         std::cout << "  [" << p[0] << "," << p[1] << "]\n";
     }
 
@@ -69,11 +103,25 @@ int main(int argc, char** argv) {
         return -1;
     }
     filePlot << "set term wxt 0\n";
+    filePlot << "set title \"Morton order integer in interval [" << xbeg << "," << xend
+            << "[ x [" << ybeg << "," << yend << "[\"\n";
     filePlot << "set size ratio -1\n";
     filePlot << "set xrange [" << (xbeg - 1) << ":" << (xend + 1) << "]\n";
     filePlot << "set yrange [" << (ybeg - 1) << ":" << (yend + 1) << "]\n";
     filePlot << "plot '-' w l\n";
-    for (auto& p : points) {
+    for (auto& p : pointsInt) {
+        filePlot << p[0] << " " << p[1] << "\n";
+    }
+    filePlot << "e" << std::endl;
+
+    filePlot << "set term wxt 1\n";
+    filePlot << "set title \"Morton order float in interval [" << (res * xbeg) << "," << (res * xend)
+            << "[ x [" << (res * ybeg) << "," << (res * yend) << "[\"\n";
+    filePlot << "set size ratio -1\n";
+    filePlot << "set xrange [" << res * (xbeg - 1) << ":" << res * (xend + 1) << "]\n";
+    filePlot << "set yrange [" << res * (ybeg - 1) << ":" << res * (yend + 1) << "]\n";
+    filePlot << "plot '-' w l\n";
+    for (auto& p : pointsFloat) {
         filePlot << p[0] << " " << p[1] << "\n";
     }
     filePlot << "e" << std::endl;
@@ -83,7 +131,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
-
-
-

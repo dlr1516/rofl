@@ -380,6 +380,8 @@ namespace rofl {
         static constexpr IntegerType MANTISSA_IMPLICIT_BIT = (IntegerType)1 << MANTISSA_BITS;
         static constexpr IntegerType MANTISSA_MASK = ((IntegerType)1 << MANTISSA_BITS) - 1;
         static constexpr IntegerType EXPONENT_MASK = (((IntegerType)1 << EXPONENT_BITS) - 1) << MANTISSA_BITS;
+        static constexpr IntegerType EXPONENT_MIN = -EXPONENT_BIAS;
+        static constexpr IntegerType EXPONENT_MAX = (((IntegerType)1 << EXPONENT_BITS) - 1) - EXPONENT_BIAS;
         static constexpr IntegerType SIGN_MASK = (IntegerType)1 << (MANTISSA_BITS + EXPONENT_BITS);
 
         static FloatType compose(const IntegerType& mantissa, const IntegerType& exponent, bool sign) {
@@ -407,6 +409,8 @@ namespace rofl {
         static constexpr IntegerType MANTISSA_IMPLICIT_BIT = (IntegerType)1 << MANTISSA_BITS;
         static constexpr IntegerType MANTISSA_MASK = ((IntegerType)1 << MANTISSA_BITS) - 1;
         static constexpr IntegerType EXPONENT_MASK = (((IntegerType)1 << EXPONENT_BITS) - 1) << MANTISSA_BITS;
+        static constexpr IntegerType EXPONENT_MIN = -EXPONENT_BIAS;
+        static constexpr IntegerType EXPONENT_MAX = (((IntegerType)1 << EXPONENT_BITS) - 1) - EXPONENT_BIAS;
         static constexpr IntegerType SIGN_MASK = (IntegerType)1 << (MANTISSA_BITS + EXPONENT_BITS);
 
         static FloatType compose(const IntegerType& mantissa, const IntegerType& exponent, bool sign) {

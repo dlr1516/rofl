@@ -45,5 +45,7 @@ void testFloatTraits() {
     std::cout << "MANTISSA_IMPLICIT_BIT " << std::bitset<FT::BIT_NUM>(FT::MANTISSA_IMPLICIT_BIT) << "\n";
     std::cout << "MANTISSA_MASK         " << std::bitset<FT::BIT_NUM>(FT::MANTISSA_MASK) << "\n";
     std::cout << "EXPONENT_MASK         " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MASK) << "\n";
+    std::cout << "EXPONENT_MIN          " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MIN) << " " << FT::EXPONENT_MIN << "\n";
+    std::cout << "EXPONENT_MAX          " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MAX) << " " << FT::EXPONENT_MAX << "\n";
     std::cout << "SIGN_MASK             " << std::bitset<FT::BIT_NUM>(FT::SIGN_MASK) << "\n";
 }

@@ -19,6 +19,10 @@
 #define ROFL_COMMON_MORTON_SORT_H_
 
 #include <limits>
+#include <type_traits>  // std::is_integral<>, std::is_floating_point<>
+#include <algorithm>    // std::swap()
+#include <cmath>        // fabs()
+#include <rofl/common/macros.h>
 #include <rofl/common/bit_manip.h>
 #include <rofl/common/numeric_traits.h>
 
@@ -93,18 +97,22 @@ namespace rofl {
     }
 
     template <typename F>
-    F computeBitDiff(const F& f1, const F& f2) {
-        typename FloatTraits<F>::IntegerType xm, xe;
-        return computeBitDiff<F>(f1, f2, xm, xe);
-    }
-
-    template <typename F>
-    F computeBitDiff(const F& f1, const F& f2, typename FloatTraits<F>::IntegerType& mantissaDiff, typename FloatTraits<F>::IntegerType& exponentDiff) {
+    F computeBitDiff(const F& fin1, const F& fin2, typename FloatTraits<F>::IntegerType& mantissaDiff, typename FloatTraits<F>::IntegerType& exponentDiff) {
         using FT = FloatTraits<F>;
         using IntegerType = typename FT::IntegerType;
         using UnsignedType = typename FT::UnsignedType;
+        F f1, f2;
         IntegerType fm1, fm2, fe1, fe2, msbPos;
         bool fs1, fs2;
+
+        // Arranges the input floating s.t. fabs(f1) > fabs(f2)
+        if (fabs(fin1) > fabs(fin2)) {
+            f1 = fin1;
+            f2 = fin2;
+        } else {
+            f1 = fin2;
+            f2 = fin1;
+        }
 
         FT::decompose(f1, fm1, fe1, fs1);
         FT::decompose(f2, fm2, fe2, fs2);
@@ -113,16 +121,19 @@ namespace rofl {
         // is the infinity. 
         if (fs1 ^ fs2) {
             mantissaDiff = 0;
-            exponentDiff = FT::EXPONENT_MASK - FT::EXPONENT_BIAS;
+            exponentDiff = FT::EXPONENT_MAX;
+//            ROFL_MSG("different signs\n"
+//                    << std::bitset<FT::BIT_NUM>(mantissaDiff) << " xm " << mantissaDiff << "\n"
+//                    << std::bitset<FT::BIT_NUM>(exponentDiff) << " xe " << exponentDiff << "\n");
             return FT::compose(mantissaDiff, exponentDiff, false);
         }
 
-        // f1 must be the maximum of the two
-        if (fabs(f1) < fabs(f2)) {
-            std::swap(f1, f2);
-            std::swap(fe1, fe2);
-            std::swap(fm1, fm2);
-        }
+        //        // f1 must be the maximum of the two
+        //        if (fabs(f1) < fabs(f2)) {
+        //            std::swap(f1, f2);
+        //            std::swap(fe1, fe2);
+        //            std::swap(fm1, fm2);
+        //        }
 
         // Adding the implicit most significant bit to the two mantissas
         fm1 = fm1 | FT::MANTISSA_IMPLICIT_BIT;
@@ -148,6 +159,13 @@ namespace rofl {
 
         return FT::compose(mantissaDiff, exponentDiff, false);
     }
+
+    template <typename F>
+    F computeBitDiff(const F& f1, const F& f2) {
+        typename FloatTraits<F>::IntegerType xm, xe;
+        return computeBitDiff<F>(f1, f2, xm, xe);
+    }
+
 
     // ---------------------------------------------------------------
     // MORTON OPERATION ON ARRAYS/VECTORS OF SCALARS
@@ -215,7 +233,7 @@ namespace rofl {
             }
         }
     }
-    
+
     /**
      * Compares two vectors of floating point values with floating point type F 
      * and dimension Dim and sort them according to Morton order.
@@ -249,7 +267,7 @@ namespace rofl {
         }
         return (v1[lastDim] < v2[lastDim]);
     }
-    
+
     template <typename F, int Dim>
     int mortonDistanceFloat(const F* v1, const F* v2) {
         using FT = FloatTraits<F>;
@@ -265,45 +283,59 @@ namespace rofl {
         }
         return exponentMax;
     }
-    
+
     // ---------------------------------------------------------------
     // MORTON TRAITS
     // ---------------------------------------------------------------
-    
-    template <typename Scalar, size_t Dim, typename Enable = void> 
+
+    /**
+     * Struct MortonTraits<Scalar, Dim> is a class that provides the functions
+     * to perform operations related to Morton order on vectors/arrays of type
+     * Scalar* and size Dim. 
+     * MortonTraits<> has specialized implementations according to the type of 
+     * Scalar, e.g. for integral types (basically integers) or floating types. 
+     * The specialized implementation uses the C++ type_traits with C++-17 syntax.
+     * For example, 
+     *   std::enable_if_t<EXPR> (with C++-11/14 std::enable_if<EXPR>::type)
+     *   std::is_integral_v<EXPR> (with C++-11/14 std::is_integral<EXPR>::value).
+     * 
+     * The operations related to Morton order are the following:
+     * - compare();
+     * - distance();
+     * - split();
+     */
+    template <typename Scalar, size_t Dim, typename Enable = void>
     struct MortonTraits;
-    
-    
-    template <typename Scalar, size_t Dim> 
-    struct MortonTraits<Scalar, Dim, std::enable_if<std::is_integral_v<Scalar> > > {
-        
+
+    template <typename Scalar, size_t Dim>
+    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_integral_v<Scalar> > > {
+
         static bool compare(const Scalar* v1, const Scalar* v2) {
             return mortonCmpInt<Scalar, Dim>(v1, v2);
         }
-        
+
         static int distance(const Scalar* v1, const Scalar* v2) {
             return mortonDistanceInt<Scalar, Dim>(v1, v2);
         }
-        
+
         static void split(const Scalar* v1, const Scalar* v2, Scalar* low, Scalar* mid, Scalar* upp) {
             mortonSplitInt<Scalar, Dim>(v1, v2, low, mid, upp);
         }
     };
-    
-    template <typename Scalar, size_t Dim> 
-    struct MortonTraits<Scalar, Dim, std::enable_if<std::is_floating_point_v<Scalar> > > { 
-    
-        static bool compare(const Scalar* v1, const Scalar* v2) {
+
+    template <typename Scalar, size_t Dim>
+    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_floating_point_v<Scalar> > > {
+
+                                                                                                     static bool compare(const Scalar* v1, const Scalar* v2) {
             return mortonCmpFloat<Scalar, Dim>(v1, v2);
         }
-        
+
         static int distance(const Scalar* v1, const Scalar* v2) {
             return mortonDistanceFloat<Scalar, Dim>(v1, v2);
         }
     };
-    
+
 
 }
-
 
 #endif 
