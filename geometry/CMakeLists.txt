@@ -17,6 +17,7 @@ include_directories(
 )
 
 add_library(${SUBLIB_NAME} SHARED
+  src/correspondence_graph_association.cpp
   src/gis.cpp 
   src/hough_line_detector.cpp 
   src/hough_plane_detector.cpp 
