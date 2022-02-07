@@ -83,7 +83,9 @@ namespace rofl {
             }
         }
                 
-        // AA
+        // Brute-force visits the cliques
+        
+        
     }
 
 } // end of namespace

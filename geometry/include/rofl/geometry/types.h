@@ -34,6 +34,12 @@
 #include <boost/geometry/geometries/register/multi_polygon.hpp>
 
 namespace rofl {
+    
+    using Scalar = float;
+    
+    const Scalar K_2PI = 6.28318530718;
+    
+    using AngleInterval = std::pair<Scalar, Scalar>;
 
     /**
      * ROFL geometry types are taken from library Eigen.
@@ -53,8 +59,6 @@ namespace rofl {
      */
 
 #if __cplusplus < 201703L
-
-    using Scalar = float;
 
     // --------------------------------------------------------------
     // LINEAR ALGEBRA AND GEOMETRY: ELEMENTARY TYPES
@@ -102,8 +106,6 @@ namespace rofl {
     using VectorBox2 = std::vector<Box2, Eigen::aligned_allocator<Box2> >;
 
 #else
-
-    using Scalar = float;
 
     // --------------------------------------------------------------
     // LINEAR ALGEBRA AND GEOMETRY: ELEMENTARY TYPES
