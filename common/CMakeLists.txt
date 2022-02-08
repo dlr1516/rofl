@@ -14,6 +14,7 @@ add_library(${SUBLIB_NAME} SHARED
   src/bit_manip.cpp 
   src/disjoint_set.cpp
   src/functions.cpp
+  src/label_set.cpp
   src/param_map.cpp
   src/profiler.cpp
 )
@@ -36,7 +37,12 @@ target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
 add_executable(test_numeric_traits
   app/test_numeric_traits.cpp
 )
-target_link_libraries(test_numeric_traits ${SUBLIB_NAME})
+target_link_libraries(test_numeric_traits ${SUBLIB_NAME} ${Boost_LIBRARIES})
+
+add_executable(test_label_set
+  app/test_label_set.cpp
+)
+target_link_libraries(test_label_set ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
 add_executable(test_morton_order_int
   app/test_morton_order_int.cpp

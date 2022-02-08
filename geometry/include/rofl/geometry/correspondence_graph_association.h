@@ -22,6 +22,7 @@
 #include <deque>
 #include <Eigen/Dense>
 #include <rofl/geometry/types.h>
+#include <rofl/common/label_set.h>
 #include <rofl/common/macros.h>
 
 namespace rofl {
@@ -61,6 +62,9 @@ namespace rofl {
             int i1;
             Scalar distance;
 
+            PairDistance() : i0(-1), i1(-1), distance(0.0) {
+            }
+
             PairDistance(int _i0, int _i1, Scalar _distance) : i0(_i0), i1(_i1), distance(_distance) {
             }
         };
@@ -70,7 +74,9 @@ namespace rofl {
             int index;
             int isrc;
             int idst;
-            std::vector<int> adjacents;
+            //std::vector<int> adjacents;
+            LabelSet adjacents;
+            
         };
         using VectorCorrespondenceNode = std::vector<CorrespondenceNode>;
 
@@ -89,7 +95,7 @@ namespace rofl {
          * @param 
          */
         void setTolerance(Scalar tol);
-        
+
         /**
          * Sets the minimum distance. 
          * @param 
@@ -111,13 +117,18 @@ namespace rofl {
         template <typename It, typename Dist>
         void insertSrc(It beg, It end, Dist dist) {
             numSrc_ = std::distance(beg, end);
-            distancesSrc_.resize(numSrc_ * (numSrc_ - 1) / 2);
+            distancesSrc_.reserve(numSrc_ * (numSrc_ - 1) / 2);
             insertPairDistances(beg, end, dist, std::back_inserter(distancesSrc_));
 
             std::sort(distancesSrc_.begin(), distancesSrc_.end(),
                     [&](const PairDistance& pd0, const PairDistance & pd1) -> bool {
                         return pd0.distance < pd1.distance;
                     });
+
+            ROFL_MSG("source pairwise distances");
+            for (auto& pd : distancesSrc_) {
+                std::cout << "  i0 " << pd.i0 << " i1 " << pd.i1 << " dist " << pd.distance << "\n";
+            }
         }
 
         /**
@@ -135,13 +146,18 @@ namespace rofl {
         template <typename It, typename Dist>
         void insertDst(It beg, It end, Dist dist) {
             numDst_ = std::distance(beg, end);
-            distancesSrc_.resize(numDst_ * (numDst_ - 1) / 2);
+            distancesSrc_.reserve(numDst_ * (numDst_ - 1) / 2);
             insertPairDistances(beg, end, dist, std::back_inserter(distancesDst_));
-                    
+
             std::sort(distancesDst_.begin(), distancesDst_.end(),
                     [&](const PairDistance& pd0, const PairDistance & pd1) -> bool {
                         return pd0.distance < pd1.distance;
                     });
+
+            ROFL_MSG("destination pairwise distances");
+            for (auto& pd : distancesDst_) {
+                std::cout << "  i0 " << pd.i0 << " i1 " << pd.i1 << " dist " << pd.distance << "\n";
+            }
         }
 
         void associate();

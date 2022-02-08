@@ -29,6 +29,9 @@ if(PCL_FOUND)
   target_link_libraries(test_hough_plane_detector ${SUBLIB_NAME} rofl_common ${PCL_LIBRARIES})
 endif()
 
+add_executable(test_correspondence_graph app/test_correspondence_graph.cpp)
+target_link_libraries(test_correspondence_graph ${SUBLIB_NAME} rofl_common ${PCL_LIBRARIES})
+
 
 # Option "make install": copy binaries
 install(TARGETS ${SUBLIB_NAME}

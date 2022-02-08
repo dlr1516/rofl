@@ -37,6 +37,8 @@ namespace rofl {
     
     using Scalar = float;
     
+    // From C++-20 substitute with: constexpr K_PI = std::numbers::pi_v<float>;
+    const Scalar K_PI = 3.141592653589793238463;   
     const Scalar K_2PI = 6.28318530718;
     
     using AngleInterval = std::pair<Scalar, Scalar>;
