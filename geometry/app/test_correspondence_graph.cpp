@@ -85,7 +85,34 @@ int main(int argc, char** argv) {
     corr.insertSrc(pointsSrc.begin(), pointsSrc.end(), norm2);
     corr.insertDst(pointsDst.begin(), pointsDst.end(), norm2);
     
-    corr.associate();
+    //std::vector<rofl::LabelSet> cliquesMax;
+    //corr.associate(cliquesMax);
+    //std::cout << "\nmaximum cliques:\n";
+    //for (auto& clique : cliquesMax) {
+    //    std::cout << clique << "\n";
+    //}
+    std::vector<rofl::CorrespondenceGraphAssociation::AssociationHypothesis> associationsBest;
+    corr.associate(associationsBest);
+    for (int k = 0; k < associationsBest.size(); ++k) {
+        std::cout << "---\nassocitation best " << k << ":\n";
+        for (auto& p : associationsBest[k].associations) {
+            int isrc = p.first;
+            int idst = p.second;
+            std::cout << "  isrc " << isrc << ", idst " << idst << "\n";
+        }
+        
+        for (int i = 0; i < associationsBest[k].associations.size(); ++i) {
+            int is0 = associationsBest[k].associations[i].first;
+            int id0 = associationsBest[k].associations[i].second;
+            for (int j = i+1; j < associationsBest[k].associations.size(); ++j) {
+                int is1 = associationsBest[k].associations[j].first;
+                int id1 = associationsBest[k].associations[j].second;
+                
+                std::cout << "  src dist(" << is0 << "," << is1 << ") " << (pointsSrc[is0] - pointsSrc[is1]).norm() << "; "
+                        << "  dst dist(" << id0 << "," << id1 << ") " << (pointsDst[id0] - pointsDst[id1]).norm() << "\n";
+            }
+        }
+    }
     
     return 0;
 }

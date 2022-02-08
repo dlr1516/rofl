@@ -101,10 +101,14 @@ namespace rofl {
     }
 
     void LabelSet::print(std::ostream& out) const {
-        for (auto& l : labels_) {
-            out << l << ", ";
+        out << "{"; 
+        for (auto it = labels_.begin(); it != labels_.end(); ++it) {
+            if (it != labels_.begin()) {
+                out << ", ";
+            }
+            out << *it;
         }
-        out << std::endl;
+        out << "}";
     }
 
 } // end of namespace

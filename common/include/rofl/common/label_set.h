@@ -129,5 +129,10 @@ namespace rofl {
 
 } // end of namespace
 
+std::ostream& operator<<(std::ostream& out, const rofl::LabelSet& ls) {
+    ls.print(out);
+    return out;
+}
+
 #endif /* IDSET_H */
 

@@ -79,6 +79,10 @@ namespace rofl {
             
         };
         using VectorCorrespondenceNode = std::vector<CorrespondenceNode>;
+        
+        struct AssociationHypothesis {
+            std::vector<std::pair<int, int> > associations;
+        };
 
         /**
          * Default constructor. 
@@ -160,7 +164,9 @@ namespace rofl {
             }
         }
 
-        void associate();
+        void associate(std::vector<LabelSet>& cliquesMax);
+        
+        void associate(std::vector<AssociationHypothesis>& associations);
 
 
     private:
@@ -185,6 +191,8 @@ namespace rofl {
                 }
             }
         }
+        
+        void convertToAssociation(const LabelSet& correspNodes, AssociationHypothesis& assocHyp) const;
     };
 
 } // end of namespace
