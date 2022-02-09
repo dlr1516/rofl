@@ -48,6 +48,14 @@ namespace rofl {
     bool LabelSet::inside(Label label) const {
         return (labels_.find(label) != labels_.end());
     }
+    
+    bool LabelSet::operator==(const LabelSet& ls) const {
+        return std::equal(labels_.begin(), labels_.end(), ls.labels_.begin());
+    }
+    
+    bool LabelSet::operator!=(const LabelSet& ls) const {
+        return !std::equal(labels_.begin(), labels_.end(), ls.labels_.begin());
+    }
 
     bool LabelSet::insert(Label label) {
         bool itemIn = inside(label);

@@ -79,6 +79,20 @@ namespace rofl {
          * @param label the label to be checked
          */
         bool inside(Label label) const;
+        
+        /**
+         * Compares the content of this label set with the given one. 
+         * @param ls the other label set to be compared
+         * @return true if the two label sets are equal 
+         */
+        bool operator==(const LabelSet& ls) const;
+        
+        /**
+         * Compares the content of this label set with the given one. 
+         * @param ls the other label set to be compared
+         * @return true if the two label sets are NOT equal 
+         */
+        bool operator!=(const LabelSet& ls) const;
 
         /**
          * Inserts the label in the set.

@@ -19,7 +19,8 @@
 #include <rofl/common/min_max_heap.h>
 #include <numeric>
 
-#include "rofl/common/min_max_heap.h" // for std::iota
+#include "rofl/common/min_max_heap.h"
+#include "rofl/geometry/gis.h" // for std::iota
 
 namespace rofl {
 
@@ -68,16 +69,18 @@ namespace rofl {
                     return dmin < pd.distance;
                 });
         for (auto itSrc = begSrc; itSrc != distancesSrc_.end(); ++itSrc) {
-            auto begDst = std::upper_bound(distancesDst_.begin(), distancesDst_.end(), itSrc->distance - distTol_,
+            Scalar distLower = itSrc->distance - distTol_;
+            Scalar distUpper = itSrc->distance + distTol_;
+            auto begDst = std::upper_bound(distancesDst_.begin(), distancesDst_.end(), distLower,
                     [](const Scalar& dmin, const PairDistance & pd) -> bool {
                         return dmin < pd.distance;
                     });
             isrc0 = itSrc->i0;
             isrc1 = itSrc->i1;
-            Scalar distMax = itSrc->distance + distTol_;
-            for (auto itDst = begDst; itDst != distancesDst_.end() && itDst->distance < distMax; ++itDst) {
+            for (auto itDst = begDst; itDst != distancesDst_.end() && itDst->distance < distUpper; ++itDst) {
                 idst0 = itDst->i0;
                 idst1 = itDst->i1;
+                ROFL_VAR6(isrc0, isrc1, itSrc->distance, idst0, idst1, itDst->distance);
                 index0 = isrc0 * numDst_ + idst0;
                 index1 = isrc1 * numDst_ + idst1;
                 ROFL_ASSERT_VAR4(index0 < nodes_.size(), index0, isrc0, idst0, numDst_);
@@ -93,10 +96,11 @@ namespace rofl {
             }
         }
 
-        ROFL_MSG("nodes:");
+        ROFL_MSG("correspondence graph nodes:");
         for (auto& n : nodes_) {
             //std::sort(n.adjacents.begin(), n.adjacents.end());
-            std::cout << "  node " << n.index << ": isrc " << n.isrc << " idst " << n.idst << " compatible with " << n.adjacents.size() << "\n";
+            std::cout << "  node " << n.index << ": isrc " << n.isrc << " idst " << n.idst << " compatible with " << n.adjacents.size() 
+                    << " " << n.adjacents << "\n";
         }
 
         std::deque<int> nodeList(nodes_.size());
@@ -108,8 +112,10 @@ namespace rofl {
 
         for (auto& node0 : nodeList) {
             candidates = nodes_[node0].adjacents.unionSet(node0);
+            //std::cout << "node " << node0 << ": " << candidates << std::endl;
             for (auto& node1 : nodes_[node0].adjacents) {
-                candidates = candidates.intersectionSet(nodes_[node0].adjacents.unionSet(node1));
+                candidates = candidates.intersectionSet(nodes_[node1].adjacents.unionSet(node1));
+                //std::cout << "  with node " << node1 << ": " << candidates << std::endl;
             }
             std::cout << "maximum clique with node " << node0 << ": " << candidates << "\n";
 
