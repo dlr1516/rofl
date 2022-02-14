@@ -80,10 +80,19 @@ namespace rofl {
         const Indices& dimensions() const {
             return domain_.dimensions();
         }
+        
+        /**
+         * Says if the given indices are inside the index domain.
+         * @param indices the input indices
+         * @return true if the given indices are inside the domain
+         */
+        bool inside(const Indices& indices) const {
+            return domain_.inside(indices);
+        }
 
         /**
          * Warning: the user is responsible about the correct access to the buffer.
-         * This function is defined for more efficient access to data.
+         * This function is defined for more efficient access to data by avoiding Indices 
          */
         const Value& value(const Index* indices) const {
             return data_[detail::StaticRasterIndexer<Dim, Index>::getPos(domain_.min().data(), domain_.dimensions().data(), indices)];

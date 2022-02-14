@@ -74,6 +74,7 @@ namespace rofl {
             int index;
             int isrc;
             int idst;
+            int color; 
             //std::vector<int> adjacents;
             LabelSet adjacents;
             
@@ -193,6 +194,8 @@ namespace rofl {
         }
         
         void convertToAssociation(const LabelSet& correspNodes, AssociationHypothesis& assocHyp) const;
+        
+        void findClique();
     };
 
 } // end of namespace

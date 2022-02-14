@@ -122,9 +122,9 @@ namespace rofl {
         if (fs1 ^ fs2) {
             mantissaDiff = 0;
             exponentDiff = FT::EXPONENT_MAX;
-//            ROFL_MSG("different signs\n"
-//                    << std::bitset<FT::BIT_NUM>(mantissaDiff) << " xm " << mantissaDiff << "\n"
-//                    << std::bitset<FT::BIT_NUM>(exponentDiff) << " xe " << exponentDiff << "\n");
+            //            ROFL_MSG("different signs\n"
+            //                    << std::bitset<FT::BIT_NUM>(mantissaDiff) << " xm " << mantissaDiff << "\n"
+            //                    << std::bitset<FT::BIT_NUM>(exponentDiff) << " xe " << exponentDiff << "\n");
             return FT::compose(mantissaDiff, exponentDiff, false);
         }
 
@@ -165,6 +165,11 @@ namespace rofl {
         typename FloatTraits<F>::IntegerType xm, xe;
         return computeBitDiff<F>(f1, f2, xm, xe);
     }
+    
+//    template <typename F>
+//    int intervalPow2Float(const F& i1, const F& i2, F& low, F& mid, F& upp) {
+//        
+//    }
 
 
     // ---------------------------------------------------------------
@@ -309,9 +314,9 @@ namespace rofl {
 
     template <typename Scalar, size_t Dim>
 #if __cplusplus >= 201703L
-    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_integral_v<Scalar> > > 
+    struct MortonTraits<Scalar, Dim, std::enable_if_t<std::is_integral_v<Scalar> > >
 #else
-    struct MortonTraits<Scalar, Dim, typename std::enable_if<std::is_integral<Scalar>::value >::type > 
+    struct MortonTraits<Scalar, Dim, typename std::enable_if<std::is_integral<Scalar>::value >::type >
 #endif
     {
 
@@ -336,7 +341,7 @@ namespace rofl {
 #endif
     {
 
-                                                                                                     static bool compare(const Scalar* v1, const Scalar* v2) {
+        static bool compare(const Scalar* v1, const Scalar* v2) {
             return mortonCmpFloat<Scalar, Dim>(v1, v2);
         }
 

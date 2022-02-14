@@ -45,7 +45,7 @@ namespace rofl {
         //        };
         //        rofl::MinMaxHeap<LabelSet, decltype(cmp)> queue(cmp);
         std::deque<LabelSet> queue;
-        LabelSet parentClique, childClique, candidates;
+        LabelSet cliqueCur, visited;
         CorrespondenceNode node;
         int isrc0, isrc1, idst0, idst1, index0, index1;
 
@@ -111,22 +111,32 @@ namespace rofl {
                 });
 
         for (auto& node0 : nodeList) {
-            candidates = nodes_[node0].adjacents.unionSet(node0);
-            //std::cout << "node " << node0 << ": " << candidates << std::endl;
+            cliqueCur = nodes_[node0].adjacents.unionSet(node0);
+            std::cout << "node " << node0 << ": " << cliqueCur << std::endl;
             for (auto& node1 : nodes_[node0].adjacents) {
-                candidates = candidates.intersectionSet(nodes_[node1].adjacents.unionSet(node1));
-                //std::cout << "  with node " << node1 << ": " << candidates << std::endl;
+                cliqueCur = cliqueCur.intersectionSet(nodes_[node1].adjacents.unionSet(node1));
+                std::cout << "  with node " << node1 << ": " << cliqueCur << std::endl;
             }
-            std::cout << "maximum clique with node " << node0 << ": " << candidates << "\n";
+            std::cout << "maximum clique with node " << node0 << ": " << cliqueCur << "\n";
 
-            if (cliquesMax.empty() || candidates.size() == cliquesMax.back().size()) {
-                cliquesMax.push_back(candidates);
-                ROFL_VAR2(cliquesMax.back().size(), candidates);
-            } else if (candidates.size() > cliquesMax.back().size()) {
+            if (cliquesMax.empty() || cliqueCur.size() == cliquesMax.back().size()) {
+                bool novel = true;
+                for (auto& cl : cliquesMax) {
+                    if (cliqueCur == cl) {
+                        novel = false;
+                        break;
+                    }
+                }
+                if (novel) {
+                    cliquesMax.push_back(cliqueCur);
+                    ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
+                }
+            } else if (cliqueCur.size() > cliquesMax.back().size()) {
                 cliquesMax.clear();
-                cliquesMax.push_back(candidates);
-                ROFL_VAR2(cliquesMax.back().size(), candidates);
+                cliquesMax.push_back(cliqueCur);
+                ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
             }
+            visited.insert(node0); 
         }
         ROFL_VAR2(cliquesMax.size(), cliquesMax.back().size());
     }
