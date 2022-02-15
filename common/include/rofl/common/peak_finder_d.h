@@ -140,7 +140,7 @@ namespace rofl {
             // Initializes the window
             auto domainIt = domain_.beginBoustrophedon();
             auto domainEnd = domain_.endBoustrophedon();
-            ROFL_ASSERT_VAR1(domainIt != domainEnd, domain_);
+            ROFL_ASSERT_VAR2(domainIt != domainEnd, domain_, "Empty domain!");
             windowInterval.initCentered(*domainIt, iwin_);
             novelInterval = windowInterval.intersect(domain_);
             for (auto it = novelInterval.beginRaster(); it != novelInterval.endRaster(); ++it) {
