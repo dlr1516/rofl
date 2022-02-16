@@ -18,6 +18,7 @@ include_directories(
 
 add_library(${SUBLIB_NAME} SHARED
   src/base_geometry2.cpp
+  src/box_registration.cpp
   src/correspondence_graph_association.cpp
   src/gis.cpp 
   src/hough_line_detector.cpp 
