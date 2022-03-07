@@ -195,7 +195,7 @@ namespace rofl {
         
         void convertToAssociation(const LabelSet& correspNodes, AssociationHypothesis& assocHyp) const;
         
-        void findClique();
+        void executeBronKerbosch(LabelSet cliqueCur, LabelSet candidateNodes, LabelSet excludedNodes);
     };
 
 } // end of namespace

@@ -63,6 +63,11 @@ namespace rofl {
          */
         size_t size() const;
         
+        /**
+         * Returns true if the set is empty. 
+         */
+        bool empty() const;
+        
 
         /**
          * Returns an iterator pointing to the first element of set. 
@@ -100,6 +105,13 @@ namespace rofl {
          * @return 
          */
         bool insert(Label label);
+        
+        /**
+         * Removes the label in the set.
+         * @param label the label to be removed
+         * @return 
+         */
+        void remove(Label label);
 
         /**
          * Returns a new label set that is the unin of this set and the given 
@@ -124,9 +136,17 @@ namespace rofl {
         LabelSet intersectionSet(const LabelSet& ls) const;
         
         /**
-         * Returns a new label set that is the unin of this set and the given 
+         * Returns a new label set that is the union of this set and the given 
          * label.
          * @param label the label to be added
+         * @return the union set
+         */
+        LabelSet differenceSet(const Label& label) const;
+        
+        /**
+         * Returns a new label set that is the unin of this set and the given 
+         * label set
+         * @param ls the label set to be added
          * @return the union set
          */
         LabelSet differenceSet(const LabelSet& ls) const;

@@ -36,6 +36,10 @@ namespace rofl {
     size_t LabelSet::size() const {
         return labels_.size();
     }
+    
+    bool LabelSet::empty() const {
+        return labels_.empty();
+    }
 
     std::set<int>::iterator LabelSet::begin() const {
         return labels_.begin();
@@ -63,6 +67,10 @@ namespace rofl {
             labels_.insert(label);
         }
         return itemIn;
+    }
+    
+    void LabelSet::remove(Label label) {
+        labels_.erase(label);
     }
 
     LabelSet LabelSet::unionSet(Label label) const {
@@ -94,6 +102,12 @@ namespace rofl {
 //        std::cout << std::endl;
         //setNew.print(std::cout);
         return LabelSet(tmp.begin(), tmp.end());
+    }
+    
+    LabelSet LabelSet::differenceSet(const Label& label) const {
+        LabelSet ls(*this);
+        ls.labels_.erase(label);
+        return ls;
     }
 
     LabelSet LabelSet::differenceSet(const LabelSet& ls) const {

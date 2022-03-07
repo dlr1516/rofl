@@ -45,7 +45,7 @@ namespace rofl {
         //        };
         //        rofl::MinMaxHeap<LabelSet, decltype(cmp)> queue(cmp);
         std::deque<LabelSet> queue;
-        LabelSet cliqueCur, visited;
+        //LabelSet cliqueCur, visited;
         CorrespondenceNode node;
         int isrc0, isrc1, idst0, idst1, index0, index1;
 
@@ -99,46 +99,52 @@ namespace rofl {
         ROFL_MSG("correspondence graph nodes:");
         for (auto& n : nodes_) {
             //std::sort(n.adjacents.begin(), n.adjacents.end());
-            std::cout << "  node " << n.index << ": isrc " << n.isrc << " idst " << n.idst << " compatible with " << n.adjacents.size() 
+            std::cout << "  node " << n.index << ": isrc " << n.isrc << " idst " << n.idst << " compatible with " << n.adjacents.size()
                     << " " << n.adjacents << "\n";
         }
 
-        std::deque<int> nodeList(nodes_.size());
-        std::iota(nodeList.begin(), nodeList.end(), 0);
-        std::sort(nodeList.begin(), nodeList.end(),
-                [&](int n0, int n1) ->bool {
-                    return nodes_[n0].adjacents.size() > nodes_[n1].adjacents.size();
-                });
+        //        std::deque<int> nodeList(nodes_.size());
+        //        std::iota(nodeList.begin(), nodeList.end(), 0);
+        //        std::sort(nodeList.begin(), nodeList.end(),
+        //                [&](int n0, int n1) ->bool {
+        //                    return nodes_[n0].adjacents.size() > nodes_[n1].adjacents.size();
+        //                });
 
-        for (auto& node0 : nodeList) {
-            cliqueCur = nodes_[node0].adjacents.unionSet(node0);
-            std::cout << "node " << node0 << ": " << cliqueCur << std::endl;
-            for (auto& node1 : nodes_[node0].adjacents) {
-                cliqueCur = cliqueCur.intersectionSet(nodes_[node1].adjacents.unionSet(node1));
-                std::cout << "  with node " << node1 << ": " << cliqueCur << std::endl;
-            }
-            std::cout << "maximum clique with node " << node0 << ": " << cliqueCur << "\n";
-
-            if (cliquesMax.empty() || cliqueCur.size() == cliquesMax.back().size()) {
-                bool novel = true;
-                for (auto& cl : cliquesMax) {
-                    if (cliqueCur == cl) {
-                        novel = false;
-                        break;
-                    }
-                }
-                if (novel) {
-                    cliquesMax.push_back(cliqueCur);
-                    ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
-                }
-            } else if (cliqueCur.size() > cliquesMax.back().size()) {
-                cliquesMax.clear();
-                cliquesMax.push_back(cliqueCur);
-                ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
-            }
-            visited.insert(node0); 
+        LabelSet cliqueCur, candidateNodes, excludedNodes;
+        for (int i = 0; i < nodes_.size(); ++i) {
+            candidateNodes.insert(i);
         }
-        ROFL_VAR2(cliquesMax.size(), cliquesMax.back().size());
+        executeBronKerbosch(cliqueCur, candidateNodes, excludedNodes);
+
+        //        for (auto& node0 : nodeList) {
+        //            cliqueCur = nodes_[node0].adjacents.unionSet(node0);
+        //            std::cout << "node " << node0 << ": " << cliqueCur << std::endl;
+        //            for (auto& node1 : nodes_[node0].adjacents) {
+        //                cliqueCur = cliqueCur.intersectionSet(nodes_[node1].adjacents.unionSet(node1));
+        //                std::cout << "  with node " << node1 << ": " << cliqueCur << std::endl;
+        //            }
+        //            std::cout << "maximum clique with node " << node0 << ": " << cliqueCur << "\n";
+        //
+        //            if (cliquesMax.empty() || cliqueCur.size() == cliquesMax.back().size()) {
+        //                bool novel = true;
+        //                for (auto& cl : cliquesMax) {
+        //                    if (cliqueCur == cl) {
+        //                        novel = false;
+        //                        break;
+        //                    }
+        //                }
+        //                if (novel) {
+        //                    cliquesMax.push_back(cliqueCur);
+        //                    ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
+        //                }
+        //            } else if (cliqueCur.size() > cliquesMax.back().size()) {
+        //                cliquesMax.clear();
+        //                cliquesMax.push_back(cliqueCur);
+        //                ROFL_VAR2(cliquesMax.back().size(), cliqueCur);
+        //            }
+        //            visited.insert(node0); 
+        //        }
+        //        ROFL_VAR2(cliquesMax.size(), cliquesMax.back().size());
     }
 
     void CorrespondenceGraphAssociation::associate(std::vector<AssociationHypothesis>& associations) {
@@ -153,22 +159,49 @@ namespace rofl {
             associations.push_back(assoc);
         }
     }
-    
+
     void CorrespondenceGraphAssociation::convertToAssociation(const LabelSet& correspNodes, AssociationHypothesis& assocHyp) const {
         assocHyp.associations.clear();
         for (auto& node : correspNodes) {
             std::cout << "  node " << node << ": isrc " << nodes_[node].isrc << " idst " << nodes_[node].idst << std::endl;
             assocHyp.associations.push_back(std::make_pair(nodes_[node].isrc, nodes_[node].idst));
         }
-        
-//        for (int i = 0; i < correspNodes.size(); ++i) {
-//            int is0 = nodes_[i].isrc;
-//            int id0 = nodes_[i].idst;
-//            for (int i = i+1; j < correspNodes.size(); ++j) {
-//                int is1 = nodes_[j].isrc;
-//                int id1 = nodes_[j].idst;
-//            }
-//        }
+
+        //        for (int i = 0; i < correspNodes.size(); ++i) {
+        //            int is0 = nodes_[i].isrc;
+        //            int id0 = nodes_[i].idst;
+        //            for (int i = i+1; j < correspNodes.size(); ++j) {
+        //                int is1 = nodes_[j].isrc;
+        //                int id1 = nodes_[j].idst;
+        //            }
+        //        }
+    }
+
+    void CorrespondenceGraphAssociation::executeBronKerbosch(LabelSet cliqueCur, LabelSet candidateNodes, LabelSet excludedNodes) {
+        static int iterCount = 0;
+
+        iterCount++;
+        ROFL_VAR1(iterCount);
+        if (iterCount >= 200) {
+            return;
+        }
+
+        if (candidateNodes.empty() && excludedNodes.empty()) {
+            //return cliqueCur;
+            ROFL_MSG("maximum clique: " << cliqueCur);
+            return;
+        }
+
+        for (auto& n : candidateNodes) {
+            ROFL_VAR4(n, cliqueCur, candidateNodes, excludedNodes);
+            LabelSet cliqueCurNew = cliqueCur.unionSet(n);
+            LabelSet candidateNodesNew = candidateNodes.intersectionSet(nodes_[n].adjacents);
+            LabelSet excludedNodesNew = excludedNodes.intersectionSet(nodes_[n].adjacents);
+            ROFL_VAR4(n, cliqueCurNew, candidateNodesNew, excludedNodesNew);
+            executeBronKerbosch(cliqueCurNew, candidateNodesNew, excludedNodesNew);
+            candidateNodes.remove(n);
+            excludedNodes.insert(n);
+        }
     }
 
 } // end of namespace
