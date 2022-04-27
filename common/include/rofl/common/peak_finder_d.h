@@ -122,7 +122,7 @@ namespace rofl {
         }
 
         template <typename Map, typename InsertIt>
-        void detect(const Map& map, InsertIt insertMax) {
+        void detect(const Map& map, InsertIt insertMax) const {
             // Priority queue storing the item in a given interval window sorted
             // according to the order set by comparator comp_() (peaks first!)
             // NOTE: in the discussion of the examples, we assume that comp_ = std::greater<>,
@@ -200,7 +200,7 @@ namespace rofl {
         Value valueMin_;
         bool enableFilterMinValue_;
 
-        void findIncrement(const Indices& iprev, const Indices& icurr, int& dimMax, int& incrMax) {
+        void findIncrement(const Indices& iprev, const Indices& icurr, int& dimMax, int& incrMax) const {
             int incr;
             dimMax = 0;
             incrMax = 0;

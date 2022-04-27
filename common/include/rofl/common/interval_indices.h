@@ -58,6 +58,9 @@ namespace rofl {
          *   pos 0 -> [3,1], pos 1 -> [4,1], pos 2 -> [5,1],
          *   pos 3 -> [3,2], pos 4 -> [4,2], pos 5 -> [5,2],
          *   pos 6 -> [3,3], pos 7 -> [4,3], pos 8 -> [5,3]
+         * 
+         * StaticRasterIndexer is implemented using recursive template parameters 
+         * for efficiency (at least we expect it more efficient than RasterIndexer). 
          */
         template <size_t Dim, typename Index>
         struct StaticRasterIndexer {
