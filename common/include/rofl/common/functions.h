@@ -25,6 +25,7 @@
 
 namespace rofl {
 
+    const double K_2PI = 6.28318530718;
     const double PNEBI_ARG_MAX = 600.0;
     const double BIG_NUM = 1.0e+10;
     const double SMALL_NUM = 1.0e-10;
@@ -97,6 +98,20 @@ namespace rofl {
      * @return the approximate atan2.
      */
     double fastAtan2(double x, double y);
+    
+    /**
+     * Returns an angle normalized in interval [0, 2*M_PI[.
+     * @param angle the input angle
+     * @return the normalized angle 
+     */
+    double normalize360(double angle); 
+    
+    /**
+     * Returns an angle normalized in interval [0, M_PI[.
+     * @param angle the input angle
+     * @return the normalized angle 
+     */
+    double normalize180(double angle);
 
     /**
      * Computes the value of the given Fourier series at the given point theta.

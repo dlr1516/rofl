@@ -144,7 +144,7 @@ namespace rofl {
         LabelSet differenceSet(const Label& label) const;
         
         /**
-         * Returns a new label set that is the unin of this set and the given 
+         * Returns a new label set that is the union of this set and the given 
          * label set
          * @param ls the label set to be added
          * @return the union set

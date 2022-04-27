@@ -102,6 +102,14 @@ namespace rofl {
         th = copysign(th, y); // th in range [-M_PI,M_PI]
         return th;
     }
+    
+    double normalize360(double angle) {
+        return (angle - K_2PI * floor(angle / K_2PI));
+    }
+    
+    double normalize180(double angle) {
+        return (angle - M_PI * floor(angle / M_PI));
+    }
 
     double evaluateFourier(const std::vector<double>& coeffs, double theta) {
         double val, cth2, sth2, cth, sth, ctmp, stmp;

@@ -14,6 +14,7 @@ add_library(${SUBLIB_NAME} SHARED
   src/bit_manip.cpp 
   src/disjoint_set.cpp
   src/functions.cpp
+  src/io.cpp
   src/label_set.cpp
   src/param_map.cpp
   src/profiler.cpp
@@ -33,6 +34,11 @@ add_executable(test_peak_finder_d
   app/test_peak_finder_d.cpp
 )
 target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
+
+add_executable(test_io
+  app/test_io.cpp
+)
+target_link_libraries(test_io ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
 add_executable(test_numeric_traits
   app/test_numeric_traits.cpp
