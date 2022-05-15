@@ -15,17 +15,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <iostream>
-#include <fstream>
-#include <bitset>
 #include <rofl/common/bit_manip.h>
 #include <rofl/common/numeric_traits.h>
+#include <bitset>
+#include <fstream>
+#include <iostream>
 
 template <typename F>
 void testFloatTraits();
 
 int main(int argc, char** argv) {
-
     testFloatTraits<float>();
     testFloatTraits<double>();
     return 0;
@@ -37,15 +36,25 @@ void testFloatTraits() {
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
 
-    std::cout << "\n---\nFloatTraits<" << typeid (F).name() << ">\n";
+    std::cout << "\n---\nFloatTraits<" << typeid(F).name() << ">\n";
     std::cout << "BIT_NUM " << FT::BIT_NUM << "\n";
     std::cout << "MANTISSA_BITS " << FT::MANTISSA_BITS << "\n";
     std::cout << "EXPONENT_BITS " << FT::EXPONENT_BITS << "\n";
     std::cout << "EXPONENT_BIAS " << FT::EXPONENT_BIAS << "\n";
-    std::cout << "MANTISSA_IMPLICIT_BIT " << std::bitset<FT::BIT_NUM>(FT::MANTISSA_IMPLICIT_BIT) << "\n";
-    std::cout << "MANTISSA_MASK         " << std::bitset<FT::BIT_NUM>(FT::MANTISSA_MASK) << "\n";
-    std::cout << "EXPONENT_MASK         " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MASK) << "\n";
-    std::cout << "EXPONENT_MIN          " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MIN) << " " << FT::EXPONENT_MIN << "\n";
-    std::cout << "EXPONENT_MAX          " << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MAX) << " " << FT::EXPONENT_MAX << "\n";
-    std::cout << "SIGN_MASK             " << std::bitset<FT::BIT_NUM>(FT::SIGN_MASK) << "\n";
+    std::cout << "MANTISSA_IMPLICIT_BIT "
+              << std::bitset<FT::BIT_NUM>(FT::MANTISSA_IMPLICIT_BIT) << "\n";
+    std::cout << "MANTISSA_MASK         "
+              << std::bitset<FT::BIT_NUM>(FT::MANTISSA_MASK) << "\n";
+    std::cout << "EXPONENT_MASK         "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MASK) << "\n";
+    std::cout << "EXPONENT_MIN          "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MIN) << " "
+              << FT::EXPONENT_MIN << "\n";
+    std::cout << "EXPONENT_MAX          "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MAX) << " "
+              << FT::EXPONENT_MAX << "\n";
+    std::cout << "SIGN_MASK             "
+              << std::bitset<FT::BIT_NUM>(FT::SIGN_MASK) << "\n";
+
+    std::cout << "" << std::endl;
 }

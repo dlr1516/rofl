@@ -50,6 +50,11 @@ add_executable(test_label_set
 )
 target_link_libraries(test_label_set ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
+add_executable(test_morton_sort
+  app/test_morton_sort.cpp
+)
+target_link_libraries(test_morton_sort ${SUBLIB_NAME} ${Boost_LIBRARIES})
+
 add_executable(test_morton_order_int
   app/test_morton_order_int.cpp
 )
