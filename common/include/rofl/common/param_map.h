@@ -147,6 +147,25 @@ namespace rofl {
             return true;
         }
 
+        template <typename Value, typename Iterator>
+        bool getParamContainer(std::string paramName, Iterator beg, Iterator end, std::string defaultString, const Value &defaultValue, std::string delim = "[],") {
+            Iterator cit;
+            // Initializes the vector values with default value
+            for (cit = beg; cit != end; ++cit) {
+                *cit = defaultValue;
+            }
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end()) {
+                fillWithTokens(v->second, beg, end, defaultValue, delim);
+                return true;
+            } else {
+                fillWithTokens(defaultString, beg, end, defaultValue, delim);
+                setParam(paramName, defaultString);
+                return false;
+            }
+            return true;
+        }
+
     protected:
         table_type table_;
 
