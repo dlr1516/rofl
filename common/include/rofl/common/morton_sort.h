@@ -499,6 +499,14 @@ struct MortonTraits<
     static int distance(const Scalar* v1, const Scalar* v2) {
         return mortonDistanceFloat<Scalar, Dim>(v1, v2);
     }
+
+    static void split(const Scalar* v1,
+                      const Scalar* v2,
+                      Scalar* low,
+                      Scalar* mid,
+                      Scalar* upp) {
+        mortonSplitFloat<Scalar, Dim>(v1, v2, low, mid, upp);
+    }
 };
 
 }  // namespace rofl
