@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ROFL.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <array>
-#include <vector>
 #include <rofl/common/morton_sort.h>
 #include <rofl/common/param_map.h>
+
+#include <array>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 int main(int argc, char** argv) {
     using PointI = std::array<int, 2>;
@@ -70,23 +71,23 @@ int main(int argc, char** argv) {
             xorI = rofl::IntegerTraits<int>::removeSign(i) ^ rofl::IntegerTraits<int>::removeSign(j);
             f1 = res * i;
             f2 = res * j;
-            xorF = rofl::computeBitDiff(f1, f2);
+            xorF = rofl::xorFloat(f1, f2);
             std::cout
-                    << "i " << std::setw(3) << i << " (" << std::setw(3) << (res * i) << ")  "
-                    << "j " << std::setw(3) << j << " (" << std::setw(3) << (res * j) << "): "
-                    << "xorI " << std::setw(3) << xorI << " xorF " << std::setw(3) << xorF << std::endl;
+                << "i " << std::setw(3) << i << " (" << std::setw(3) << (res * i) << ")  "
+                << "j " << std::setw(3) << j << " (" << std::setw(3) << (res * j) << "): "
+                << "xorI " << std::setw(3) << xorI << " xorF " << std::setw(3) << xorF << std::endl;
         }
     }
 
     std::sort(pointsInt.begin(), pointsInt.end(),
-            [&](const PointI& p1, const PointI & p2) -> bool {
-                return rofl::MortonTraits<int, 2>::compare(p1.data(), p2.data());
-                //return rofl::mortonCmpInt<int, 2>(p1.data(), p2.data());
-            });
+              [&](const PointI& p1, const PointI& p2) -> bool {
+                  return rofl::MortonTraits<int, 2>::compare(p1.data(), p2.data());
+                  // return rofl::mortonCmpInt<int, 2>(p1.data(), p2.data());
+              });
     std::sort(pointsFloat.begin(), pointsFloat.end(),
-            [&](const PointF& p1, const PointF & p2) -> bool {
-                return rofl::MortonTraits<float, 2>::compare(p1.data(), p2.data());
-            });
+              [&](const PointF& p1, const PointF& p2) -> bool {
+                  return rofl::MortonTraits<float, 2>::compare(p1.data(), p2.data());
+              });
 
     std::cout << "\nSorted Integer points in morton order:\n";
     for (auto& p : pointsInt) {
@@ -104,7 +105,7 @@ int main(int argc, char** argv) {
     }
     filePlot << "set term wxt 0\n";
     filePlot << "set title \"Morton order integer in interval [" << xbeg << "," << xend
-            << "[ x [" << ybeg << "," << yend << "[\"\n";
+             << "[ x [" << ybeg << "," << yend << "[\"\n";
     filePlot << "set size ratio -1\n";
     filePlot << "set xrange [" << (xbeg - 1) << ":" << (xend + 1) << "]\n";
     filePlot << "set yrange [" << (ybeg - 1) << ":" << (yend + 1) << "]\n";
@@ -116,7 +117,7 @@ int main(int argc, char** argv) {
 
     filePlot << "set term wxt 1\n";
     filePlot << "set title \"Morton order float in interval [" << (res * xbeg) << "," << (res * xend)
-            << "[ x [" << (res * ybeg) << "," << (res * yend) << "[\"\n";
+             << "[ x [" << (res * ybeg) << "," << (res * yend) << "[\"\n";
     filePlot << "set size ratio -1\n";
     filePlot << "set xrange [" << res * (xbeg - 1) << ":" << res * (xend + 1) << "]\n";
     filePlot << "set yrange [" << res * (ybeg - 1) << ":" << res * (yend + 1) << "]\n";
@@ -127,7 +128,8 @@ int main(int argc, char** argv) {
     filePlot << "e" << std::endl;
     filePlot.close();
 
-    std::cout << "To view the outcome of Morton order, run the command:\n\ngnuplot -persist " << filenamePlot << "\n" << std::endl;
+    std::cout << "To view the outcome of Morton order, run the command:\n\ngnuplot -persist " << filenamePlot << "\n"
+              << std::endl;
 
     return 0;
 }

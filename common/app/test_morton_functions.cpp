@@ -17,6 +17,7 @@
  */
 #include <rofl/common/morton_sort.h>
 #include <rofl/common/param_map.h>
+
 #include <array>
 #include <fstream>
 #include <iomanip>
@@ -66,7 +67,7 @@ void testFloat(const F& f1, const F& f2) {
     IntegerType mantissaDiff, exponentDiff;
     int level;
 
-    fdiff = rofl::computeBitDiff(f1, f2, mantissaDiff, exponentDiff);
+    fdiff = rofl::xorFloat(f1, f2, mantissaDiff, exponentDiff);
     level = rofl::intervalPow2Float(f1, f2, flow, fmid, fupp);
 
     std::cout << "f1    " << printME(f1) << " " << f1 << "\n"
@@ -94,16 +95,16 @@ int main(int argc, char** argv) {
     f1 = i1;
     f2 = i2;
 
-    std::cout << "testing integer\n";
+    std::cout << "testing integer/float\n";
     testInt<int>(13, 9);
-    testInt<int>(5, 14);
-    testInt<int>(-17, -28);
-    testInt<int>(-1, 17);
-
-    std::cout << "testing float\n";
     testFloat<float>(13.0f, 9.0f);
+
+    std::cout << "testing integer/float\n";
+    testInt<int>(5, 14);
     testFloat<float>(5.0f, 14.0f);
-    testFloat<float>(-17.0f, -28.0f);
+
+    std::cout << "testing integer/float\n";
+    testInt<int>(-1, 17);
     testFloat<float>(-1.0f, 17.0f);
 
     std::cout << "Input number\n";
