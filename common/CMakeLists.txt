@@ -16,6 +16,7 @@ add_library(${SUBLIB_NAME} SHARED
   src/functions.cpp
   src/io.cpp
   src/label_set.cpp
+  src/morton_tree.cpp
   src/param_map.cpp
   src/profiler.cpp
 )
@@ -59,6 +60,11 @@ add_executable(test_morton_order
   app/test_morton_order.cpp
 )
 target_link_libraries(test_morton_order ${SUBLIB_NAME} ${Boost_LIBRARIES})
+
+add_executable(test_morton_tree
+  app/test_morton_tree.cpp
+)
+target_link_libraries(test_morton_tree ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
 
 # Option "make install": copy binaries

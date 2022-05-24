@@ -281,6 +281,7 @@ int intervalPow2Float(const F& fin1, const F& fin2, F& low, F& mid, F& upp) {
     if (fs2) {
         std::swap(low, upp);
     }
+    level = fe2 + level - FT::MANTISSA_BITS;
     // ROFL_MSG("intervMask  " << std::bitset<FT::BIT_NUM>(intervMask));
     // ROFL_MSG("mlow        " << std::bitset<FT::BIT_NUM>(mlow) << "  " << low);
     // ROFL_MSG("     ->     " << std::bitset<FT::BIT_NUM>(FT::toInt(low)));
@@ -347,11 +348,11 @@ void mortonSplitInt(const I* v1, const I* v2, I* low, I* mid, I* upp) {
     int dimSplit, levelSplit, level;
 
     dimSplit = 0;
-    levelSplit = intervalPow2(v1[0], v2[0], low[0], mid[0], upp[0]);
+    levelSplit = intervalPow2Int(v1[0], v2[0], low[0], mid[0], upp[0]);
     for (int d = 1; d < Dim; ++d) {
-        level = intervalPow2(v1[d], v2[d], low[d], mid[d], upp[d]);
+        level = intervalPow2Int(v1[d], v2[d], low[d], mid[d], upp[d]);
         if (level > levelSplit) {
-            mid(dimSplit) = low(dimSplit);
+            mid[dimSplit] = low[dimSplit];
             dimSplit = d;
             levelSplit = level;
         } else {
@@ -415,11 +416,11 @@ void mortonSplitFloat(const F* v1, const F* v2, F* low, F* mid, F* upp) {
     int dimSplit, levelSplit, level;
 
     dimSplit = 0;
-    // levelSplit = intervalPow2Float(v1[0], v2[0], low[0], mid[0], upp[0]);
+    levelSplit = intervalPow2Float(v1[0], v2[0], low[0], mid[0], upp[0]);
     for (int d = 1; d < Dim; ++d) {
-        // level = intervalPow2Float(v1[d], v2[d], low[d], mid[d], upp[d]);
+        level = intervalPow2Float(v1[d], v2[d], low[d], mid[d], upp[d]);
         if (level > levelSplit) {
-            mid(dimSplit) = low(dimSplit);
+            mid[dimSplit] = low[dimSplit];
             dimSplit = d;
             levelSplit = level;
         } else {
