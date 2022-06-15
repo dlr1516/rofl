@@ -66,6 +66,11 @@ add_executable(test_morton_tree
 )
 target_link_libraries(test_morton_tree ${SUBLIB_NAME} ${Boost_LIBRARIES})
 
+add_executable(test_tls_scalar_consensus
+  app/test_tls_scalar_consensus.cpp
+)
+target_link_libraries(test_tls_scalar_consensus ${SUBLIB_NAME} ${Boost_LIBRARIES})
+
 
 # Option "make install": copy binaries
 install(TARGETS ${SUBLIB_NAME}

@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-std=c++17)
 
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 
-find_package(Boost COMPONENTS system filesystem iostreams) 
+find_package(Boost COMPONENTS system filesystem iostreams)
 find_package(Eigen3 REQUIRED)
 find_package(PCL)
 
@@ -26,10 +26,9 @@ if(PCL_FOUND)
   add_subdirectory(pcl)
 endif()
 
-# Installs instruction for CMake configuration scripts 
+# Installs instruction for CMake configuration scripts
 
-## Option "make install": copy cmake script
+# # Option "make install": copy cmake script
 file(GLOB cmake_script "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/roflConfig.cmake")
 message(STATUS "cmake_script " ${cmake_script})
 INSTALL(FILES ${cmake_script} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/rofl/)
-

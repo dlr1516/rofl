@@ -25,7 +25,46 @@
 #include <vector>
 
 template <typename F>
-std::string printME(const F& f) {
+std::string printMantissaExp(const F& f);
+
+template <typename F>
+void testFloatTraits(const F& f1, const F& f2);
+
+template <typename I>
+void testMortonSplitInt(const I& i1, const I& i2);
+
+template <typename F>
+void testMortonSplitFloat(const F& f1, const F& f2);
+
+void testMortonSplit(rofl::ParamMap& params);
+
+// --------------------------------------------------------
+// MAIN
+// --------------------------------------------------------
+
+int main(int argc, char** argv) {
+    rofl::ParamMap params;
+    std::string filenameCfg, testName;
+
+    params.read(argc, argv);
+    params.getParam<std::string>("cfg", filenameCfg, "");
+    params.read(filenameCfg);
+    params.getParam<std::string>("test", testName, "");
+
+    std::cout << "Params:\n";
+    params.write(std::cout);
+    std::cout << std::endl;
+
+    if (testName == "split") {
+        testMortonSplit(params);
+    } else {
+        ROFL_ERR("invalid name of test");
+    }
+    return 0;
+}
+
+template <typename F>
+std::string printMantissaExp(const F& f) {
     using FT = rofl::FloatTraits<F>;
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
@@ -40,8 +79,54 @@ std::string printME(const F& f) {
     return ss.str();
 }
 
+template <typename F>
+void testFloatTraits(const F& f1, const F& f2) {
+    using FT = rofl::FloatTraits<F>;
+    using IntegerType = typename FT::IntegerType;
+    using UnsignedType = typename FT::UnsignedType;
+    F div;
+    IntegerType fm1, fm2, fmdiv, fe1, fe2, fediv;
+    bool fs1, fs2, fsdiv;
+
+    std::cout << "\n---\nFloatTraits<" << typeid(F).name() << ">\n";
+    std::cout << "BIT_NUM " << FT::BIT_NUM << "\n";
+    std::cout << "MANTISSA_BITS " << FT::MANTISSA_BITS << "\n";
+    std::cout << "EXPONENT_BITS " << FT::EXPONENT_BITS << "\n";
+    std::cout << "EXPONENT_BIAS " << FT::EXPONENT_BIAS << "\n";
+    std::cout << "MANTISSA_IMPLICIT_BIT "
+              << std::bitset<FT::BIT_NUM>(FT::MANTISSA_IMPLICIT_BIT) << "\n";
+    std::cout << "MANTISSA_MASK         "
+              << std::bitset<FT::BIT_NUM>(FT::MANTISSA_MASK) << "\n";
+    std::cout << "EXPONENT_MASK         "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MASK) << "\n";
+    std::cout << "EXPONENT_MIN          "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MIN) << " "
+              << FT::EXPONENT_MIN << "\n";
+    std::cout << "EXPONENT_MAX          "
+              << std::bitset<FT::BIT_NUM>(FT::EXPONENT_MAX) << " "
+              << FT::EXPONENT_MAX << "\n";
+    std::cout << "SIGN_MASK             "
+              << std::bitset<FT::BIT_NUM>(FT::SIGN_MASK) << "\n";
+    std::cout << "" << std::endl;
+
+    FT::decompose(f1, fm1, fe1, fs1);
+    FT::decompose(f2, fm2, fe2, fs2);
+    div = FT::dividePow2(f1, 3);
+    FT::decompose(div, fmdiv, fediv, fsdiv);
+    std::cout << "f1:  m " << std::bitset<FT::MANTISSA_BITS>(fm1)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fe1)
+              << " s " << fs1 << "  " << f1 << std::endl;
+    std::cout << "f2:  m " << std::bitset<FT::MANTISSA_BITS>(fm2)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fe2)
+              << " s " << fs2 << "  " << f2 << std::endl;
+    std::cout << "div = " << f1 << " / 2^3\n";
+    std::cout << "div: m " << std::bitset<FT::MANTISSA_BITS>(fmdiv)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fediv)
+              << " s " << fsdiv << "  " << div << std::endl;
+}
+
 template <typename I>
-void testInt(const I& i1, const I& i2) {
+void testMortonSplitInt(const I& i1, const I& i2) {
     using IT = rofl::IntegerTraits<I>;
     I low, mid, upp, diff;
 
@@ -55,11 +140,12 @@ void testInt(const I& i1, const I& i2) {
               << "low  " << std::bitset<IT::BIT_NUM>(low) << " " << low << "\n"
               << "mid  " << std::bitset<IT::BIT_NUM>(mid) << " " << mid << "\n"
               << "upp  " << std::bitset<IT::BIT_NUM>(upp) << " " << upp << "\n"
+              << "msb(i1,i2) " << rofl::msb(i1, i2) << "\n"
               << std::endl;
 }
 
 template <typename F>
-void testFloat(const F& f1, const F& f2) {
+void testMortonSplitFloat(const F& f1, const F& f2) {
     using FT = rofl::FloatTraits<F>;
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
@@ -70,45 +156,31 @@ void testFloat(const F& f1, const F& f2) {
     fdiff = rofl::xorFloat(f1, f2, mantissaDiff, exponentDiff);
     level = rofl::intervalPow2Float(f1, f2, flow, fmid, fupp);
 
-    std::cout << "f1    " << printME(f1) << " " << f1 << "\n"
-              << "f2    " << printME(f2) << " " << f2 << "\n"
-              << "fdiff " << printME(fdiff) << " " << fdiff << " level "
+    std::cout << "f1    " << printMantissaExp(f1) << " " << f1 << "\n"
+              << "f2    " << printMantissaExp(f2) << " " << f2 << "\n"
+              << "fdiff " << printMantissaExp(fdiff) << " " << fdiff << " level "
               << level << "\n"
-              << "flow  " << printME(flow) << " " << flow << "\n"
-              << "fmid  " << printME(fmid) << " " << fmid << "\n"
-              << "fupp  " << printME(fupp) << " " << fupp << "\n";
+              << "flow  " << printMantissaExp(flow) << " " << flow << "\n"
+              << "fmid  " << printMantissaExp(fmid) << " " << fmid << "\n"
+              << "fupp  " << printMantissaExp(fupp) << " " << fupp << "\n";
     std::cout << std::endl;
 }
 
-int main(int argc, char** argv) {
-    rofl::ParamMap params;
+void testMortonSplit(rofl::ParamMap& params) {
     int i1, i2;
     float f1, f2;
 
-    params.read(argc, argv);
-    params.getParam<int>("i1", i1, int(4));
-    params.getParam<int>("i2", i2, int(9));
+    params.getParam<float>("f1", f1, float(13.0f));
+    params.getParam<float>("f2", f2, float(9.0f));
 
     std::cout << "Params:\n";
     params.write(std::cout);
     std::cout << std::endl;
-    f1 = i1;
-    f2 = i2;
-
-    std::cout << "testing integer/float\n";
-    testInt<int>(13, 9);
-    testFloat<float>(13.0f, 9.0f);
-
-    std::cout << "testing integer/float\n";
-    testInt<int>(5, 14);
-    testFloat<float>(5.0f, 14.0f);
-
-    std::cout << "testing integer/float\n";
-    testInt<int>(-1, 17);
-    testFloat<float>(-1.0f, 17.0f);
+    i1 = round(f1);
+    i2 = round(f2);
 
     std::cout << "Input number\n";
-    testInt<int>(i1, i2);
-    testFloat<float>(f1, f2);
-    return 0;
+    testFloatTraits(f1, f2);
+    testMortonSplitInt<int>(i1, i2);
+    testMortonSplitFloat<float>(f1, f2);
 }

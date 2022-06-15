@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <initializer_list>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -40,6 +41,16 @@ class MortonTree {
     struct Item {
         Scalar values[Dim];
         int id;
+
+        Item() {
+            std::fill(values, values + Dim, 0);
+            id = -1;
+        }
+
+        Item(std::initializer_list<Scalar> v, int i) {
+            std::copy(v.begin(), v.end(), values);
+            id = i;
+        }
 
         void print(std::ostream& out) const {
             out << "[";
@@ -255,16 +266,19 @@ class MortonTree {
 
         ROFL_VAR2(boxMin.toString(), boxMax.toString());
 
-        cur.first = std::lower_bound(std::begin(items_), std::end(items_), boxMin, compareItems);
-        cur.second = std::upper_bound(std::begin(items_), std::end(items_), boxMax, compareItems);
+        for (auto it = std::begin(items_); it != std::end(items_); ++it) {
+            ROFL_VAR3(it->toString(), compareItems(*it, boxMin), compareItems(*it, boxMax));
+        }
+        cur.first = std::upper_bound(std::begin(items_), std::end(items_), boxMin, compareItems);
+        cur.second = std::lower_bound(std::begin(items_), std::end(items_), boxMax, compareItems);
         queue.push_back(cur);
 
         ROFL_MSG("initial interval " << cur.first->toString() << " : " << cur.second->toString());
 
         int count = 0;
         while (!queue.empty() && count < 10) {
-            cur = queue.front();
-            queue.pop_front();
+            cur = queue.back();
+            queue.pop_back();
             std::cout << "\n---\nEXPLORING " << printInter(cur) << std::endl;
             findTreeBucket(cur.first, cur.second, itLow, itMid, itUpp);
             ROFL_MSG("splitting\n"
@@ -280,11 +294,19 @@ class MortonTree {
                 low.second = itMid;
                 upp.first = itMid;
                 upp.second = cur.second;
-                ROFL_VAR2(printInter(low), printInter(upp));
-                if (upp.first != upp.second)
-                    queue.push_back(upp);
-                if (low.first != low.second)
+                // ROFL_VAR2(printInter(low), printInter(upp));
+                if (low.first != low.second) {
+                    ROFL_MSG("added LOW interval: " << printInter(low));
                     queue.push_back(low);
+                } else {
+                    ROFL_MSG("discarted LOW interval: " << printInter(low));
+                }
+                if (upp.first != upp.second) {
+                    ROFL_MSG("added UPP interval: " << printInter(upp));
+                    queue.push_back(upp);
+                } else {
+                    ROFL_MSG("discarted UPP interval: " << printInter(upp));
+                }
             }
             count++;
         }
@@ -314,8 +336,8 @@ class MortonTree {
 
     void findTreeBucket(ConstIterator& first, ConstIterator& last, ConstIterator& low, ConstIterator& mid, ConstIterator& upp) {
         Item boxLow, boxMid, boxUpp;
-        if (last != first)
-            --last;
+        // if (last != first)
+        //     --last;
         Traits::split(first->values, last->values, boxLow.values, boxMid.values, boxUpp.values);
         ROFL_VAR3(boxLow.toString(), boxMid.toString(), boxUpp.toString());
         low = std::lower_bound(std::begin(items_), std::end(items_), boxLow, compareItems);

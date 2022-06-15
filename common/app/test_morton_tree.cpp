@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
             tree.insert(item);
         }
     }
+    tree.insert(rofl::MortonTree2f::Item({0.3, -1.1}, -1));
     std::cout << "inserted " << tree.size() << " items" << std::endl;
 
     tree.searchInBox(query, range, inRange);
