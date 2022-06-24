@@ -30,12 +30,12 @@ void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector
     ROFL_ASSERT_VAR2(n == ranges.size(), n, ranges.size());
     inliers.resize(n);
     std::vector<Scalar> weights(n);
-    std::vector<Scalar> valueHat(ne);
-    std::vector<Scalar> valueCost(ne);
+    std::vector<Scalar> valueHat(ne, 0);
+    std::vector<Scalar> valueCost(ne, 0);
 
     // Creates a sorted list of endpoints
     std::vector<std::pair<Scalar, int>> endpoints;
-    endpoints.reserve(ne);
+    // endpoints.reserve(ne);
     for (size_t i = 0; i < n; ++i) {
         endpoints.push_back(std::make_pair(values[i] - ranges[i], i + 1));
         endpoints.push_back(std::make_pair(values[i] + ranges[i], -i - 1));
@@ -46,7 +46,7 @@ void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector
               });
 
     // Computes the weights of each value i as the inverse square of its range
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < ranges.size(); ++i) {
         if (std::abs(ranges[i]) < 1e-6) {
             weights[i] = 1e+12;
         } else {
@@ -73,7 +73,7 @@ void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector
     // containing v.
     // Cardinality is tracked adding -1 when an interval starts and +1 when it ends.
     for (size_t j = 0; j < ne; ++j) {
-        int i = int(std::abs<int>(endpoints[j].second)) - 1;  // Indices starting at 1
+        int i = int(std::abs(endpoints[j].second)) - 1;  // Indices starting at 1
         int incr = (endpoints[j].second > 0) ? 1 : -1;
 
         consensusSetCardinal += incr;
@@ -93,17 +93,19 @@ void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector
         // for (size_t s = 0; s < std::abs(consensusSetCardinal); ++s) {
         //     std::cout << " ";
         // }
-        // std::cout << i << " (" << j << "): "
-        //           << "endpoint " << endpoints[j].first
-        //           << ", value " << values[i]
-        //           << ", valueHat " << valueHat[j]
-        //           << ", valueCost " << valueCost[j]
-        //           << ", consensusSetCardinal " << consensusSetCardinal
-        //           << std::endl;
+        std::cout << i << " (" << j << "): "
+                  << "endpoint " << endpoints[j].first
+                  << ", value " << values[i]
+                  << ", valueHat " << valueHat[j]
+                  << ", valueCost " << valueCost[j]
+                  << ", consensusSetCardinal " << consensusSetCardinal
+                  << ", sumXiSquare " << sumXiSquare
+                  << ", sumXi " << sumXi
+                  << std::endl;
     }
 
     auto itMin = std::min_element(valueCost.begin(), valueCost.end());
-    // ROFL_VAR2(std::distance(valueCost.begin(), itMin), *itMin);
+    ROFL_VAR2(std::distance(valueCost.begin(), itMin), *itMin);
     valueMax = valueHat.at(std::distance(valueCost.begin(), itMin));
 
     for (size_t i = 0; i < n; ++i) {
