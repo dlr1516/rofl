@@ -27,173 +27,167 @@
 #include "macros.h"
 #include <map>
 
-namespace rofl {
+namespace rofl
+{
 
-/** Reads and stores parameters from a string, a file, etc.
- */
-class ParamMap {
-   public:
-    // typedef std::unordered_map<std::string, std::string> table_type;
-    using table_type = std::map<std::string, std::string>;  // a map stores lexically ordered parameters (nicer to view!)
-    using iterator = table_type::iterator;
-    using const_iterator = table_type::const_iterator;
-
-    const static char COMMENT = '#';
-    const static unsigned int MAX_LEN = 2000;
-
-    /** Default constructor.
+    /** Reads and stores parameters from a string, a file, etc.
      */
-    ParamMap();
+    class ParamMap
+    {
+    public:
+        // typedef std::unordered_map<std::string, std::string> table_type;
+        using table_type = std::map<std::string, std::string>; // a map stores lexically ordered parameters (nicer to view!)
+        using iterator = table_type::iterator;
+        using const_iterator = table_type::const_iterator;
 
-    /** Destructor.
-     */
-    virtual ~ParamMap();
+        const static char COMMENT = '#';
+        const static unsigned int MAX_LEN = 2000;
 
-    /** Clears all the content of param table.
-     */
-    void clear();
+        /** Default constructor.
+         */
+        ParamMap();
 
-    /** Reads params from an input stream in the format:
-     *   key1 value1
-     *   key2 value2
-     *   ...
-     */
-    bool read(std::istream& in);
+        /** Destructor.
+         */
+        virtual ~ParamMap();
 
-    /** Reads params from an input file (format as above).
-     */
-    bool read(std::string& filename);
+        /** Clears all the content of param table.
+         */
+        void clear();
 
-    /** Reads from a command line. Required format
-     *   ...
-     *   argv[i] = "-key1"      // starting with "-"
-     *   argv[i+1] = "value1"
-     */
-    bool read(int argc, char** argv);
+        /** Reads params from an input stream in the format:
+         *   key1 value1
+         *   key2 value2
+         *   ...
+         */
+        bool read(std::istream &in);
 
-    /** Writes the pairs (key,value).
-     */
-    bool write(std::ostream& out) const;
+        /** Reads params from an input file (format as above).
+         */
+        bool read(std::string &filename);
 
-    /** Writes the pairs (key,value) appending each line to linePrefix
-     * (e.g. with linePrefix = "#  " -> line becomes "#  key value")
-     */
-    bool write(std::ostream& out, const std::string& linePrefix) const;
+        /** Reads from a command line. Required format
+         *   ...
+         *   argv[i] = "-key1"      // starting with "-"
+         *   argv[i+1] = "value1"
+         */
+        bool read(int argc, char **argv);
 
-    /** Writes the parameters to an output file (format as above).
-     */
-    bool write(std::string& filename) const;
+        /** Writes the pairs (key,value).
+         */
+        bool write(std::ostream &out) const;
 
-    /** Sets the param (as a set of string).
-     */
-    void setParamString(std::string paramName, std::string paramValue);
+        /** Writes the pairs (key,value) appending each line to linePrefix
+         * (e.g. with linePrefix = "#  " -> line becomes "#  key value")
+         */
+        bool write(std::ostream &out, const std::string &linePrefix) const;
 
-    /** Sets the param (as a set of string).
-     */
-    template <typename Value>
-    void setParam(std::string paramName, const Value& paramValue) {
-        std::stringstream sstr;
-        sstr << paramValue;
-        table_.erase(paramName);
-        table_.insert(std::make_pair(paramName, sstr.str()));
-    }
+        /** Writes the parameters to an output file (format as above).
+         */
+        bool write(std::string &filename) const;
 
-    /** Casts the string value of a given parameters to the desired value.
-     */
-    template <typename Value>
-    bool getParam(std::string paramName, Value& value, const Value& defaultValue) {
-        const_iterator v = table_.find(paramName);
-        if (v != table_.end()) {
-            try {
-                value = boost::lexical_cast<Value>(v->second);
-            } catch (boost::bad_lexical_cast const&) {
-                std::cerr
-                    << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid(Value).name()
-                    << "\" for variable \"" << v->first << "\"" << std::endl;
-            }
-        } else {
-            //            std::cerr << "Parameter " << paramName << " not found." << std::endl;
-            value = defaultValue;
-            setParam(paramName, defaultValue);
-            return false;
+        /** Sets the param (as a set of string).
+         */
+        void setParamString(std::string paramName, std::string paramValue);
+
+        /** Sets the param (as a set of string).
+         */
+        template <typename Value>
+        void setParam(std::string paramName, const Value &paramValue)
+        {
+            std::stringstream sstr;
+            sstr << paramValue;
+            table_.erase(paramName);
+            table_.insert(std::make_pair(paramName, sstr.str()));
         }
-        return true;
-    }
 
-    /** Casts the string value of a given parameters to the desired value.
-     */
-    template <typename Value, typename Inserter>
-    bool getParamContainerInserter(std::string paramName, Inserter ins, const Value& defaultValue, std::string delim = "[],") {
-        const_iterator v = table_.find(paramName);
-        if (v != table_.end()) {
-            try {
-                // Splits the value into tokens, e.g. "[1,2,3]" with delim "[,]" should become tokens "1", "2" and "3"
-                boost::char_separator<char> sep(delim.c_str());
-                boost::tokenizer<boost::char_separator<char> > tokens(v->second, sep);
-                // Casts each token into a value
-                for (auto it = tokens.begin(); it != tokens.end(); ++it) {
-                    ins = boost::lexical_cast<Value>(*it);
+        /** Casts the string value of a given parameters to the desired value.
+         */
+        template <typename Value>
+        bool getParam(std::string paramName, Value &value, const Value &defaultValue)
+        {
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end())
+            {
+                try
+                {
+                    value = boost::lexical_cast<Value>(v->second);
                 }
-
-            } catch (boost::bad_lexical_cast const&) {
-                std::cerr << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid(Value).name()
-                          << "\" for variable \"" << v->first << "\"" << std::endl;
+                catch (boost::bad_lexical_cast const &)
+                {
+                    std::cerr
+                        << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid(Value).name()
+                        << "\" for variable \"" << v->first << "\"" << std::endl;
+                }
             }
-        } else {
-            // std::cerr << "Parameter " << paramName << " not found." << std::endl;
-            // ins = defaultValue;
-            setParam(paramName, "");
-            return false;
-        }
-        return true;
-    }
-
-    template <typename Value, typename Iterator>
-    bool getParamContainer(std::string paramName, Iterator beg, Iterator end, std::string defaultString, const Value& defaultValue, std::string delim = "[],") {
-        Iterator cit;
-        // Initializes the vector values with default value
-        for (cit = beg; cit != end; ++cit) {
-            *cit = defaultValue;
-        }
-        const_iterator v = table_.find(paramName);
-        if (v != table_.end()) {
-            fillWithTokens(v->second, beg, end, defaultValue, delim);
+            else
+            {
+                //            std::cerr << "Parameter " << paramName << " not found." << std::endl;
+                value = defaultValue;
+                setParam(paramName, defaultValue);
+                return false;
+            }
             return true;
-        } else {
-            fillWithTokens(defaultString, beg, end, defaultValue, delim);
-            setParam(paramName, defaultString);
-            return false;
         }
-        return true;
-    }
 
-   protected:
-    table_type table_;
-
-    static bool isOption(std::string str);
-
-    template <typename Value, typename Iterator>
-    static void fillWithTokens(const std::string& valueString, Iterator beg, Iterator end, const Value& valueDefault, const std::string& delim) {
-        try {
-            // Splits the value into tokens, e.g. "[1,2,3]" with delim "[,]" should become tokens "1", "2" and "3"
-            boost::char_separator<char> sep(delim.c_str());
-            boost::tokenizer<boost::char_separator<char> > tokens(valueString, sep);
-            // Casts each token into a value
-            auto sit = tokens.begin();
-            for (Iterator vit = beg; vit != end; ++vit) {
-                if (sit != tokens.end()) {
-                    *vit = boost::lexical_cast<Value>(*sit);
-                    ++sit;
-                } else {
-                    *vit = valueDefault;
+        /** Casts the string value of a given parameters to the desired value.
+         */
+        template <typename Value, typename Inserter>
+        bool getParamContainerInserter(std::string paramName, Inserter ins, const Value &defaultValue, std::string delim = "[],")
+        {
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end())
+            {
+                try
+                {
+                    // Splits the value into tokens, e.g. "[1,2,3]" with delim "[,]" should become tokens "1", "2" and "3"
+                    boost::char_separator<char> sep(delim.c_str());
+                    boost::tokenizer<boost::char_separator<char>> tokens(v->second, sep);
+                    // Casts each token into a value
+                    for (auto it = tokens.begin(); it != tokens.end(); ++it)
+                    {
+                        ins = boost::lexical_cast<Value>(*it);
+                    }
+                }
+                catch (boost::bad_lexical_cast const &)
+                {
+                    std::cerr << __FILE__ << "," << __LINE__ << ": Error: cannot cast string \"" << v->second << "\" to type \"" << typeid(Value).name()
+                              << "\" for variable \"" << v->first << "\"" << std::endl;
                 }
             }
-        } catch (boost::bad_lexical_cast const&) {
-            // ROFL_ERR("Error: cannot cast \"" << valueString << "\" to container values");
-            return;
+            else
+            {
+                // std::cerr << "Parameter " << paramName << " not found." << std::endl;
+                // ins = defaultValue;
+                setParam(paramName, "");
+                return false;
+            }
+            return true;
         }
-    }
-};
+
+        template <typename Value, typename Iterator>
+        bool getParamContainer(std::string paramName, Iterator beg, Iterator end, std::string defaultString, const Value &defaultValue, std::string delim = "[],")
+        {
+            Iterator cit;
+            // Initializes the vector values with default value
+            for (cit = beg; cit != end; ++cit)
+            {
+                *cit = defaultValue;
+            }
+            const_iterator v = table_.find(paramName);
+            if (v != table_.end())
+            {
+                fillWithTokens(v->second, beg, end, defaultValue, delim);
+                return true;
+            }
+            else
+            {
+                fillWithTokens(defaultString, beg, end, defaultValue, delim);
+                setParam(paramName, defaultString);
+                return false;
+            }
+            return true;
+        }
 
     protected:
         table_type table_;
@@ -201,31 +195,36 @@ class ParamMap {
         static bool isOption(std::string str);
 
         template <typename Value, typename Iterator>
-        static void fillWithTokens(const std::string& valueString, Iterator beg, Iterator end, const Value& valueDefault, const std::string& delim) {
-            try {
+        static void fillWithTokens(const std::string &valueString, Iterator beg, Iterator end, const Value &valueDefault, const std::string &delim)
+        {
+            try
+            {
                 // Splits the value into tokens, e.g. "[1,2,3]" with delim "[,]" should become tokens "1", "2" and "3"
                 boost::char_separator<char> sep(delim.c_str());
-                boost::tokenizer<boost::char_separator<char> > tokens(valueString, sep);
+                boost::tokenizer<boost::char_separator<char>> tokens(valueString, sep);
                 // Casts each token into a value
                 auto sit = tokens.begin();
-                for (Iterator vit = beg; vit != end; ++vit) {
-                    if (sit != tokens.end()) {
+                for (Iterator vit = beg; vit != end; ++vit)
+                {
+                    if (sit != tokens.end())
+                    {
                         *vit = boost::lexical_cast<Value>(*sit);
                         ++sit;
-                    } else {
+                    }
+                    else
+                    {
                         *vit = valueDefault;
                     }
                 }
-            } catch (boost::bad_lexical_cast const&) {
-                ROFL_ERR("Error: cannot cast \"" << valueString << "\" to container values");
+            }
+            catch (boost::bad_lexical_cast const &)
+            {
+                // ROFL_ERR("Error: cannot cast \"" << valueString << "\" to container values");
                 return;
             }
         }
     };
 
-} // end of namespace 
-
-}  // namespace rofl
-
+} // end of namespace
 
 #endif
