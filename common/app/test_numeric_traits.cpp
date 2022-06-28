@@ -17,24 +17,43 @@
  */
 #include <rofl/common/bit_manip.h>
 #include <rofl/common/numeric_traits.h>
+#include <rofl/common/param_map.h>
+
 #include <bitset>
 #include <fstream>
 #include <iostream>
 
 template <typename F>
-void testFloatTraits();
+void testFloatTraits(const F& f1, const F& f2);
 
 int main(int argc, char** argv) {
-    testFloatTraits<float>();
-    testFloatTraits<double>();
+    rofl::ParamMap params;
+    float f1, f2;
+    double d1, d2;
+
+    params.read(argc, argv);
+    params.getParam<float>("f1", f1, float(9.0f));
+    params.getParam<float>("f2", f2, float(13.0f));
+
+    std::cout << "Params:\n";
+    params.write(std::cout);
+    std::cout << std::endl;
+    d1 = f1;
+    d2 = f2;
+
+    testFloatTraits<float>(f1, f2);
+    testFloatTraits<double>(d1, d2);
     return 0;
 }
 
 template <typename F>
-void testFloatTraits() {
+void testFloatTraits(const F& f1, const F& f2) {
     using FT = rofl::FloatTraits<F>;
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
+    F div;
+    IntegerType fm1, fm2, fmdiv, fe1, fe2, fediv;
+    bool fs1, fs2, fsdiv;
 
     std::cout << "\n---\nFloatTraits<" << typeid(F).name() << ">\n";
     std::cout << "BIT_NUM " << FT::BIT_NUM << "\n";
@@ -55,6 +74,20 @@ void testFloatTraits() {
               << FT::EXPONENT_MAX << "\n";
     std::cout << "SIGN_MASK             "
               << std::bitset<FT::BIT_NUM>(FT::SIGN_MASK) << "\n";
-
     std::cout << "" << std::endl;
+
+    FT::decompose(f1, fm1, fe1, fs1);
+    FT::decompose(f2, fm2, fe2, fs2);
+    div = FT::dividePow2(f1, 3);
+    FT::decompose(div, fmdiv, fediv, fsdiv);
+    std::cout << "f1:  m " << std::bitset<FT::MANTISSA_BITS>(fm1)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fe1)
+              << " s " << fs1 << "  " << f1 << std::endl;
+    std::cout << "f2:  m " << std::bitset<FT::MANTISSA_BITS>(fm2)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fe2)
+              << " s " << fs2 << "  " << f2 << std::endl;
+    std::cout << "div = " << f1 << " / 2^3\n";
+    std::cout << "div: m " << std::bitset<FT::MANTISSA_BITS>(fmdiv)
+              << " e " << std::bitset<FT::EXPONENT_BITS>(fediv)
+              << " s " << fsdiv << "  " << div << std::endl;
 }

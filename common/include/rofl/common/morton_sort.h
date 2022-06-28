@@ -60,8 +60,15 @@ bool msb(const Integer& i1, const Integer& i2) {
 }
 
 /**
- * Computes the smallest power 2 interval [low, upp[ that contains
- * the input interval [i1, i2[ and the middle value mid of [low, upp[.
+ * Computes the extreme and middle values of the smallest subtree
+ * containing the given interval [i1, i2[.
+ * A subtree of level k covers an interval of size 2^k.
+ * The minimum level is given by:
+ *
+ *   level = BIT_NUM - nlz(i1 ^ i2)   (discretized log2)
+ *   low = 2^level * floor(i1 / 2^level)
+ *   upp = 2^level * ceil(i1 / 2^level)
+ *   mid = (low + upp) / 2 = low + 2^(level - 1)
  *
  * Example: i1 = 8 (b00001000), i2 = 11 (b00001011) as int8_t
  *   level = log2(i1 ^ i2) = log2(b00000111) = 3
@@ -109,6 +116,14 @@ int intervalPow2Int(const I& i1, const I& i2, I& low, I& mid, I& upp) {
         low = i1 & (~intervMask);
         upp = (low | intervMask);
         mid = low | (1 << (level - 1));
+        // ROFL_VAR1(level);
+        // ROFL_MSG("i1          " << std::bitset<IT::BIT_NUM>(i1));
+        // ROFL_MSG("i2          " << std::bitset<IT::BIT_NUM>(i2));
+        // ROFL_MSG("xor         " << std::bitset<IT::BIT_NUM>(IT::removeSign(i1) ^ IT::removeSign(i2)));
+        // ROFL_MSG("intervMask  " << std::bitset<IT::BIT_NUM>(intervMask));
+        // ROFL_MSG("low         " << std::bitset<IT::BIT_NUM>(low));
+        // ROFL_MSG("mid         " << std::bitset<IT::BIT_NUM>(mid));
+        // ROFL_MSG("upp         " << std::bitset<IT::BIT_NUM>(upp));
     } else {
         intervMask = ~0;
         low = std::numeric_limits<I>::min();
@@ -119,10 +134,10 @@ int intervalPow2Int(const I& i1, const I& i2, I& low, I& mid, I& upp) {
 }
 
 template <typename F>
-F computeBitDiff(const F& fin1,
-                 const F& fin2,
-                 typename FloatTraits<F>::IntegerType& mantissaDiff,
-                 typename FloatTraits<F>::IntegerType& exponentDiff) {
+F xorFloat(const F& fin1,
+           const F& fin2,
+           typename FloatTraits<F>::IntegerType& mantissaDiff,
+           typename FloatTraits<F>::IntegerType& exponentDiff) {
     using FT = FloatTraits<F>;
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
@@ -181,59 +196,103 @@ F computeBitDiff(const F& fin1,
 }
 
 template <typename F>
-F computeBitDiff(const F& f1, const F& f2) {
+F xorFloat(const F& f1, const F& f2) {
     typename FloatTraits<F>::IntegerType xm, xe;
-    return computeBitDiff<F>(f1, f2, xm, xe);
+    return xorFloat<F>(f1, f2, xm, xe);
 }
 
+/**
+ * @brief Computes the extreme and middle values of the smallest
+ * subtree containing the given interval [i1, i2[.
+ * A subtree of level k covers an interval of size 2^k.
+ * The minimum level is given by:
+ *
+ * @tparam F the type of floating point number
+ * @param fin1 first value of interval
+ * @param fin2 second value of interval
+ * @param low
+ * @param mid
+ * @param upp
+ * @return int
+ */
 template <typename F>
 int intervalPow2Float(const F& fin1, const F& fin2, F& low, F& mid, F& upp) {
     using FT = FloatTraits<F>;
     using IntegerType = typename FT::IntegerType;
     using UnsignedType = typename FT::UnsignedType;
-    F f1, f2;
+    using IT = IntegerTraits<IntegerType>;
+    F f1, f2, powLevel;
     IntegerType fm1, fm2, fe1, fe2, fm12, fe12;
+    IntegerType intervMask, mlow, mmid, mupp;
     bool fs1, fs2, fs12;
     int level;
 
-    // Arranges the input floating s.t. fabs(f1) > fabs(f2)
-    if (fabs(fin1) > fabs(fin2)) {
-        f1 = fin1;
-        f2 = fin2;
-    } else {
-        f1 = fin2;
-        f2 = fin1;
-    }
+    // Extracts mantissa, exponent and sign from each term
+    FT::decompose(fin1, fm1, fe1, fs1);
+    FT::decompose(fin2, fm2, fe2, fs2);
 
-    FT::decompose(f1, fm1, fe1, fs1);
-    FT::decompose(f2, fm2, fe2, fs2);
-    computeBitDiff<F>(f1, f2, fm12, fe12);
-
+    // If signs are different, the tree containing the two items
+    // spans the whole floating point range
     if (fs1 ^ fs2) {
-        // low = FT::compose(FT::MANTISSA_MASK, FT::EXPONENT_MAX, true);
-        // upp = FT::compose(FT::MANTISSA_MASK, FT::EXPONENT_MAX, false);
-        // mid = FT::compose(0, FT::EXPONENT_MIN, false);
         low = std::numeric_limits<F>::lowest();
         upp = std::numeric_limits<F>::max();
         mid = 0;
         level = FT::EXPONENT_MAX + 1;
-    } else {
-        // Example 1 (using 6 bits mantissa, 6 bits exp):
-        // f1 = 13:   1.101000 * 2^4  fm1: 101000  fe1: 000100
-        // f2 = 9:    1.001000 * 2^4  fm2: 001000  fe2: 000100
-        // low = 9:   1.000000 * 2^4  m:   000000  e:   000100
-        // upp = 9:   1.111111 * 2^4  m:   111111  e:   000100
-        //
-        // Example 2 (using 6 bits mantissa, 6 bits exp):
-        // f1 = 14:   1.110000 * 2^4  fm1: 110000  fe1: 000100
-        // f2 = 5:    1.010000 * 2^2  fm2: 010000  fe2: 000010
-        // low = 4:   1.000000 * 2^2  m:   000000  e:   000100
-        // upp = 9:   1.111110 * 2^4  m:   111111  e:   000100
-        low = FT::compose(0, std::min(fe1, fe2), fs1);
-        upp = FT::compose(FT::MANTISSA_MASK, fe1, fs1);
-        mid = FT::compose(0, fe1 - 1, fs1);
-        level = fe12 + 1;
+        return level;
     }
+
+    // Arranges the input floating s.t. fabs(f1) < fabs(f2)
+    f2 = fin1;
+    f2 = fin2;
+    if (fe1 > fe2 || (fe1 == fe2 && fm1 > fm2)) {
+        std::swap(fm1, fm2);
+        std::swap(fe1, fe2);
+        std::swap(f1, f2);
+    }
+    fm1 = fm1 | FT::MANTISSA_IMPLICIT_BIT;
+    fm2 = fm2 | FT::MANTISSA_IMPLICIT_BIT;
+    fe12 = fe2 - fe1;
+    // ROFL_MSG("fm1         " << std::bitset<FT::BIT_NUM>(fm1));
+    // ROFL_MSG("fm2         " << std::bitset<FT::BIT_NUM>(fm2));
+    // ROFL_MSG("fm1 >> fe12 " << std::bitset<FT::BIT_NUM>(fm1 >> fe12));
+    // ROFL_MSG("xor         " << std::bitset<FT::BIT_NUM>(fm2 ^ (fm1 >> fe12)));
+    // ROFL_VAR2(log2Mod(fm2 ^ (fm1 >> fe12)), FT::MANTISSA_BITS - log2Mod(fm2 ^ (fm1 >> fe12)));
+    if (fe12 <= FT::MANTISSA_BITS) {
+        level = IT::BIT_NUM - IT::nlz(fm2 ^ (fm1 >> fe12));
+    } else {
+        level = IT::BIT_NUM - IT::nlz(fm2);
+    }
+    ROFL_VAR4(fe1, fe2, fe12, level);
+    intervMask = (1 << level) - 1;
+    mlow = fm2 & (~intervMask);
+    mupp = (mlow | intervMask);
+    mmid = mlow | (1 << (level - 1));
+    if (mlow != 0) {
+        low = FT::compose(mlow ^ FT::MANTISSA_IMPLICIT_BIT, fe2, fs2);
+    } else {
+        low = FT::compose(mlow, FT::EXPONENT_MIN, fs2);
+    }
+    if (mmid != 0) {
+        mid = FT::compose(mmid ^ FT::MANTISSA_IMPLICIT_BIT, fe2, fs2);
+    } else {
+        mid = FT::compose(mmid, FT::EXPONENT_MIN, fs2);
+    }
+    if (mupp != 0) {
+        upp = FT::compose(mupp ^ FT::MANTISSA_IMPLICIT_BIT, fe2, fs2);
+    } else {
+        upp = FT::compose(mupp, FT::EXPONENT_MIN, fs2);
+    }
+    if (fs2) {
+        std::swap(low, upp);
+    }
+    level = fe2 + level - FT::MANTISSA_BITS;
+    // ROFL_MSG("intervMask  " << std::bitset<FT::BIT_NUM>(intervMask));
+    // ROFL_MSG("mlow        " << std::bitset<FT::BIT_NUM>(mlow) << "  " << low);
+    // ROFL_MSG("     ->     " << std::bitset<FT::BIT_NUM>(FT::toInt(low)));
+    // ROFL_MSG("mmid        " << std::bitset<FT::BIT_NUM>(mmid) << "  " << mid);
+    // ROFL_MSG("     ->     " << std::bitset<FT::BIT_NUM>(FT::toInt(mid)));
+    // ROFL_MSG("mupp        " << std::bitset<FT::BIT_NUM>(mupp) << "  " << upp);
+    // ROFL_MSG("     ->     " << std::bitset<FT::BIT_NUM>(FT::toInt(upp)));
 
     return level;
 }
@@ -293,11 +352,11 @@ void mortonSplitInt(const I* v1, const I* v2, I* low, I* mid, I* upp) {
     int dimSplit, levelSplit, level;
 
     dimSplit = 0;
-    levelSplit = intervalPow2(v1[0], v2[0], low[0], mid[0], upp[0]);
+    levelSplit = intervalPow2Int(v1[0], v2[0], low[0], mid[0], upp[0]);
     for (int d = 1; d < Dim; ++d) {
-        level = intervalPow2(v1[d], v2[d], low[d], mid[d], upp[d]);
+        level = intervalPow2Int(v1[d], v2[d], low[d], mid[d], upp[d]);
         if (level > levelSplit) {
-            mid(dimSplit) = low(dimSplit);
+            mid[dimSplit] = low[dimSplit];
             dimSplit = d;
             levelSplit = level;
         } else {
@@ -328,9 +387,9 @@ bool mortonCmpFloat(const F* v1, const F* v2) {
     F currXor, lastXor;
 
     lastDim = 0;
-    lastXor = computeBitDiff(v1[0], v2[0], lastMantissa, lastExponent);
+    lastXor = xorFloat(v1[0], v2[0], lastMantissa, lastExponent);
     for (int d = 1; d < Dim; ++d) {
-        currXor = computeBitDiff(v1[d], v2[d], currMantissa, currExponent);
+        currXor = xorFloat(v1[d], v2[d], currMantissa, currExponent);
         if (lastXor < currXor && lastExponent < currExponent) {
             lastDim = d;
             lastExponent = currExponent;
@@ -348,7 +407,7 @@ int mortonDistanceFloat(const F* v1, const F* v2) {
     IntegerType mantissa, exponent, exponentMax;
     exponentMax = -FT::EXPONENT_BIAS;
     for (int d = 0; d < Dim; ++d) {
-        computeBitDiff(v1[d], v2[d], mantissa, exponent);
+        xorFloat(v1[d], v2[d], mantissa, exponent);
         if (exponent > exponentMax) {
             exponentMax = exponent;
         }
@@ -361,11 +420,13 @@ void mortonSplitFloat(const F* v1, const F* v2, F* low, F* mid, F* upp) {
     int dimSplit, levelSplit, level;
 
     dimSplit = 0;
-    // levelSplit = intervalPow2Float(v1[0], v2[0], low[0], mid[0], upp[0]);
+    levelSplit = intervalPow2Float(v1[0], v2[0], low[0], mid[0], upp[0]);
+    // ROFL_VAR5(v1[0], v2[0], low[0], mid[0], upp[0]);
     for (int d = 1; d < Dim; ++d) {
-        // level = intervalPow2Float(v1[d], v2[d], low[d], mid[d], upp[d]);
+        level = intervalPow2Float(v1[d], v2[d], low[d], mid[d], upp[d]);
+        // ROFL_VAR5(v1[d], v2[d], low[d], mid[d], upp[d]);
         if (level > levelSplit) {
-            mid(dimSplit) = low(dimSplit);
+            mid[dimSplit] = low[dimSplit];
             dimSplit = d;
             levelSplit = level;
         } else {
@@ -444,6 +505,14 @@ struct MortonTraits<
 
     static int distance(const Scalar* v1, const Scalar* v2) {
         return mortonDistanceFloat<Scalar, Dim>(v1, v2);
+    }
+
+    static void split(const Scalar* v1,
+                      const Scalar* v2,
+                      Scalar* low,
+                      Scalar* mid,
+                      Scalar* upp) {
+        mortonSplitFloat<Scalar, Dim>(v1, v2, low, mid, upp);
     }
 };
 
