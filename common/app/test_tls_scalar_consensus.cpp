@@ -102,9 +102,9 @@ int main(int argc, char** argv) {
 
     std::cout << "Performs histogram computation\n";
     std::vector<bool> inliers;
-    // rofl::estimateTLSEstimation(valuesDif.begin(), valuesDif.end(),
+    // rofl::estimateTranslationTls(valuesDif.begin(), valuesDif.end(),
     //                             ranges.begin(), ranges.end(), translEst, inliers);
-    rofl::estimateTLSEstimation2(valuesDif, ranges, translEst, inliers);
+    rofl::estimateTranslationTls(valuesDif, ranges, translEst, inliers);
 
     std::cout << "Estimated translation: " << translEst << std::endl;
 

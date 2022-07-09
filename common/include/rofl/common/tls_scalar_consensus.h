@@ -23,7 +23,7 @@
 namespace rofl {
 
 template <typename Scalar>
-void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector<Scalar>& ranges, Scalar& valueMax, std::vector<bool>& inliers) {
+void estimateTranslationTls(const std::vector<Scalar>& values, const std::vector<Scalar>& ranges, Scalar& valueMax, std::vector<bool>& inliers) {
     size_t n = values.size();
     size_t ne = 2 * n;
 
@@ -93,15 +93,16 @@ void estimateTLSEstimation2(const std::vector<Scalar>& values, const std::vector
         // for (size_t s = 0; s < std::abs(consensusSetCardinal); ++s) {
         //     std::cout << " ";
         // }
-        std::cout << i << " (" << j << "): "
-                  << "endpoint " << endpoints[j].first
-                  << ", value " << values[i]
-                  << ", valueHat " << valueHat[j]
-                  << ", valueCost " << valueCost[j]
-                  << ", consensusSetCardinal " << consensusSetCardinal
-                  << ", sumXiSquare " << sumXiSquare
-                  << ", sumXi " << sumXi
-                  << std::endl;
+
+        // std::cout << i << " (" << j << "): "
+        //           << "endpoint " << endpoints[j].first
+        //           << ", value " << values[i]
+        //           << ", valueHat " << valueHat[j]
+        //           << ", valueCost " << valueCost[j]
+        //           << ", consensusSetCardinal " << consensusSetCardinal
+        //           << ", sumXiSquare " << sumXiSquare
+        //           << ", sumXi " << sumXi
+        //           << std::endl;
     }
 
     auto itMin = std::min_element(valueCost.begin(), valueCost.end());
