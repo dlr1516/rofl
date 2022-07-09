@@ -22,6 +22,24 @@
 
 namespace rofl {
 
+/**
+ * @brief Estimates the value with a maximum consensus from a set of values
+ * each provided with a range of acceptance.
+ * This function follows the Truncated Least Square (TLS) formulation from
+ * Teaser registration tool.
+ *
+ * H. Yang, J. Shi, and L. Carlone, "TEASER: Fast and Certifiable Point Cloud Registration,"
+ * IEEE Trans. Robotics, 37(2), pp. 314-333, April 2021, doi: 10.1109/TRO.2020.3033695.
+ *
+ * The present implementation is an adaptation of software project
+ * https://github.com/MIT-SPARK/TEASER-plusplus
+ *
+ * @tparam Scalar the scalar type (it must be a floating point like float or double)
+ * @param values std::vector of scalar values
+ * @param ranges std::vector of scalar ranges (tolerance threshold for inliers)
+ * @param valueMax value with maximum consensus
+ * @param inliers std::vector to mark inlier values
+ */
 template <typename Scalar>
 void estimateTranslationTls(const std::vector<Scalar>& values, const std::vector<Scalar>& ranges, Scalar& valueMax, std::vector<bool>& inliers) {
     size_t n = values.size();
