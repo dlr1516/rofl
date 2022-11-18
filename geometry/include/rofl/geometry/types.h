@@ -63,6 +63,8 @@ using AngleInterval = std::pair<Scalar, Scalar>;
 
 #if __cplusplus < 201703L
 
+static_assert(__cplusplus >= 201703L, "Versions before C++-17 are deprecated: add compiling option \"-DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS='-std=c++17'\"");
+
 // --------------------------------------------------------------
 // LINEAR ALGEBRA AND GEOMETRY: ELEMENTARY TYPES
 // --------------------------------------------------------------
