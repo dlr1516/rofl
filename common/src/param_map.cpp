@@ -126,6 +126,25 @@ namespace rofl {
         table_.insert(std::make_pair(paramName, paramValue));
     }
 
+    void ParamMap::adaptTildeInPaths()
+    {
+        for (auto it = table_.begin(); it != table_.end(); ++it)
+        {
+            auto first = it->first;
+            auto second = it->second;
+            // std::cout << "second with tilde: " << second << std::endl;
+            std::string homePath = getenv("HOME");
+            homePath += "/"; // getenv() return only /home/user -> need to add another
+            // std::cout << "homePath " << homePath << std::endl;
+            if (second.rfind("~") == 0)
+            {
+                second.replace(0, 2, homePath);
+                std::cout << "second WITHOUT tilde: " << second << std::endl;
+                setParam(first, second);
+            }
+        }
+    }
+
     bool ParamMap::isOption(std::string str) {
         return (str.length() >= 2 && str.at(0) == '-' && isalpha(str.at(1)));
     }

@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-//#include <unordered_map>
+// #include <unordered_map>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include "macros.h"
@@ -188,6 +188,11 @@ namespace rofl
             }
             return true;
         }
+
+        /**
+         * @brief Run through @param paramMap and substitute ~ at the beginning of strings (paths) with $HOME env variable
+         */
+        void adaptTildeInPaths();
 
     protected:
         table_type table_;

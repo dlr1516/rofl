@@ -1,0 +1,373 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.2.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Mon Aug 22 16:55:53 2022
+
+# Variables
+
+# 'override' directive
+GNUMAKEFLAGS := 
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = ubuntu
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+SNAP_COMMON = /var/snap/code/common
+# environment
+XDG_SESSION_TYPE = x11
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+IM_CONFIG_PHASE = 1
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /run/user/1000/gdm/Xauthority
+# environment
+GDMSESSION = ubuntu
+# environment
+XMODIFIERS = @im=ibus
+# makefile
+CURDIR := /home/ernest/workspace/rofl
+# makefile
+SHELL = /bin/sh
+# environment
+SNAP_DATA = /var/snap/code/105
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# environment
+JOURNAL_STREAM = 8:53061
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
+# environment
+SNAP_INSTANCE_NAME = code
+# environment
+SNAP_ARCH = amd64
+# makefile
+MAKEFILE_LIST := 
+# automatic
+@F = $(notdir $@)
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /var/lib/snapd/desktop/applications/code_code.desktop
+# environment
+USERNAME = ernest
+# environment
+MAKELEVEL := 0
+# environment
+MANDATORY_PATH = /usr/share/gconf/ubuntu.mandatory.path
+# environment
+XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+ROS_ETC_DIR = /opt/ros/noetic/etc/ros
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+_ = /snap/code/105/usr/share/code/code
+# environment
+ROS_PACKAGE_PATH = /home/ernest/robotics_ws/src/material/rimlab_velodyne_samples/rimlab_velodyne/rimlab_velodyne:/home/ernest/robotics_ws/src/material/rimlab_velodyne_samples/rimlab_velodyne/rimlab_velodyne_msgs:/home/ernest/robotics_ws/src/material/rimlab_velodyne_samples/rimlab_velodyne/rimlab_velodyne_driver:/home/ernest/robotics_ws/src/material/rimlab_velodyne_samples/rimlab_velodyne/rimlab_velodyne_pointcloud:/home/ernest/robotics_ws/src/material/rimlab_velodyne_samples/rimlab_velodyne_cloud_reader:/opt/ros/noetic/share
+# environment
+MANAGERPID = 2155
+# environment
+ROS_PYTHON_VERSION = 3
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+LC_NAME = it_IT.UTF-8
+# environment
+VSCODE_CWD = /home/ernest
+# environment
+GSETTINGS_SCHEMA_DIR = /snap/code/105/usr/share/glib-2.0/schemas
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+# environment
+XDG_SESSION_DESKTOP = ubuntu
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+SESSION_MANAGER = local/rog-strix:@/tmp/.ICE-unix/2409,unix/rog-strix:/tmp/.ICE-unix/2409
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+GDK_PIXBUF_MODULE_FILE = /home/ernest/snap/code/common/.cache/gdk-pixbuf-loaders.cache
+# environment
+SNAP = /snap/code/105
+# environment
+ROS_ROOT = /opt/ros/noetic/share/ros
+# environment
+SNAP_VERSION = e4503b30
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+DISABLE_WAYLAND = 1
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+INVOCATION_ID = b3cbd67c32af44609c4bebe115fc4031
+# environment
+GDK_PIXBUF_MODULEDIR = /snap/code/105/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+CMAKE_PREFIX_PATH = /home/ernest/robotics_ws/devel:/opt/ros/noetic
+# environment
+LS_COLORS = 
+# environment
+ROS_DISTRO = noetic
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 34575
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :1
+# environment
+CONDA_EXE = /home/ernest/anaconda3/bin/conda
+# environment
+SNAP_INSTANCE_KEY = 
+# environment
+PWD = /home/ernest/workspace/rofl
+# default
+.LOADED := 
+# environment
+SSH_AGENT_PID = 2374
+# environment
+PKG_CONFIG_PATH = /home/ernest/robotics_ws/devel/lib/pkgconfig:/opt/ros/noetic/lib/pkgconfig
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+# environment
+GTK_MODULES = gail:atk-bridge
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/ernest
+# environment
+LD_LIBRARY_PATH = /home/ernest/robotics_ws/devel/lib:/opt/ros/noetic/lib
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+VSCODE_CLI = 1
+# environment
+VSCODE_CODE_CACHE_PATH = /home/ernest/.config/Code/CachedData/e4503b30fc78200f846c62cf8091b76ff5547662
+# environment
+LOGNAME = ernest
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void
+# environment
+SNAP_CONTEXT = 1eTAoR1JrFb2qefad_UdltkthQv_ycueH7g1I8Ey-fM9Nc02Xa-Q
+# automatic
++F = $(notdir $+)
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+SNAP_USER_COMMON = /home/ernest/snap/code/common
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+LC_TIME = it_IT.UTF-8
+# environment
+SNAP_REAL_HOME = /home/ernest
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+QT_IM_MODULE = ibus
+# environment
+SNAP_USER_DATA = /home/ernest/snap/code/105
+# environment
+SHLVL = 0
+# environment
+GNOME_SHELL_SESSION_MODE = ubuntu
+# default
+MAKE_VERSION := 4.2.1
+# environment
+USER = ernest
+# environment
+SNAP_REVISION = 105
+# environment
+LC_MONETARY = it_IT.UTF-8
+# makefile
+.DEFAULT_GOAL := 
+# environment
+XDG_CURRENT_DESKTOP = Unity
+# environment
+ROSLISP_PACKAGE_DIRECTORIES = /home/ernest/robotics_ws/devel/share/common-lisp
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+LC_TELEPHONE = it_IT.UTF-8
+# environment
+CONDA_SHLVL = 0
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-860f93a0-1.70.2-main.sock
+# environment
+BAMF_DESKTOP_FILE_HINT = /var/lib/snapd/desktop/applications/code_code.desktop
+# environment
+PYTHONPATH = /home/ernest/robotics_ws/devel/lib/python3/dist-packages:/opt/ros/noetic/lib/python3/dist-packages
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+ROS_VERSION = 1
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+GDK_BACKEND = x11
+# environment
+LC_PAPER = it_IT.UTF-8
+# environment
+NO_AT_BRIDGE = 1
+# environment
+LC_IDENTIFICATION = it_IT.UTF-8
+# environment
+QT_ACCESSIBILITY = 1
+# environment
+DEFAULTS_PATH = /usr/share/gconf/ubuntu.default.path
+# default
+MAKEFILES := 
+# environment
+SNAP_COOKIE = 1eTAoR1JrFb2qefad_UdltkthQv_ycueH7g1I8Ey-fM9Nc02Xa-Q
+# environment
+LC_NUMERIC = it_IT.UTF-8
+# automatic
+<F = $(notdir $<)
+# environment
+LC_MEASUREMENT = it_IT.UTF-8
+# environment
+ROS_MASTER_URI = http://localhost:11311
+# environment
+SNAP_NAME = code
+# environment
+LC_ALL = C
+# environment
+CONDA_PYTHON_EXE = /home/ernest/anaconda3/bin/python
+# environment
+GJS_DEBUG_TOPICS = JS ERROR;JS LOG
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# environment
+SNAP_REEXEC = 
+# environment
+_CE_M = 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+WINDOWPATH = 2
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# environment
+GJS_DEBUG_OUTPUT = stderr
+# default
+.RECIPEPREFIX := 
+# environment
+LC_ADDRESS = it_IT.UTF-8
+# environment
+LANG = C
+# environment
+VSCODE_PID = 8943
+# environment
+_CE_CONDA = 
+# variable set hash-table stats:
+# Load=144/1024=14%, Rehash=0, Collisions=23/166=14%
+ 
+make: *** No rule to make target 'all'.  Stop.
+
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 66308, inode 10094115): 13 files, no impossibilities.
+
+# 13 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 21 / storage = 187 B / avg = 8 B
+# current buf: size = 8162 B / used = 187 B / count = 21 / avg = 8 B
+
+# strcache performance: lookups = 24 / hit rate = 12%
+# hash-table stats:
+# Load=21/8192=0%, Rehash=0, Collisions=1/24=4%
+# Finished Make data base on Mon Aug 22 16:55:53 2022
+
+ 
