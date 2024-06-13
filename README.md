@@ -11,43 +11,21 @@ Library **rofl** implements the Angular Radon Spectrum method
 for estimation of rotation. 
 It has been kept to a minimal design. 
 
-If you use this library, please cite the following paper: 
-
-D. Lodi Rizzini. 
-Angular Radon Spectrum for Rotation Estimation. 
-Pattern Recognition, Volume 84, Dec. 2018, Pages 182-196, 
-DOI [10.1016/j.patcog.2018.07.017](https://doi.org/10.1016/j.patcog.2018.07.017).
-
-````
-  @article{lodirizzini2018pr,
-    author={Lodi Rizzini, D.},
-    title={{Angular Radon Spectrum for Rotation Estimation}}
-    journal={Pattern Recognition},
-    volume={84},
-    pages={182--196},
-    month={dec},
-    year={2018},
-    publisher={Elsevier},
-    issn = {},
-    doi = {10.1016/j.patcog.2018.07.017},
-    note = {DOI 10.1016/j.patcog.2018.07.017, EID 2-s2.0-85050072081},
-  }
-````
-
-or the most relevant associated publications by visiting: 
-https://rimlab.ce.unipr.it/
+If you use this library, please consider the most notable [publications](https://rimlab.ce.unipr.it/Publications.html) produced by our lab, which can be found at the following link
+[https://rimlab.ce.unipr.it/](https://rimlab.ce.unipr.it/Publications.html)
 
 
 DEPENDENCIES
 -------------------------------------------------
 
-The software depends on the following external libraries
+The code is compatible with C++17 or later.
+The software depends on the following external libraries:
 
 - Boost (submodule lexical_cast)
 - Eigen 3.0 
-- ROFL (https://github.com/dlr1516/rofl)
+- PCL (for PCL module)
 
-Other dependencies are placed in directory thirdparty. 
+Other dependencies may be placed in directory thirdparty. 
 Some examples require the external application "gnuplot" to display 
 results. 
 
