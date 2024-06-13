@@ -11,8 +11,7 @@ Library **rofl** implements the Angular Radon Spectrum method
 for estimation of rotation. 
 It has been kept to a minimal design. 
 
-If you use this library, please consider the most notable [publications](https://rimlab.ce.unipr.it/Publications.html) produced by our lab, which can be found at the following link
-[https://rimlab.ce.unipr.it/](https://rimlab.ce.unipr.it/Publications.html)
+If you use this library, please consider the most notable [publications](https://rimlab.ce.unipr.it/Publications.html) produced by our lab, which can be found at this [link](https://rimlab.ce.unipr.it/Publications.html)
 
 
 DEPENDENCIES
