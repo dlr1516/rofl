@@ -11,7 +11,7 @@ Library **rofl** implements the Angular Radon Spectrum method
 for estimation of rotation. 
 It has been kept to a minimal design. 
 
-If you use this library, please consider the most notable [publications](https://rimlab.ce.unipr.it/Publications.html) produced by our lab, which can be found at this [link](https://rimlab.ce.unipr.it/Publications.html)
+If you use this library, please consider the most notable [publications](https://rimlab.ce.unipr.it/Publications.html) produced by our lab, which can be found at this [link](https://rimlab.ce.unipr.it/Publications.html).
 
 
 DEPENDENCIES
@@ -101,6 +101,14 @@ You need to add the following lines to your project as in this example:
 > 
 > add_executable(foobar foobar.cpp)  
 > target_link_libraries(foobar ${rofl_LIBRARIES})  
+
+Compatibility with C++14 may require boost compatibility for filesystem e.g.,
+
+> target_link_libraries(foobar ${rofl_LIBRARIES} boost_filesystem boost_system)
+
+Most modules can be linked separately e.g., for module "common"
+
+> target_link_libraries(foobar rofl_common boost_filesystem boost_system)
 
 The above example uses the variables defined in roflConfig.cmake:
 
