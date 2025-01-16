@@ -29,47 +29,47 @@ target_link_libraries(test_min_max_heap ${Boost_LIBRARIES})
 add_executable(test_interval_indices
   app/test_interval_indices.cpp
 )
-target_link_libraries(test_interval_indices ${Boost_LIBRARIES})
+target_link_libraries(test_interval_indices ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_peak_finder_d
   app/test_peak_finder_d.cpp
 )
-target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES})
+target_link_libraries(test_peak_finder_d ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_io
   app/test_io.cpp
 )
-target_link_libraries(test_io ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_io ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_numeric_traits
   app/test_numeric_traits.cpp
 )
-target_link_libraries(test_numeric_traits ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_numeric_traits ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_label_set
   app/test_label_set.cpp
 )
-target_link_libraries(test_label_set ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_label_set ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_morton_functions
   app/test_morton_functions.cpp
 )
-target_link_libraries(test_morton_functions ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_morton_functions ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_morton_order
   app/test_morton_order.cpp
 )
-target_link_libraries(test_morton_order ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_morton_order ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_morton_tree
   app/test_morton_tree.cpp
 )
-target_link_libraries(test_morton_tree ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_morton_tree ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 add_executable(test_tls_scalar_consensus
   app/test_tls_scalar_consensus.cpp
 )
-target_link_libraries(test_tls_scalar_consensus ${SUBLIB_NAME} ${Boost_LIBRARIES})
+target_link_libraries(test_tls_scalar_consensus ${SUBLIB_NAME} ${Boost_LIBRARIES} boost_filesystem)
 
 
 # Option "make install": copy binaries
